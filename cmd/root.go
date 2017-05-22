@@ -16,14 +16,18 @@ package cmd
 import (
 	"fmt"
 	"os"
-	"path"
 
 	homedir "github.com/mitchellh/go-homedir"
+	"github.com/sascha-andres/devenv"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
-var cfgFile string
+var (
+	cfgFile    string
+	cfg        devenv.DevenvConfiguration
+	configPath string
+)
 
 // RootCmd represents the base command when called without any subcommands
 var RootCmd = &cobra.Command{
@@ -52,10 +56,11 @@ func init() {
 	// Cobra supports persistent flags, which, if defined here,
 	// will be global for your application.
 	RootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.devenv.yaml)")
+	RootCmd.PersistentFlags().StringP("basepath", "b", "$HOME/devenv/src", "Base path for projects")
+	RootCmd.PersistentFlags().StringP("configpath", "c", "$HOME/devenv/environments", "Config path for environments")
 
-	// Cobra also supports local flags, which will only run
-	// when this action is called directly.
-	RootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	viper.BindPFlag("basepath", RootCmd.PersistentFlags().Lookup("basepath"))
+	viper.BindPFlag("configpath", RootCmd.PersistentFlags().Lookup("configpath"))
 }
 
 // initConfig reads in config file and ENV variables if set.
@@ -73,10 +78,10 @@ func initConfig() {
 
 		// Search config in home directory with name ".cobra" (without extension).
 		viper.AddConfigPath(home)
-		viper.AddConfigPath(path.Join(home, ".devenv"))
 		viper.SetConfigName(".devenv")
 	}
 
+	viper.SetEnvPrefix("DEVENV")
 	viper.AutomaticEnv() // read in environment variables that match
 
 	// If a config file is found, read it in.

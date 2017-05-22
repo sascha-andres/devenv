@@ -14,9 +14,15 @@
 package cmd
 
 import (
-	"fmt"
+	"io/ioutil"
+	"log"
+	"path"
+	"strings"
 
+	"github.com/sascha-andres/devenv"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
+	"gopkg.in/yaml.v2"
 )
 
 // addCmd represents the add command
@@ -26,20 +32,22 @@ var addCmd = &cobra.Command{
 	Long: `Creates a new environment, adding a YAML file in
 your environment_config_path.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("add called")
+		projectName := strings.Join(args, " ")
+		log.Printf("Called to add '%s'\n", projectName)
+		projectFileNamePath := path.Join(viper.GetString("configpath"), projectName+".yaml")
+		log.Printf("Storing in '%s'\n", projectFileNamePath)
+
+		ev := devenv.EnvironmentConfiguration{BranchPrefix: "", Name: projectName}
+		result, err := yaml.Marshal(ev)
+		if err != nil {
+			log.Fatalf("Error marshalling new config: %#v", err)
+		}
+		if err = ioutil.WriteFile(projectFileNamePath, result, 0600); err != nil {
+			log.Fatalf("Error writing new config: %#v", err)
+		}
 	},
 }
 
 func init() {
 	RootCmd.AddCommand(addCmd)
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// addCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// addCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
