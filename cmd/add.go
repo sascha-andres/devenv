@@ -34,16 +34,20 @@ your environment_config_path.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		projectName := strings.Join(args, " ")
 		log.Printf("Called to add '%s'\n", projectName)
-		projectFileNamePath := path.Join(viper.GetString("configpath"), projectName+".yaml")
-		log.Printf("Storing in '%s'\n", projectFileNamePath)
+		if !devenv.ProjectIsCreated(projectName) {
+			projectFileNamePath := path.Join(viper.GetString("configpath"), projectName+".yaml")
+			log.Printf("Storing in '%s'\n", projectFileNamePath)
 
-		ev := devenv.EnvironmentConfiguration{BranchPrefix: "", Name: projectName}
-		result, err := yaml.Marshal(ev)
-		if err != nil {
-			log.Fatalf("Error marshalling new config: %#v", err)
-		}
-		if err = ioutil.WriteFile(projectFileNamePath, result, 0600); err != nil {
-			log.Fatalf("Error writing new config: %#v", err)
+			ev := devenv.EnvironmentConfiguration{BranchPrefix: "", Name: projectName}
+			result, err := yaml.Marshal(ev)
+			if err != nil {
+				log.Fatalf("Error marshalling new config: %#v", err)
+			}
+			if err = ioutil.WriteFile(projectFileNamePath, result, 0600); err != nil {
+				log.Fatalf("Error writing new config: %#v", err)
+			}
+		} else {
+			log.Fatal("Project already exists")
 		}
 	},
 }
