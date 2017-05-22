@@ -33,7 +33,7 @@ changes before deleting the complete directory tree.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		projectName := strings.Join(args, " ")
 		log.Printf("Called to clean '%s'\n", projectName)
-		log.Println("Currently directory is going to be removed withour any checks!")
+		log.Println("Currently directory is going to be removed without any checks!")
 		if devenv.ProjectIsCreated(projectName) {
 			os.RemoveAll(path.Join(viper.GetString("basepath"), projectName))
 		} else {
