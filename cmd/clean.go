@@ -14,9 +14,14 @@
 package cmd
 
 import (
-	"fmt"
+	"log"
+	"os"
+	"path"
+	"strings"
 
+	"github.com/sascha-andres/devenv"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 // cleanCmd represents the clean command
@@ -26,7 +31,14 @@ var cleanCmd = &cobra.Command{
 	Long: `Removes all code from your harddisk. Scans all repositories for uncommitted
 changes before deleting the complete directory tree.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("clean called")
+		projectName := strings.Join(args, " ")
+		log.Printf("Called to clean '%s'\n", projectName)
+		log.Println("Currently directory is going to be removed withour any checks!")
+		if devenv.ProjectIsCreated(projectName) {
+			os.RemoveAll(path.Join(viper.GetString("basepath"), projectName))
+		} else {
+			log.Println("Project does not exist")
+		}
 	},
 }
 
