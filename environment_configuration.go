@@ -7,8 +7,8 @@ import (
 	"os"
 	"os/exec"
 	"path"
-	"strings"
 
+	"github.com/sascha-andres/devenv/helper"
 	"github.com/spf13/viper"
 
 	yaml "gopkg.in/yaml.v1"
@@ -28,7 +28,6 @@ type (
 		Environment  map[string]string         `yaml:"env"`
 		Shell        string                    `yaml:"shell"`
 	}
-	environ []string
 )
 
 // LoadFromFile takes a YAML file and unmarhals its data
@@ -50,9 +49,9 @@ func (ev *EnvironmentConfiguration) LoadFromFile(path string) error {
 // StartShell executes configured shell or default shell (sh)
 func (ev *EnvironmentConfiguration) StartShell() error {
 	command := exec.Command("bash", "-l")
-	env := environ(os.Environ())
+	env := helper.Environ(os.Environ())
 	for key := range ev.Environment {
-		env.unset(key)
+		env.Unset(key)
 	}
 	for key, value := range ev.Environment {
 		log.Printf("Setting '%s' to '%s'", key, value)
@@ -74,33 +73,10 @@ func (ev *EnvironmentConfiguration) StartShell() error {
 
 // ProjectIsCreated checks whether project is checked out
 func ProjectIsCreated(projectName string) bool {
-	if ok, err := exists(path.Join(viper.GetString("basepath"), projectName)); ok && err == nil {
+	if ok, err := helper.Exists(path.Join(viper.GetString("basepath"), projectName)); ok && err == nil {
 		return true
 	}
 	return false
-}
-
-// unset removes an environment key for a new process
-func (e *environ) unset(key string) {
-	for i := range *e {
-		if strings.HasPrefix((*e)[i], key+"=") {
-			(*e)[i] = (*e)[len(*e)-1]
-			*e = (*e)[:len(*e)-1]
-			break
-		}
-	}
-}
-
-// exists returns whether the given file or directory exists or not
-func exists(path string) (bool, error) {
-	_, err := os.Stat(path)
-	if err == nil {
-		return true, nil
-	}
-	if os.IsNotExist(err) {
-		return false, nil
-	}
-	return true, err
 }
 
 func init() {
