@@ -5,10 +5,6 @@ import (
 	"log"
 	"os"
 	"os/exec"
-	"path"
-
-	"github.com/sascha-andres/devenv"
-	"github.com/spf13/viper"
 )
 
 var (
@@ -16,17 +12,17 @@ var (
 )
 
 // Git calls the system git in the project diorectory with specified arguments
-func Git(ev devenv.EnvironmentConfiguration, args ...string) error {
+func Git(ev map[string]string, projectPath string, args ...string) error {
 	command := exec.Command("git", args...)
 	env := Environ(os.Environ())
-	for key := range ev.Environment {
+	for key := range ev {
 		env.Unset(key)
 	}
-	for key, value := range ev.Environment {
+	for key, value := range ev {
 		log.Printf("Setting '%s' to '%s'", key, value)
 		env = append(env, fmt.Sprintf("%s=%s", key, value))
 	}
-	command.Dir = path.Join(viper.GetString("basepath"), ev.Name)
+	command.Dir = projectPath
 	command.Env = env
 	command.Stdout = os.Stdout
 	command.Stdin = os.Stdin
