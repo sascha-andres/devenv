@@ -14,31 +14,41 @@
 package cmd
 
 import (
-	"fmt"
+	"log"
+	"path"
+	"strings"
 
+	"github.com/sascha-andres/devenv"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 // bashCmd represents the bash command
-var bashCmd = &cobra.Command{
-	Use:   "bash",
-	Short: "Start a bash shell",
-	Long:  `Spwans a bash shell in the directory where all code is located`,
-	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("bash called")
-	},
-}
+var (
+	bashCmd = &cobra.Command{
+		Use:   "bash",
+		Short: "Start a bash shell",
+		Long:  `Spwans a bash shell in the directory where all code is located`,
+		Run: func(cmd *cobra.Command, args []string) {
+			projectName := strings.Join(args, " ")
+			log.Printf("Called to start shell for '%s'\n", projectName)
+			if !devenv.ProjectIsCreated(projectName) {
+				log.Fatalf("Project '%s' does not yet exist", projectName)
+			}
+			projectFileNamePath := path.Join(viper.GetString("configpath"), projectName+".yaml")
+			log.Printf("Loading from '%s'\n", projectFileNamePath)
+
+			var ev devenv.EnvironmentConfiguration
+			if err := ev.LoadFromFile(projectFileNamePath); err != nil {
+				log.Fatalf("Error loading environment config: %#v\n", err)
+			}
+			if err := ev.StartShell(); err != nil {
+				log.Fatalf("Error starting shell: %#v\n", err)
+			}
+		},
+	}
+)
 
 func init() {
 	RootCmd.AddCommand(bashCmd)
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// bashCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// bashCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
