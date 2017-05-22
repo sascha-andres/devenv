@@ -6,13 +6,17 @@ A development environment automater
 
 ### Command line
 
+```
 devenv add <dev-env name>
 devenv bash <dev-env name>
 devenv shell <dev-env name>
 devenv clean <dev-env name>
+devenv pull <dev-env name>
+```
 
 ### In-App shell
 
+```
 repo add <repo-name> <path> <url>
 repo delete <repo-name>
 repo commit <repo-name> <commit-msg>
@@ -24,8 +28,9 @@ repo close <repo-name> <branch name> <target branch>
 commit <commit-msg>
 push
 pull
-branch <repo-name> <branch name>
-close <repo-name> <branch name> <target branch>
+branch <branch name>
+close <branch name> <target branch>
+```
 
 ## Config file format
 
