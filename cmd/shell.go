@@ -14,9 +14,17 @@
 package cmd
 
 import (
+	"bufio"
 	"fmt"
+	"log"
+	"os"
+	"path"
+	"strings"
 
+	"github.com/sascha-andres/devenv"
+	"github.com/sascha-andres/devenv/shell"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 // shellCmd represents the shell command
@@ -25,7 +33,26 @@ var shellCmd = &cobra.Command{
 	Short: "Start devenv shell",
 	Long:  `Devenv shell allows to work with all repositories at once.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("shell called")
+		projectName := strings.Join(args, " ")
+		log.Printf("Called to start shell for '%s'\n", projectName)
+		if "" == projectName || !devenv.ProjectIsCreated(projectName) {
+			log.Fatalf("Project '%s' does not yet exist", projectName)
+		}
+
+		reader := bufio.NewReader(os.Stdin)
+		interp := shell.NewInterpreter(path.Join(viper.GetString("basepath"), projectName))
+		for {
+			fmt.Print("> ")
+			text, err := reader.ReadString('\n')
+			if err != nil {
+				log.Fatalf("Error getting command: %#v", err)
+			}
+			text = strings.TrimSpace(text)
+			if "quit" == text {
+				break
+			}
+			interp.Execute(text)
+		}
 	},
 }
 

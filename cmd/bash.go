@@ -32,7 +32,7 @@ var (
 		Run: func(cmd *cobra.Command, args []string) {
 			projectName := strings.Join(args, " ")
 			log.Printf("Called to start shell for '%s'\n", projectName)
-			if !devenv.ProjectIsCreated(projectName) {
+			if "" == projectName || !devenv.ProjectIsCreated(projectName) {
 				log.Fatalf("Project '%s' does not yet exist", projectName)
 			}
 			projectFileNamePath := path.Join(viper.GetString("configpath"), projectName+".yaml")

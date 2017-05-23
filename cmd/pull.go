@@ -35,7 +35,7 @@ repository project.`,
 		projectName := strings.Join(args, " ")
 		log.Printf("Called to get '%s'\n", projectName)
 		if ok, err := helper.Exists(path.Join(viper.GetString("configpath"), projectName+".yaml")); ok && err == nil {
-			if !devenv.ProjectIsCreated(projectName) {
+			if "" == projectName || !devenv.ProjectIsCreated(projectName) {
 				projectDirectory := path.Join(viper.GetString("basepath"), projectName)
 				os.MkdirAll(projectDirectory, 0700)
 				var ev devenv.EnvironmentConfiguration

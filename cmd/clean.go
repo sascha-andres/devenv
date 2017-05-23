@@ -34,7 +34,7 @@ changes before deleting the complete directory tree.`,
 		projectName := strings.Join(args, " ")
 		log.Printf("Called to clean '%s'\n", projectName)
 		log.Println("Currently directory is going to be removed without any checks!")
-		if devenv.ProjectIsCreated(projectName) {
+		if projectName != "" && devenv.ProjectIsCreated(projectName) {
 			os.RemoveAll(path.Join(viper.GetString("basepath"), projectName))
 		} else {
 			log.Println("Project does not exist")
