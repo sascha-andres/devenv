@@ -84,6 +84,26 @@ func (ev *EnvironmentConfiguration) StartShell() error {
 	return nil
 }
 
+// RepositoryExists returns true if a repository is configured in environment
+func (ev *EnvironmentConfiguration) RepositoryExists(repoName string) bool {
+	for _, repo := range ev.Repositories {
+		if repo.Name == repoName {
+			return true
+		}
+	}
+	return false
+}
+
+// GetRepository returns a repository with given name
+func (ev *EnvironmentConfiguration) GetRepository(repoName string) *RepositoryConfiguration {
+	for _, repo := range ev.Repositories {
+		if repo.Name == repoName {
+			return &repo
+		}
+	}
+	return nil
+}
+
 // ProjectIsCreated checks whether project is checked out
 func ProjectIsCreated(projectName string) bool {
 	if ok, err := helper.Exists(path.Join(viper.GetString("basepath"), projectName)); ok && err == nil {

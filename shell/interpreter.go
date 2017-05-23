@@ -17,26 +17,27 @@ import (
 	"log"
 
 	"github.com/mgutz/str"
+	"github.com/sascha-andres/devenv"
 )
 
 type (
 	// Interpreter contains data for where and what to do
 	Interpreter struct {
 		ExecuteScriptDirectory string
+		EnvConfiguration       devenv.EnvironmentConfiguration
 	}
 )
 
 // NewInterpreter returns a new interpreter
-func NewInterpreter(path string) *Interpreter {
-	return &Interpreter{ExecuteScriptDirectory: path}
+func NewInterpreter(path string, ev devenv.EnvironmentConfiguration) *Interpreter {
+	return &Interpreter{ExecuteScriptDirectory: path, EnvConfiguration: ev}
 }
 
 func (i *Interpreter) Execute(commandline string) error {
 	tokenized := str.ToArgv(commandline)
-	log.Printf("%#v\n", tokenized)
 	switch tokenized[0] {
 	case "repo":
-		log.Println("Repository specific function")
+		return i.ExecuteRepo(tokenized[1:])
 	case "branch":
 		log.Println("Create branch in all repositories")
 	case "pull":

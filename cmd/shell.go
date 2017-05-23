@@ -22,6 +22,7 @@ import (
 	"strings"
 
 	"github.com/sascha-andres/devenv"
+	"github.com/sascha-andres/devenv/helper"
 	"github.com/sascha-andres/devenv/shell"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -38,9 +39,15 @@ var shellCmd = &cobra.Command{
 		if "" == projectName || !devenv.ProjectIsCreated(projectName) {
 			log.Fatalf("Project '%s' does not yet exist", projectName)
 		}
+		var ev devenv.EnvironmentConfiguration
+		if ok, err := helper.Exists(path.Join(viper.GetString("configpath"), projectName+".yaml")); ok && err == nil {
+			if err := ev.LoadFromFile(path.Join(viper.GetString("configpath"), projectName+".yaml")); err != nil {
+				log.Fatalf("Error reading env config: '%s'", err.Error())
+			}
+		}
 
 		reader := bufio.NewReader(os.Stdin)
-		interp := shell.NewInterpreter(path.Join(viper.GetString("basepath"), projectName))
+		interp := shell.NewInterpreter(path.Join(viper.GetString("basepath"), projectName), ev)
 		for {
 			fmt.Print("> ")
 			text, err := reader.ReadString('\n')
@@ -51,7 +58,9 @@ var shellCmd = &cobra.Command{
 			if "quit" == text {
 				break
 			}
-			interp.Execute(text)
+			if err := interp.Execute(text); err != nil {
+				log.Printf("Error: '%s'", err.Error())
+			}
 		}
 	},
 }
