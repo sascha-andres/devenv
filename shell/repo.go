@@ -18,6 +18,7 @@ import (
 	"log"
 )
 
+// ExecuteRepo checks command and hands over to specific functions
 func (i *Interpreter) ExecuteRepo(args []string) error {
 	if len(args) == 0 {
 		return fmt.Errorf("No repo and action provided")
