@@ -14,27 +14,13 @@
 package shell
 
 import (
-	"fmt"
-	"log"
+	"path"
+
+	"github.com/sascha-andres/devenv/helper"
 )
 
-func (i *Interpreter) ExecuteRepo(args []string) error {
-	if len(args) == 0 {
-		return fmt.Errorf("No repo and action provided")
-	}
-	if len(args) == 1 {
-		return fmt.Errorf("No action provided")
-	}
-	if !i.EnvConfiguration.RepositoryExists(args[0]) {
-		return fmt.Errorf("Repository unknown")
-	}
-	switch args[1] {
-	case "log":
-		return i.executeRepoLog(args[0])
-	case "status":
-		return i.executeRepoStatus(args[0])
-	default:
-		log.Printf("%v\n", args)
-	}
-	return nil
+func (i *Interpreter) executeRepoStatus(repository string) error {
+	repo := i.EnvConfiguration.GetRepository(repository)
+	repoPath := path.Join(i.ExecuteScriptDirectory, repo.Path)
+	return helper.Git(i.EnvConfiguration.Environment, repoPath, "status")
 }
