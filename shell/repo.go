@@ -30,12 +30,20 @@ func (i *Interpreter) ExecuteRepo(args []string) error {
 		return fmt.Errorf("Repository unknown")
 	}
 	switch args[1] {
+	case "lg":
+		fallthrough
 	case "log":
 		return i.executeRepoLog(args[0])
+	case "st":
+		fallthrough
 	case "status":
 		return i.executeRepoStatus(args[0])
+	case ">":
+		fallthrough
 	case "push":
 		return i.executeRepoPush(args[0], args[2:])
+	case "<":
+		fallthrough
 	case "pull":
 		return i.executeRepoPush(args[0], args[2:])
 	default:
