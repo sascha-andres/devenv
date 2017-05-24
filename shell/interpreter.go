@@ -14,7 +14,7 @@
 package shell
 
 import (
-	"log"
+	"fmt"
 
 	"github.com/mgutz/str"
 	"github.com/sascha-andres/devenv"
@@ -28,6 +28,10 @@ type (
 	}
 )
 
+var (
+	repoCommands []Commander
+)
+
 // NewInterpreter returns a new interpreter
 func NewInterpreter(path string, ev devenv.EnvironmentConfiguration) *Interpreter {
 	return &Interpreter{ExecuteScriptDirectory: path, EnvConfiguration: ev}
@@ -37,13 +41,16 @@ func (i *Interpreter) Execute(commandline string) error {
 	tokenized := str.ToArgv(commandline)
 	switch tokenized[0] {
 	case "repo":
-		return i.ExecuteRepo(tokenized[1:])
-	case "branch":
-		log.Println("Create branch in all repositories")
-	case "pull":
-		log.Println("Get latest code for all repositories")
-	case "push":
-		log.Println("Put latest code")
+		return i.executeFromCommands(repoCommands, tokenized[1:])
 	}
 	return nil
+}
+
+func (i *Interpreter) executeFromCommands(commands []Commander, arguments []string) error {
+	for _, val := range commands {
+		if val.IsResponsible(arguments[0]) {
+			return val.Execute(i, arguments[0], arguments[2:])
+		}
+	}
+	return fmt.Errorf("'%s' is not a valid function", arguments[0])
 }

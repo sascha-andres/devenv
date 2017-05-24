@@ -19,11 +19,21 @@ import (
 	"github.com/sascha-andres/devenv/helper"
 )
 
-func (i *Interpreter) executeRepoPull(repository string, args []string) error {
+type repoPullCommand struct{}
+
+func (c repoPullCommand) Execute(i *Interpreter, repository string, args []string) error {
 	repo := i.EnvConfiguration.GetRepository(repository)
 	repoPath := path.Join(i.ExecuteScriptDirectory, repo.Path)
 	var arguments []string
 	arguments = append(arguments, "pull")
 	arguments = append(arguments, args...)
 	return helper.Git(i.EnvConfiguration.Environment, repoPath, arguments...)
+}
+
+func (c repoPullCommand) IsResponsible(commandName string) bool {
+	return commandName == "pull" || commandName == "<"
+}
+
+func init() {
+	repoCommands = append(repoCommands, repoPullCommand{})
 }

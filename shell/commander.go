@@ -13,24 +13,8 @@
 
 package shell
 
-import (
-	"path"
-
-	"github.com/sascha-andres/devenv/helper"
-)
-
-type repoLogCommand struct{}
-
-func (c repoLogCommand) Execute(i *Interpreter, repository string, args []string) error {
-	repo := i.EnvConfiguration.GetRepository(repository)
-	repoPath := path.Join(i.ExecuteScriptDirectory, repo.Path)
-	return helper.Git(i.EnvConfiguration.Environment, repoPath, "log", "--oneline", "--graph", "--decorate", "--all")
-}
-
-func (c repoLogCommand) IsResponsible(commandName string) bool {
-	return commandName == "log" || commandName == "l"
-}
-
-func init() {
-	repoCommands = append(repoCommands, repoLogCommand{})
+// Commander represents a unit of work for rhe shell
+type Commander interface {
+	IsResponsible(commandName string) bool
+	Execute(i *Interpreter, repository string, args []string) error
 }

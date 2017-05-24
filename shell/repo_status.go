@@ -19,8 +19,18 @@ import (
 	"github.com/sascha-andres/devenv/helper"
 )
 
-func (i *Interpreter) executeRepoStatus(repository string) error {
+type repoStatusCommand struct{}
+
+func (c repoStatusCommand) IsResponsible(commandName string) bool {
+	return commandName == "status" || commandName == "st"
+}
+
+func (c repoStatusCommand) Execute(i *Interpreter, repository string, args []string) error {
 	repo := i.EnvConfiguration.GetRepository(repository)
 	repoPath := path.Join(i.ExecuteScriptDirectory, repo.Path)
 	return helper.Git(i.EnvConfiguration.Environment, repoPath, "status")
+}
+
+func init() {
+	repoCommands = append(repoCommands, repoStatusCommand{})
 }
