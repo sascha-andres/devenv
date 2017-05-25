@@ -61,7 +61,12 @@ func (ev *EnvironmentConfiguration) LoadFromFile(path string) error {
 
 // StartShell executes configured shell or default shell (sh)
 func (ev *EnvironmentConfiguration) StartShell() error {
-	command := exec.Command("bash", "-l")
+	var command *exec.Cmd
+	if ev.Shell != "" {
+		command = exec.Command(ev.Shell)
+	} else {
+		command = exec.Command("bash", "-l")
+	}
 	env := helper.Environ(os.Environ())
 	for key := range ev.Environment {
 		env.Unset(key)
