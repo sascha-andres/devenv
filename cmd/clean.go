@@ -20,6 +20,7 @@ import (
 	"strings"
 
 	"github.com/sascha-andres/devenv"
+	"github.com/sascha-andres/devenv/helper"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -32,9 +33,20 @@ var cleanCmd = &cobra.Command{
 changes before deleting the complete directory tree.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		projectName := strings.Join(args, " ")
-		log.Printf("Called to clean '%s'\n", projectName)
-		log.Println("Currently directory is going to be removed without any checks!")
 		if projectName != "" && devenv.ProjectIsCreated(projectName) {
+			var ev devenv.EnvironmentConfiguration
+			if ok, err := helper.Exists(path.Join(viper.GetString("configpath"), projectName+".yaml")); ok && err == nil {
+				if err := ev.LoadFromFile(path.Join(viper.GetString("configpath"), projectName+".yaml")); err != nil {
+					log.Fatalf("Error reading env config: '%s'", err.Error())
+				}
+			}
+			for _, repo := range ev.Repositories {
+				if hasChanges, err := helper.HasChanges(ev.Environment, path.Join(path.Join(viper.GetString("basepath"), projectName, repo.Path))); hasChanges || err != nil {
+					log.Printf("'%s' has changes", repo.Name)
+					os.Exit(1)
+				}
+			}
+			log.Printf("'%s' has no changes, removing", projectName)
 			os.RemoveAll(path.Join(viper.GetString("basepath"), projectName))
 		} else {
 			log.Println("Project does not exist")
@@ -44,14 +56,4 @@ changes before deleting the complete directory tree.`,
 
 func init() {
 	RootCmd.AddCommand(cleanCmd)
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// cleanCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// cleanCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }

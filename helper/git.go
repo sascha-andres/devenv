@@ -14,6 +14,8 @@
 package helper
 
 import (
+	"bufio"
+	"bytes"
 	"fmt"
 	"log"
 	"os"
@@ -55,4 +57,28 @@ func init() {
 	if err != nil {
 		log.Fatalf("Could not locate git: '%#v'", err)
 	}
+}
+
+func HasChanges(ev map[string]string, projectPath string) (bool, error) {
+	// git status --porcelain
+	command := exec.Command("git", "status", "--porcelain")
+	env := Environ(os.Environ())
+	for key := range ev {
+		env.Unset(key)
+	}
+	for key, value := range ev {
+		log.Printf("Setting '%s' to '%s'", key, value)
+		env = append(env, fmt.Sprintf("%s=%s", key, value))
+	}
+	command.Dir = projectPath
+	command.Env = env
+	out, err := command.Output()
+	if err != nil {
+		return true, err
+	}
+	scanner := bufio.NewScanner(bytes.NewBuffer(out))
+	for scanner.Scan() {
+		return true, nil
+	}
+	return false, nil
 }
