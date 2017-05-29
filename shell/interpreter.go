@@ -30,6 +30,7 @@ type (
 
 var (
 	repoCommands []Commander
+	commands     []Commander
 )
 
 // NewInterpreter returns a new interpreter
@@ -42,15 +43,19 @@ func (i *Interpreter) Execute(commandline string) error {
 	tokenized := str.ToArgv(commandline)
 	switch tokenized[0] {
 	case "repo", "r":
-		return i.executeFromCommands(repoCommands, tokenized[1:])
+		return i.executeFromCommands(repoCommands, true, tokenized[1:])
 	}
-	return nil
+	return i.executeFromCommands(commands, false, tokenized)
 }
 
-func (i *Interpreter) executeFromCommands(commands []Commander, arguments []string) error {
+func (i *Interpreter) executeFromCommands(commands []Commander, specific bool, arguments []string) error {
 	for _, val := range commands {
 		if val.IsResponsible(arguments[0]) {
-			return val.Execute(i, arguments[0], arguments[2:])
+			if specific {
+				return val.Execute(i, arguments[1], arguments[2:])
+			} else {
+				return val.Execute(i, "%", arguments[1:])
+			}
 		}
 	}
 	return fmt.Errorf("'%s' is not a valid function", arguments[0])
