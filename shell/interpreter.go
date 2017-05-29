@@ -40,7 +40,7 @@ func NewInterpreter(path string, ev devenv.EnvironmentConfiguration) *Interprete
 func (i *Interpreter) Execute(commandline string) error {
 	tokenized := str.ToArgv(commandline)
 	switch tokenized[0] {
-	case "repo":
+	case "repo", "r":
 		return i.executeFromCommands(repoCommands, tokenized[1:])
 	}
 	return nil
