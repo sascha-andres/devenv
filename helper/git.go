@@ -83,3 +83,9 @@ func HasChanges(ev map[string]string, projectPath string) (bool, error) {
 	}
 	return false, nil
 }
+
+func HasBranch(ev map[string]string, projectPath, branch string) (bool, error) {
+	// git ls-remote --exit-code . origin/branch-name -> 0 == remote existiert
+	// git rev-parse --verify <branch> --> 0 == local branch exists
+	return false, nil
+}
