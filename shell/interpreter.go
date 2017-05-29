@@ -37,6 +37,7 @@ func NewInterpreter(path string, ev devenv.EnvironmentConfiguration) *Interprete
 	return &Interpreter{ExecuteScriptDirectory: path, EnvConfiguration: ev}
 }
 
+// Execute takes a line entered by the user and calls the command
 func (i *Interpreter) Execute(commandline string) error {
 	tokenized := str.ToArgv(commandline)
 	switch tokenized[0] {
