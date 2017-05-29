@@ -14,7 +14,7 @@
 package shell
 
 import (
-	"log"
+	"fmt"
 	"path"
 
 	"github.com/sascha-andres/devenv/helper"
@@ -25,16 +25,14 @@ type repoBranchCommand struct{}
 func (c repoBranchCommand) Execute(i *Interpreter, repository string, args []string) error {
 	repo := i.EnvConfiguration.GetRepository(repository)
 	repoPath := path.Join(i.ExecuteScriptDirectory, repo.Path)
-  hasBranch, err := helper.HasBranch(i.EnvConfiguration.Environment, repoPath, args[0])
-  if err != nil {
-    return err
-  }
-	if hasBranch {
-		log.Println("Branch exists, checkout")
-	} else {
-		log.Println("Branch does not exist, create & checkout")
+	hasBranch, err := helper.HasBranch(i.EnvConfiguration.Environment, repoPath, args[0])
+	if err != nil {
+		return err
 	}
-	return nil
+	if hasBranch {
+		return helper.Git(i.EnvConfiguration.Environment, repoPath, "checkout", args[0])
+	}
+	return helper.Git(i.EnvConfiguration.Environment, repoPath, "checkout", "-b", args[0], "--track", fmt.Sprintf("origin/%s", args[0]))
 }
 
 func (c repoBranchCommand) IsResponsible(commandName string) bool {
