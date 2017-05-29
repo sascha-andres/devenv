@@ -84,8 +84,24 @@ func HasChanges(ev map[string]string, projectPath string) (bool, error) {
 	return false, nil
 }
 
+// HasBranch checks if there is a branch locally or remotely
 func HasBranch(ev map[string]string, projectPath, branch string) (bool, error) {
+	ok, err := HasRemoteBranch(ev, projectPath, branch)
+	if err != nil {
+		return false, err
+	}
+	ok2, err := HasLocalBranch(ev, projectPath, branch)
+	return ok && ok2, err
+}
+
+// HasRemoteBranch checks if there is a branch remotely
+func HasRemoteBranch(ev map[string]string, projectPath, branch string) (bool, error) {
 	// git ls-remote --exit-code . origin/branch-name -> 0 == remote existiert
+	return false, nil
+}
+
+// HasLocalBranch checks if there is a branch locally
+func HasLocalBranch(ev map[string]string, projectPath, branch string) (bool, error) {
 	// git rev-parse --verify <branch> --> 0 == local branch exists
 	return false, nil
 }
