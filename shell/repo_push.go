@@ -22,7 +22,7 @@ import (
 type repoPushCommand struct{}
 
 func (c repoPushCommand) Execute(i *Interpreter, repository string, args []string) error {
-	repo := i.EnvConfiguration.GetRepository(repository)
+	_, repo := i.EnvConfiguration.GetRepository(repository)
 	repoPath := path.Join(i.ExecuteScriptDirectory, repo.Path)
 	var arguments []string
 	arguments = append(arguments, "push")

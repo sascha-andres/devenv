@@ -22,7 +22,7 @@ import (
 type repoBranchCommand struct{}
 
 func (c repoBranchCommand) Execute(i *Interpreter, repository string, args []string) error {
-	repo := i.EnvConfiguration.GetRepository(repository)
+	_, repo := i.EnvConfiguration.GetRepository(repository)
 	repoPath := path.Join(i.ExecuteScriptDirectory, repo.Path)
 	hasBranch, err := helper.HasBranch(i.EnvConfiguration.Environment, repoPath, args[0])
 	if err != nil {

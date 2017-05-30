@@ -113,13 +113,13 @@ func (ev *EnvironmentConfiguration) RepositoryExists(repoName string) bool {
 }
 
 // GetRepository returns a repository with given name
-func (ev *EnvironmentConfiguration) GetRepository(repoName string) *RepositoryConfiguration {
-	for _, repo := range ev.Repositories {
+func (ev *EnvironmentConfiguration) GetRepository(repoName string) (int, *RepositoryConfiguration) {
+	for index, repo := range ev.Repositories {
 		if repo.Name == repoName {
-			return &repo
+			return index, &repo
 		}
 	}
-	return nil
+	return 0, nil
 }
 
 // ProjectIsCreated checks whether project is checked out

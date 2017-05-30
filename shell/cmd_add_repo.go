@@ -14,12 +14,9 @@
 package shell
 
 import (
-	"bufio"
 	"fmt"
 	"log"
-	"os"
 	"path"
-	"strings"
 
 	"github.com/sascha-andres/devenv"
 	"github.com/sascha-andres/devenv/helper"
@@ -44,15 +41,6 @@ func (c addRepoCommand) Execute(i *Interpreter, repository string, args []string
 	rc := devenv.RepositoryConfiguration{Name: name, Path: rpath, URL: link}
 	i.EnvConfiguration.Repositories = append(i.EnvConfiguration.Repositories, rc)
 	return i.EnvConfiguration.SaveToFile(path.Join(viper.GetString("configpath"), i.EnvConfiguration.Name+".yaml"))
-}
-
-func getAnswer() string {
-	reader := bufio.NewReader(os.Stdin)
-	text, err := reader.ReadString('\n')
-	if err != nil {
-		log.Fatalf("Error getting command: %#v", err)
-	}
-	return strings.TrimSpace(text)
 }
 
 func (c addRepoCommand) IsResponsible(commandName string) bool {

@@ -22,7 +22,7 @@ import (
 type repoLogCommand struct{}
 
 func (c repoLogCommand) Execute(i *Interpreter, repository string, args []string) error {
-	repo := i.EnvConfiguration.GetRepository(repository)
+	_, repo := i.EnvConfiguration.GetRepository(repository)
 	repoPath := path.Join(i.ExecuteScriptDirectory, repo.Path)
 	return helper.Git(i.EnvConfiguration.Environment, repoPath, "log", "--oneline", "--graph", "--decorate", "--all")
 }
