@@ -59,6 +59,19 @@ func (ev *EnvironmentConfiguration) LoadFromFile(path string) error {
 	return nil
 }
 
+// SaveToFile takes the config and saves to disk
+func (ev *EnvironmentConfiguration) SaveToFile(path string) error {
+	data, err := yaml.Marshal(ev)
+	if err != nil {
+		log.Fatalf("Error marshalling project config: %#v\n", err)
+	}
+	err = ioutil.WriteFile(path, data, 0600)
+	if err != nil {
+		log.Fatalf("Error saving project config: %#v\n", err)
+	}
+	return nil
+}
+
 // StartShell executes configured shell or default shell (sh)
 func (ev *EnvironmentConfiguration) StartShell() error {
 	var command *exec.Cmd
