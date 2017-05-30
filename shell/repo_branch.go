@@ -14,7 +14,6 @@
 package shell
 
 import (
-	"fmt"
 	"path"
 
 	"github.com/sascha-andres/devenv/helper"
@@ -30,15 +29,9 @@ func (c repoBranchCommand) Execute(i *Interpreter, repository string, args []str
 		return err
 	}
 	if hasBranch {
-		if err = helper.Git(i.EnvConfiguration.Environment, repoPath, "checkout", args[0]); err == nil {
-			return helper.Git(i.EnvConfiguration.Environment, repoPath, "pull")
-		}
-		return err
+		return helper.Git(i.EnvConfiguration.Environment, repoPath, "checkout", args[0])
 	}
-	if err = helper.Git(i.EnvConfiguration.Environment, repoPath, "checkout", "-b", args[0], "--track", fmt.Sprintf("origin/%s", args[0])); err == nil {
-		return helper.Git(i.EnvConfiguration.Environment, repoPath, "pull")
-	}
-	return err
+	return helper.Git(i.EnvConfiguration.Environment, repoPath, "checkout", "-b", args[0])
 }
 
 func (c repoBranchCommand) IsResponsible(commandName string) bool {
