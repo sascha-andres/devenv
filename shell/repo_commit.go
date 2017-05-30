@@ -24,10 +24,11 @@ type repoCommitCommand struct{}
 func (c repoCommitCommand) Execute(i *Interpreter, repository string, args []string) error {
 	_, repo := i.EnvConfiguration.GetRepository(repository)
 	repoPath := path.Join(i.ExecuteScriptDirectory, repo.Path)
-	if err := helper.Git(i.EnvConfiguration.Environment, repoPath, "add", "--all", ":/"); err != nil {
+	if _, err := helper.Git(i.EnvConfiguration.Environment, repoPath, "add", "--all", ":/"); err != nil {
 		return err
 	}
-	return helper.Git(i.EnvConfiguration.Environment, repoPath, "commit")
+	_, err := helper.Git(i.EnvConfiguration.Environment, repoPath, "commit")
+	return err
 }
 
 func (c repoCommitCommand) IsResponsible(commandName string) bool {

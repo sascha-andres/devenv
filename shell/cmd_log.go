@@ -26,7 +26,7 @@ func (c logCommand) Execute(i *Interpreter, repository string, args []string) er
 	for _, repo := range i.EnvConfiguration.Repositories {
 		fmt.Printf("Log for '%s'\n", repo.Name)
 		repoPath := path.Join(i.ExecuteScriptDirectory, repo.Path)
-		err := helper.Git(i.EnvConfiguration.Environment, repoPath, "log", "-n", "10", "--oneline", "--graph", "--decorate", "--all")
+		_, err := helper.Git(i.EnvConfiguration.Environment, repoPath, "log", "-n", "10", "--oneline", "--graph", "--decorate", "--all")
 		if err != nil {
 			return err
 		}

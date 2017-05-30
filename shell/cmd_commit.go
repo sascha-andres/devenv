@@ -28,10 +28,10 @@ func (c commitCommand) Execute(i *Interpreter, repository string, args []string)
 		fmt.Printf("Commit for '%s'\n", repo.Name)
 		repoPath := path.Join(i.ExecuteScriptDirectory, repo.Path)
 		if hasChanges, err := helper.HasChanges(i.EnvConfiguration.Environment, repoPath); hasChanges && err == nil {
-			if err := helper.Git(i.EnvConfiguration.Environment, repoPath, "add", "--all", ":/"); err != nil {
+			if _, err := helper.Git(i.EnvConfiguration.Environment, repoPath, "add", "--all", ":/"); err != nil {
 				return err
 			}
-			err := helper.Git(i.EnvConfiguration.Environment, repoPath, "commit")
+			_, err := helper.Git(i.EnvConfiguration.Environment, repoPath, "commit")
 			if err != nil {
 				return err
 			}

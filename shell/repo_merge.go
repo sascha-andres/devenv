@@ -24,7 +24,8 @@ type repoMergeCommand struct{}
 func (c repoMergeCommand) Execute(i *Interpreter, repository string, args []string) error {
 	_, repo := i.EnvConfiguration.GetRepository(repository)
 	repoPath := path.Join(i.ExecuteScriptDirectory, repo.Path)
-	return helper.Git(i.EnvConfiguration.Environment, repoPath, "merge", args[0])
+	_, err := helper.Git(i.EnvConfiguration.Environment, repoPath, "merge", args[0])
+	return err
 }
 
 func (c repoMergeCommand) IsResponsible(commandName string) bool {

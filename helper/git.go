@@ -20,6 +20,7 @@ import (
 	"log"
 	"os"
 	"os/exec"
+	"syscall"
 )
 
 var (
@@ -27,7 +28,7 @@ var (
 )
 
 // Git calls the system git in the project diorectory with specified arguments
-func Git(ev map[string]string, projectPath string, args ...string) error {
+func Git(ev map[string]string, projectPath string, args ...string) (int, error) {
 	command := exec.Command("git", args...)
 	env := Environ(os.Environ())
 	for key := range ev {
@@ -43,12 +44,18 @@ func Git(ev map[string]string, projectPath string, args ...string) error {
 	command.Stdin = os.Stdin
 	command.Stderr = os.Stderr
 	if err := command.Start(); err != nil {
-		return fmt.Errorf("Error running bash: %#v", err)
+		return -1, fmt.Errorf("Error running bash: %#v", err)
 	}
 	if err := command.Wait(); err != nil {
-		return fmt.Errorf("Error waiting for bash: %#v", err)
+		if exiterr, ok := err.(*exec.ExitError); ok {
+			if status, ok := exiterr.Sys().(syscall.WaitStatus); ok {
+				return status.ExitStatus(), fmt.Errorf("Error waiting for bash: %#v", err)
+			}
+		} else {
+			return -1, fmt.Errorf("Error waiting for bash: %#v", err)
+		}
 	}
-	return nil
+	return 0, nil
 }
 
 func init() {
@@ -96,12 +103,18 @@ func HasBranch(ev map[string]string, projectPath, branch string) (bool, error) {
 
 // HasRemoteBranch checks if there is a branch remotely
 func HasRemoteBranch(ev map[string]string, projectPath, branch string) (bool, error) {
-	// git ls-remote --exit-code . origin/branch-name -> 0 == remote existiert
-	return false, nil
+	exitcode, err := Git(ev, projectPath, "ls-remote", "--exit-code", ".", fmt.Sprintf("origin/%s", branch))
+	if exitcode == 0 && err == nil {
+		return true, nil
+	}
+	return false, err
 }
 
 // HasLocalBranch checks if there is a branch locally
 func HasLocalBranch(ev map[string]string, projectPath, branch string) (bool, error) {
-	// git rev-parse --verify <branch> --> 0 == local branch exists
-	return false, nil
+	exitcode, err := Git(ev, projectPath, "rev-parse", "--verify", branch)
+	if exitcode == 0 && err == nil {
+		return true, nil
+	}
+	return false, err
 }

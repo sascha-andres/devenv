@@ -27,7 +27,8 @@ func (c repoPushCommand) Execute(i *Interpreter, repository string, args []strin
 	var arguments []string
 	arguments = append(arguments, "push")
 	arguments = append(arguments, args...)
-	return helper.Git(i.EnvConfiguration.Environment, repoPath, arguments...)
+	_, err := helper.Git(i.EnvConfiguration.Environment, repoPath, arguments...)
+	return err
 }
 
 func (c repoPushCommand) IsResponsible(commandName string) bool {

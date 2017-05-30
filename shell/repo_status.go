@@ -28,7 +28,8 @@ func (c repoStatusCommand) IsResponsible(commandName string) bool {
 func (c repoStatusCommand) Execute(i *Interpreter, repository string, args []string) error {
 	_, repo := i.EnvConfiguration.GetRepository(repository)
 	repoPath := path.Join(i.ExecuteScriptDirectory, repo.Path)
-	return helper.Git(i.EnvConfiguration.Environment, repoPath, "status")
+	_, err := helper.Git(i.EnvConfiguration.Environment, repoPath, "status")
+	return err
 }
 
 func init() {

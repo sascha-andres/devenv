@@ -29,7 +29,7 @@ func (c pushCommand) Execute(i *Interpreter, repository string, args []string) e
 		var arguments []string
 		arguments = append(arguments, "push")
 		arguments = append(arguments, args...)
-		if err := helper.Git(i.EnvConfiguration.Environment, repoPath, arguments...); err != nil {
+		if _, err := helper.Git(i.EnvConfiguration.Environment, repoPath, arguments...); err != nil {
 			return err
 		}
 	}

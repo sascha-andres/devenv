@@ -31,11 +31,11 @@ func (c branchCommand) Execute(i *Interpreter, repository string, args []string)
 			return err
 		}
 		if hasBranch {
-			if err = helper.Git(i.EnvConfiguration.Environment, repoPath, "checkout", args[0]); err != nil {
+			if _, err = helper.Git(i.EnvConfiguration.Environment, repoPath, "checkout", args[0]); err != nil {
 				return err
 			}
 		} else {
-			if err = helper.Git(i.EnvConfiguration.Environment, repoPath, "checkout", "-b", args[0]); err != nil {
+			if _, err = helper.Git(i.EnvConfiguration.Environment, repoPath, "checkout", "-b", args[0]); err != nil {
 				return err
 			}
 		}
