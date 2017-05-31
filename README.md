@@ -63,7 +63,7 @@ A valid project configuration looks like this:
 
 ### name
 
-Name must be a uniwue nasme for your project. It is used to identify the project configuration in
+Name must be a unique name for your project. It is used to identify the project configuration in
 devenv calls.
 
 ### branch-prefix
@@ -86,11 +86,11 @@ A valid repository entry looks like this:
 
 #### name
 
-Is used to identofy the repository for operations specific to onwe repository
+Is used to identify the repository for operations specific to one repository
 
 #### path
 
-A relative path where thje repository is cloned to
+A relative path where the repository is cloned to
 
 #### url
 
@@ -147,7 +147,7 @@ The in app shell provides easy methods to work with your git repositories.
 |Info||
 |---|---|
 |Aliases|none|
-|Description|Will ask for the required values of a repository and if cloning is successful saves the new repo to the project configuration|
+|Description|Will ask for the required values of a repository and if cloning is successful saves the new repository to the project configuration|
 
 Call with 
 
@@ -234,7 +234,7 @@ to `git push`
 |Info||
 |---|---|
 |Aliases|st|
-|Description|Prints the sttaus of each referenced repository|
+|Description|Prints the status of each referenced repository|
 
 Call with 
 
@@ -249,7 +249,7 @@ Repository commands take the name of a repository as they work on a single repos
 
 They are prefixed with `repo` which can be shortened to `r`.
 
-The following commands are available for a single repo:
+The following commands are available for a single repository:
 
 * branch
 * commit
@@ -348,7 +348,7 @@ Required information:
 |Info||
 |---|---|
 |Aliases|st|
-|Description|Prints the sttaus of each referenced repository|
+|Description|Prints the status of repository|
 
 Call with 
 
