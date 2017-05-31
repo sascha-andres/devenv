@@ -14,6 +14,7 @@
 package shell
 
 import (
+	"fmt"
 	"path"
 
 	"github.com/sascha-andres/devenv/helper"
@@ -24,11 +25,21 @@ type repoCommitCommand struct{}
 func (c repoCommitCommand) Execute(i *Interpreter, repository string, args []string) error {
 	_, repo := i.EnvConfiguration.GetRepository(repository)
 	repoPath := path.Join(i.ExecuteScriptDirectory, repo.Path)
-	if _, err := helper.Git(i.EnvConfiguration.Environment, repoPath, "add", "--all", ":/"); err != nil {
-		return err
+	if hasChanges, err := helper.HasChanges(i.EnvConfiguration.Environment, repoPath); hasChanges && err == nil {
+		if _, err := helper.Git(i.EnvConfiguration.Environment, repoPath, "add", "--all", ":/"); err != nil {
+			return err
+		}
+		var arguments []string
+		arguments = append(arguments, "commit")
+		arguments = append(arguments, args...)
+		_, err := helper.Git(i.EnvConfiguration.Environment, repoPath, arguments...)
+		if err != nil {
+			return err
+		}
+	} else {
+		fmt.Println(" --> no changes")
 	}
-	_, err := helper.Git(i.EnvConfiguration.Environment, repoPath, "commit")
-	return err
+	return nil
 }
 
 func (c repoCommitCommand) IsResponsible(commandName string) bool {

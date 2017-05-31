@@ -28,12 +28,16 @@ func (c repoBranchCommand) Execute(i *Interpreter, repository string, args []str
 	if err != nil {
 		return err
 	}
-	if hasBranch {
-		_, err := helper.Git(i.EnvConfiguration.Environment, repoPath, "checkout", args[0])
+	var arguments []string
+	arguments = append(arguments, "checkout")
+	if !hasBranch {
+		arguments = append(arguments, "-b")
+	}
+	arguments = append(arguments, args...)
+	if _, err = helper.Git(i.EnvConfiguration.Environment, repoPath, arguments...); err != nil {
 		return err
 	}
-	_, err = helper.Git(i.EnvConfiguration.Environment, repoPath, "checkout", "-b", args[0])
-	return err
+	return nil
 }
 
 func (c repoBranchCommand) IsResponsible(commandName string) bool {

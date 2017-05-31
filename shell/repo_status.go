@@ -28,8 +28,13 @@ func (c repoStatusCommand) IsResponsible(commandName string) bool {
 func (c repoStatusCommand) Execute(i *Interpreter, repository string, args []string) error {
 	_, repo := i.EnvConfiguration.GetRepository(repository)
 	repoPath := path.Join(i.ExecuteScriptDirectory, repo.Path)
-	_, err := helper.Git(i.EnvConfiguration.Environment, repoPath, "status")
-	return err
+	var arguments []string
+	arguments = append(arguments, "status")
+	arguments = append(arguments, args...)
+	if _, err := helper.Git(i.EnvConfiguration.Environment, repoPath, arguments...); err != nil {
+		return err
+	}
+	return nil
 }
 
 func init() {

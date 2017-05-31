@@ -30,14 +30,14 @@ func (c branchCommand) Execute(i *Interpreter, repository string, args []string)
 		if err != nil {
 			return err
 		}
-		if hasBranch {
-			if _, err = helper.Git(i.EnvConfiguration.Environment, repoPath, "checkout", args[0]); err != nil {
-				return err
-			}
-		} else {
-			if _, err = helper.Git(i.EnvConfiguration.Environment, repoPath, "checkout", "-b", args[0]); err != nil {
-				return err
-			}
+		var arguments []string
+		arguments = append(arguments, "checkout")
+		if !hasBranch {
+			arguments = append(arguments, "-b")
+		}
+		arguments = append(arguments, args...)
+		if _, err = helper.Git(i.EnvConfiguration.Environment, repoPath, arguments...); err != nil {
+			return err
 		}
 	}
 	return nil
