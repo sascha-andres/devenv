@@ -15,7 +15,9 @@ package cmd
 
 import (
 	"fmt"
+	"log"
 	"os"
+	"os/exec"
 
 	homedir "github.com/mitchellh/go-homedir"
 	"github.com/sascha-andres/devenv"
@@ -88,4 +90,10 @@ func initConfig() {
 	if err := viper.ReadInConfig(); err == nil {
 		fmt.Println("Using config file:", viper.ConfigFileUsed())
 	}
+
+	path, err := exec.LookPath("git")
+	if err != nil {
+		log.Fatal("No git installation found")
+	}
+	log.Printf("Using git at '%s'\n", path)
 }
