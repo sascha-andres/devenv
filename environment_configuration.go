@@ -40,6 +40,7 @@ type (
 		Repositories []RepositoryConfiguration `yaml:"repositories"`
 		Environment  map[string]string         `yaml:"env"`
 		Shell        string                    `yaml:"shell"`
+		Commands     []string                  `yaml:"commands"`
 	}
 )
 
@@ -73,7 +74,36 @@ func (ev *EnvironmentConfiguration) SaveToFile(path string) error {
 }
 
 // StartShell executes configured shell or default shell (sh)
+func (ev *EnvironmentConfiguration) prepareShell() error {
+	for _, cmd := range ev.Commands {
+		var command *exec.Cmd
+		command = exec.Command("bash", "-l", "-c", cmd)
+		env := helper.Environ(os.Environ())
+		for key := range ev.Environment {
+			env.Unset(key)
+		}
+		for key, value := range ev.Environment {
+			log.Printf("Setting '%s' to '%s'", key, value)
+			env = append(env, fmt.Sprintf("%s=%s", key, value))
+		}
+		command.Dir = path.Join(viper.GetString("basepath"), ev.Name)
+		command.Env = env
+		command.Stdout = os.Stdout
+		command.Stdin = os.Stdin
+		command.Stderr = os.Stderr
+		if err := command.Start(); err != nil {
+			log.Printf("Error executing '%s': '%s'", cmd, err.Error())
+		}
+		if err := command.Wait(); err != nil {
+			log.Printf("Error executing '%s': '%s'", cmd, err.Error())
+		}
+	}
+	return nil
+}
+
+// StartShell executes configured shell or default shell (sh)
 func (ev *EnvironmentConfiguration) StartShell() error {
+	ev.prepareShell()
 	var command *exec.Cmd
 	if ev.Shell != "" {
 		command = exec.Command(ev.Shell)
