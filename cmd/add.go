@@ -38,7 +38,7 @@ your environment_config_path.`,
 			projectFileNamePath := path.Join(viper.GetString("configpath"), projectName+".yaml")
 			log.Printf("Storing in '%s'\n", projectFileNamePath)
 
-			ev := devenv.EnvironmentConfiguration{BranchPrefix: "", Name: projectName}
+			ev := devenv.EnvironmentConfiguration{Name: projectName}
 			result, err := yaml.Marshal(ev)
 			if err != nil {
 				log.Fatalf("Error marshalling new config: %#v", err)

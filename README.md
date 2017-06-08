@@ -52,18 +52,16 @@ Where to store the project specific configurations.
 The project configuration contains references to the repositories and basic settings for the environment:
 
 1. name
-2. branch-prefix ( currently unused )
-3. repositories
-4. env
-5. shell
-6. commands
+2. repositories
+3. env
+4. shell
+5. commands
 
 A valid project configuration looks like this:
 
     ---
 
     name: devenv
-    branch-prefix:
     repositories:
       - name: devenv
         url: git@github.com:sascha-andres/devenv.git
@@ -78,10 +76,6 @@ A valid project configuration looks like this:
 
 Name must be a unique name for your project. It is used to identify the project configuration in
 devenv calls.
-
-### branch-prefix
-
-Unused
 
 ### repositories
 

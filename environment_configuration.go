@@ -36,7 +36,6 @@ var (
 type (
 	EnvironmentConfiguration struct {
 		Name         string                    `yaml:"name"`
-		BranchPrefix string                    `yaml:"branch-prefix"`
 		Repositories []RepositoryConfiguration `yaml:"repositories"`
 		Environment  map[string]string         `yaml:"env"`
 		Shell        string                    `yaml:"shell"`
