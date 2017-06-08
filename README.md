@@ -8,9 +8,17 @@ as if they where one ( eg creating branches in all referenced projects) using th
 
 You have to have a working git commandline installation.
 
+## Known caveats
+
+Developed and mostly tested under Linux. OSX and Windows are currently not thoroughly tested.
+
+Commands to be executed before a bash is called is unsupported on Windows.
+
+A shell must be configured for Windows.
+
 ## Main configuration
 
-There are two main configuration optinos:
+There are two main configuration options:
 
 1. basepath
 2. configpath
@@ -46,6 +54,7 @@ The project configuration contains references to the repositories and basic sett
 3. repositories
 4. env
 5. shell
+6. commands
 
 A valid project configuration looks like this:
 
@@ -58,6 +67,8 @@ A valid project configuration looks like this:
         url: git@github.com:sascha-andres/devenv.git
         path: src/devenv
     shell: bash
+    commands:
+      - echo Hello
     env:
       VAR: VALUE
 
@@ -104,6 +115,11 @@ Key value pairs that are added to the shell and git processes
 
 Executable fot the shell. If you want to use the `fish` shell in one project as opposed to your
 default shell specify here.
+
+### commands
+
+Commands to execute before the shell is called.
+
 ## Commands
 
 Commands are top level commands to work with devenv itself. The following commands are supported:

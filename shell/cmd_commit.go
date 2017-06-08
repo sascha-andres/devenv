@@ -24,7 +24,9 @@ type commitCommand struct{}
 
 func (c commitCommand) Execute(i *Interpreter, repository string, args []string) error {
 	for _, repo := range i.EnvConfiguration.Repositories {
-
+		if repo.Disabled {
+			continue
+		}
 		fmt.Printf("Commit for '%s'\n", repo.Name)
 		repoPath := path.Join(i.ExecuteScriptDirectory, repo.Path)
 		if hasChanges, err := helper.HasChanges(i.EnvConfiguration.Environment, repoPath); hasChanges && err == nil {

@@ -55,7 +55,7 @@ var shellCmd = &cobra.Command{
 				log.Fatalf("Error getting command: %#v", err)
 			}
 			text = strings.TrimSpace(text)
-			if "quit" == text {
+			if "quit" == text || "q" == text {
 				break
 			}
 			if err := interp.Execute(text); err != nil {

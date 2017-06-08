@@ -24,6 +24,9 @@ type pushCommand struct{}
 
 func (c pushCommand) Execute(i *Interpreter, repository string, args []string) error {
 	for _, repo := range i.EnvConfiguration.Repositories {
+		if repo.Disabled {
+			continue
+		}
 		fmt.Printf("Push for '%s'\n", repo.Name)
 		repoPath := path.Join(i.ExecuteScriptDirectory, repo.Path)
 		var arguments []string

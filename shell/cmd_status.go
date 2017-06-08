@@ -24,6 +24,9 @@ type statusCommand struct{}
 
 func (c statusCommand) Execute(i *Interpreter, repository string, args []string) error {
 	for _, repo := range i.EnvConfiguration.Repositories {
+		if repo.Disabled {
+			continue
+		}
 		fmt.Printf("Status for '%s'\n", repo.Name)
 		repoPath := path.Join(i.ExecuteScriptDirectory, repo.Path)
 		var arguments []string

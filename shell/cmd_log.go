@@ -24,6 +24,9 @@ type logCommand struct{}
 
 func (c logCommand) Execute(i *Interpreter, repository string, args []string) error {
 	for _, repo := range i.EnvConfiguration.Repositories {
+		if repo.Disabled {
+			continue
+		}
 		fmt.Printf("Log for '%s'\n", repo.Name)
 		repoPath := path.Join(i.ExecuteScriptDirectory, repo.Path)
 		_, err := helper.Git(i.EnvConfiguration.Environment, repoPath, "log", "-n", "10", "--oneline", "--graph", "--decorate", "--all")
