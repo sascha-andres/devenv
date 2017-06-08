@@ -24,6 +24,9 @@ type pullCommand struct{}
 
 func (c pullCommand) Execute(i *Interpreter, repository string, args []string) error {
 	for _, repo := range i.EnvConfiguration.Repositories {
+		if repo.Disabled {
+			continue
+		}
 		fmt.Printf("Pull for '%s'\n", repo.Name)
 		repoPath := path.Join(i.ExecuteScriptDirectory, repo.Path)
 		var arguments []string
