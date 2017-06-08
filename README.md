@@ -8,9 +8,17 @@ as if they where one ( eg creating branches in all referenced projects) using th
 
 You have to have a working git commandline installation.
 
+## Known caveats
+
+Developed and mostly tested under Linux. OSX and Windows are currently not thoroughly tested.
+
+Commands to be executed before a bash is called is unsupported on Windows.
+
+A shell must be configured for Windows.
+
 ## Main configuration
 
-There are two main configuration optinos:
+There are two main configuration options:
 
 1. basepath
 2. configpath
