@@ -46,6 +46,7 @@ The project configuration contains references to the repositories and basic sett
 3. repositories
 4. env
 5. shell
+6. commands
 
 A valid project configuration looks like this:
 
@@ -58,6 +59,8 @@ A valid project configuration looks like this:
         url: git@github.com:sascha-andres/devenv.git
         path: src/devenv
     shell: bash
+    commands:
+      - echo Hello
     env:
       VAR: VALUE
 
@@ -104,6 +107,11 @@ Key value pairs that are added to the shell and git processes
 
 Executable fot the shell. If you want to use the `fish` shell in one project as opposed to your
 default shell specify here.
+
+### commands
+
+Commands to execute before the shell is called.
+
 ## Commands
 
 Commands are top level commands to work with devenv itself. The following commands are supported:
