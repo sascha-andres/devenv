@@ -4,6 +4,8 @@ devenv is a tool to manage projects containing multiple git repositories. With a
 you can setup all repositories with one command and even work with the local repositories
 as if they where one ( eg creating branches in all referenced projects) using the shell.
 
+[![Go Report Card](https://goreportcard.com/badge/github.com/sascha-andres/devenv)](https://goreportcard.com/report/github.com/sascha-andres/devenv) [![codebeat badge](https://codebeat.co/badges/8cba9986-0b0b-4142-8cbf-03c0e7c4f5d6)](https://codebeat.co/projects/github-com-sascha-andres-devenv-master)
+
 ## Prerequisites
 
 You have to have a working git commandline installation.
