@@ -56,7 +56,6 @@ var shellCmd = &cobra.Command{
 		if "" == projectName || !devenv.ProjectIsCreated(projectName) {
 			log.Fatalf("Project '%s' does not yet exist", projectName)
 		}
-		var ev devenv.EnvironmentConfiguration
 		if ok, err := helper.Exists(path.Join(viper.GetString("configpath"), projectName+".yaml")); ok && err == nil {
 			if err := ev.LoadFromFile(path.Join(viper.GetString("configpath"), projectName+".yaml")); err != nil {
 				log.Fatalf("Error reading env config: '%s'", err.Error())
