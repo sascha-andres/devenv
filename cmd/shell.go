@@ -29,8 +29,12 @@ import (
 	"github.com/spf13/viper"
 )
 
+var ev devenv.EnvironmentConfiguration
+
 var completer = readline.NewPrefixCompleter(
-	readline.PcItem("repo"),
+	readline.PcItem("repo",
+		readline.PcItemDynamic(listRepositories()),
+	),
 	readline.PcItem("addrepo"),
 	readline.PcItem("branch"),
 	readline.PcItem("commit"),
@@ -76,6 +80,18 @@ var shellCmd = &cobra.Command{
 			}
 		}
 	},
+}
+
+func listRepositories() func(string) []string {
+	return func(line string) []string {
+		var repositories []string
+		for _, val := range ev.Repositories {
+			if !val.Disabled {
+				repositories = append(repositories, val.Name)
+			}
+		}
+		return repositories
+	}
 }
 
 func init() {
