@@ -21,11 +21,24 @@ import (
 	"path"
 	"strings"
 
+	"github.com/chzyer/readline"
 	"github.com/sascha-andres/devenv"
 	"github.com/sascha-andres/devenv/helper"
 	"github.com/sascha-andres/devenv/shell"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+)
+
+var completer = readline.NewPrefixCompleter(
+	readline.PcItem("repo"),
+	readline.PcItem("addrepo"),
+	readline.PcItem("branch"),
+	readline.PcItem("commit"),
+	readline.PcItem("delrepo"),
+	readline.PcItem("log"),
+	readline.PcItem("pull"),
+	readline.PcItem("push"),
+	readline.PcItem("status"),
 )
 
 // shellCmd represents the shell command
@@ -67,14 +80,4 @@ var shellCmd = &cobra.Command{
 
 func init() {
 	RootCmd.AddCommand(shellCmd)
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// shellCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// shellCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
