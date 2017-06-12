@@ -14,8 +14,7 @@
 package cmd
 
 import (
-	"bufio"
-	"fmt"
+	"io"
 	"log"
 	"os"
 	"path"
@@ -33,7 +32,14 @@ var ev devenv.EnvironmentConfiguration
 
 var completer = readline.NewPrefixCompleter(
 	readline.PcItem("repo",
-		readline.PcItemDynamic(listRepositories()),
+		readline.PcItemDynamic(listRepositories(),
+			readline.PcItem("branch"),
+			readline.PcItem("commit"),
+			readline.PcItem("log"),
+			readline.PcItem("pull"),
+			readline.PcItem("push"),
+			readline.PcItem("status"),
+		),
 	),
 	readline.PcItem("addrepo"),
 	readline.PcItem("branch"),
@@ -43,7 +49,17 @@ var completer = readline.NewPrefixCompleter(
 	readline.PcItem("pull"),
 	readline.PcItem("push"),
 	readline.PcItem("status"),
+	readline.PcItem("quit"),
 )
+
+func filterInput(r rune) (rune, bool) {
+	switch r {
+	// block CtrlZ feature
+	case readline.CharCtrlZ:
+		return r, false
+	}
+	return r, true
+}
 
 // shellCmd represents the shell command
 var shellCmd = &cobra.Command{
@@ -62,20 +78,44 @@ var shellCmd = &cobra.Command{
 			}
 		}
 
-		reader := bufio.NewReader(os.Stdin)
 		interp := shell.NewInterpreter(path.Join(viper.GetString("basepath"), projectName), ev)
+		l, err := readline.NewEx(&readline.Config{
+			Prompt:          "\033[31m»\033[0m ",
+			HistoryFile:     "/tmp/readline.tmp",
+			AutoComplete:    completer,
+			InterruptPrompt: "^C",
+			EOFPrompt:       "exit",
+
+			HistorySearchFold:   true,
+			FuncFilterInputRune: filterInput,
+		})
+		if err != nil {
+			log.Fatalln(err)
+		}
+		defer l.Close()
+
+		log.SetOutput(l.Stderr())
+
 		for {
-			fmt.Print("> ")
-			text, err := reader.ReadString('\n')
-			if err != nil {
-				log.Fatalf("Error getting command: %#v", err)
-			}
-			text = strings.TrimSpace(text)
-			if "quit" == text || "q" == text {
+			line, err := l.Readline()
+			if err == readline.ErrInterrupt {
+				if len(line) == 0 {
+					break
+				} else {
+					continue
+				}
+			} else if err == io.EOF {
 				break
 			}
-			if err := interp.Execute(text); err != nil {
-				log.Printf("Error: '%s'", err.Error())
+
+			line = strings.TrimSpace(line)
+			switch line {
+			case "quit", "q":
+				os.Exit(0)
+				break
+			default:
+				interp.Execute(line)
+				break
 			}
 		}
 	},
