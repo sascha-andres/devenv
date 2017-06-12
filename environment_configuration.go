@@ -35,11 +35,12 @@ var (
 // EnvironmentConfiguration contains information aout the project
 type (
 	EnvironmentConfiguration struct {
-		Name         string                    `yaml:"name"`
-		Repositories []RepositoryConfiguration `yaml:"repositories"`
-		Environment  map[string]string         `yaml:"env"`
-		Shell        string                    `yaml:"shell"`
-		Commands     []string                  `yaml:"commands"`
+		Name           string                    `yaml:"name"`
+		Repositories   []RepositoryConfiguration `yaml:"repositories"`
+		Environment    map[string]string         `yaml:"env"`
+		Shell          string                    `yaml:"shell"`
+		ShellArguments []string                  `yaml:"shell-arguments"`
+		Commands       []string                  `yaml:"commands"`
 	}
 )
 
