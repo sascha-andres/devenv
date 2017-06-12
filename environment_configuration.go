@@ -110,6 +110,9 @@ func (ev *EnvironmentConfiguration) StartShell() error {
 	} else {
 		command = exec.Command("bash", "-l")
 	}
+	if nil != ev.ShellArguments && len(ev.ShellArguments) > 0 {
+		command.Args = append(command.Args, ev.ShellArguments...)
+	}
 	env := helper.Environ(os.Environ())
 	for key := range ev.Environment {
 		env.Unset(key)
