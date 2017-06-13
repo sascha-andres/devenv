@@ -389,7 +389,8 @@ Required information:
 
 |Version|Description|
 |---|---|
-|dev|Completion for shell|
+|v1.1.0|Completion for shell|
 ||Command arguments for shell|
+||Variables|
 |v1.0.1|Enable/Disable repository|
 |v1.0.0|Initial version|
