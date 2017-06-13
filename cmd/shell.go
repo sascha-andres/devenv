@@ -81,7 +81,7 @@ var shellCmd = &cobra.Command{
 		interp := shell.NewInterpreter(path.Join(viper.GetString("basepath"), projectName), ev)
 		l, err := readline.NewEx(&readline.Config{
 			Prompt:          "\033[31m»\033[0m ",
-			HistoryFile:     "/tmp/readline.tmp",
+			HistoryFile:     "/tmp/devenv-" + projectName + ".tmp",
 			AutoComplete:    completer,
 			InterruptPrompt: "^C",
 			EOFPrompt:       "exit",
