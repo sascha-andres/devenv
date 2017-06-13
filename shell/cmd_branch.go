@@ -39,7 +39,11 @@ func (c branchCommand) Execute(i *Interpreter, repository string, args []string)
 			arguments = append(arguments, "-b")
 		}
 		arguments = append(arguments, args...)
-		if _, err = helper.Git(i.EnvConfiguration.Environment, repoPath, arguments...); err != nil {
+		vars, err := i.EnvConfiguration.GetReplacedEnvironment()
+		if err != nil {
+			return err
+		}
+		if _, err = helper.Git(vars, repoPath, arguments...); err != nil {
 			return err
 		}
 	}

@@ -15,7 +15,6 @@ package shell
 
 import (
 	"fmt"
-	"log"
 
 	"github.com/mgutz/str"
 	"github.com/sascha-andres/devenv"
@@ -54,9 +53,7 @@ func (i *Interpreter) executeFromCommands(commands []Commander, specific bool, a
 	if specific {
 		commandIndex = 1
 	}
-	log.Printf("%#v\n", commands)
 	for _, val := range commands {
-		log.Printf("%#v\n", val)
 		if val.IsResponsible(arguments[commandIndex]) {
 			if specific {
 				return val.Execute(i, arguments[0], arguments[2:])

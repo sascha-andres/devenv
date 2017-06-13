@@ -24,7 +24,11 @@ type repoLogCommand struct{}
 func (c repoLogCommand) Execute(i *Interpreter, repository string, args []string) error {
 	_, repo := i.EnvConfiguration.GetRepository(repository)
 	repoPath := path.Join(i.ExecuteScriptDirectory, repo.Path)
-	_, err := helper.Git(i.EnvConfiguration.Environment, repoPath, "log", "--oneline", "--graph", "--decorate", "--all")
+	vars, err := i.EnvConfiguration.GetReplacedEnvironment()
+	if err != nil {
+		return err
+	}
+	_, err = helper.Git(vars, repoPath, "log", "--oneline", "--graph", "--decorate", "--all")
 	return err
 }
 

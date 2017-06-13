@@ -36,7 +36,11 @@ func (c commitCommand) Execute(i *Interpreter, repository string, args []string)
 			var arguments []string
 			arguments = append(arguments, "commit")
 			arguments = append(arguments, args...)
-			_, err := helper.Git(i.EnvConfiguration.Environment, repoPath, arguments...)
+			vars, err := i.EnvConfiguration.GetReplacedEnvironment()
+			if err != nil {
+				return err
+			}
+			_, err = helper.Git(vars, repoPath, arguments...)
 			if err != nil {
 				return err
 			}

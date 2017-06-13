@@ -34,7 +34,11 @@ func (c addRepoCommand) Execute(i *Interpreter, repository string, args []string
 	fmt.Print("Please provide a relative path: ")
 	rpath := getAnswer()
 	repoPath := path.Join(i.ExecuteScriptDirectory, rpath)
-	if _, err := helper.Git(i.EnvConfiguration.Environment, i.ExecuteScriptDirectory, "clone", link, repoPath); err != nil {
+	vars, err := i.EnvConfiguration.GetReplacedEnvironment()
+	if err != nil {
+		return err
+	}
+	if _, err := helper.Git(vars, i.ExecuteScriptDirectory, "clone", link, repoPath); err != nil {
 		log.Fatalf("Error executing git: '%#v'", err)
 	}
 	fmt.Printf("Repository '%s' saved as '%s' to relative path '%s'\n", link, name, rpath)

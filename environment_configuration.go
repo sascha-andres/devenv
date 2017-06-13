@@ -14,7 +14,9 @@
 package devenv
 
 import (
+	"bytes"
 	"fmt"
+	"html/template"
 	"io/ioutil"
 	"log"
 	"os"
@@ -44,7 +46,7 @@ type (
 	}
 )
 
-// LoadFromFile takes a YAML file and unmarhals its data
+// LoadFromFile takes a YAML file and unmarshals its data
 func (ev *EnvironmentConfiguration) LoadFromFile(path string) error {
 	reader, err := os.Open(path)
 	if err != nil {
@@ -73,11 +75,32 @@ func (ev *EnvironmentConfiguration) SaveToFile(path string) error {
 	return nil
 }
 
+// applyVariables uses GO's templating to apply the variables
+func (ev *EnvironmentConfiguration) applyVariables(input string) (string, error) {
+	templ, err := template.New("").Parse(input)
+	if err != nil {
+		return "", err
+	}
+	b := bytes.NewBuffer(nil)
+	vars, err := ev.GetVariables()
+	if err != nil {
+		return "", err
+	}
+	if err = templ.Execute(b, vars); err != nil {
+		return "", err
+	}
+	return b.String(), nil
+}
+
 // StartShell executes configured shell or default shell (sh)
 func (ev *EnvironmentConfiguration) prepareShell() error {
 	for _, cmd := range ev.Commands {
 		var command *exec.Cmd
-		command = exec.Command("bash", "-l", "-c", cmd)
+		result, err := ev.applyVariables(cmd)
+		if err != nil {
+			return err
+		}
+		command = exec.Command("bash", "-l", "-c", result)
 		env := helper.Environ(os.Environ())
 		for key := range ev.Environment {
 			env.Unset(key)
@@ -106,20 +129,34 @@ func (ev *EnvironmentConfiguration) StartShell() error {
 	ev.prepareShell()
 	var command *exec.Cmd
 	if ev.Shell != "" {
-		command = exec.Command(ev.Shell)
+		result, err := ev.applyVariables(ev.Shell)
+		if err != nil {
+			return err
+		}
+		command = exec.Command(result)
 	} else {
 		command = exec.Command("bash", "-l")
 	}
 	if nil != ev.ShellArguments && len(ev.ShellArguments) > 0 {
-		command.Args = append(command.Args, ev.ShellArguments...)
+		for _, val := range ev.ShellArguments {
+			result, err := ev.applyVariables(val)
+			if err != nil {
+				return err
+			}
+			command.Args = append(command.Args, result)
+		}
 	}
 	env := helper.Environ(os.Environ())
 	for key := range ev.Environment {
 		env.Unset(key)
 	}
 	for key, value := range ev.Environment {
-		log.Printf("Setting '%s' to '%s'", key, value)
-		env = append(env, fmt.Sprintf("%s=%s", key, value))
+		result, err := ev.applyVariables(value)
+		if err != nil {
+			return err
+		}
+		log.Printf("Setting '%s' to '%s'", key, result)
+		env = append(env, fmt.Sprintf("%s=%s", key, result))
 	}
 	command.Dir = path.Join(viper.GetString("basepath"), ev.Name)
 	command.Env = env

@@ -27,7 +27,11 @@ func (c repoMergeCommand) Execute(i *Interpreter, repository string, args []stri
 	var arguments []string
 	arguments = append(arguments, "merge")
 	arguments = append(arguments, args...)
-	_, err := helper.Git(i.EnvConfiguration.Environment, repoPath, arguments...)
+	vars, err := i.EnvConfiguration.GetReplacedEnvironment()
+	if err != nil {
+		return err
+	}
+	_, err = helper.Git(vars, repoPath, arguments...)
 	return err
 }
 

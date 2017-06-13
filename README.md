@@ -116,6 +116,19 @@ default shell specify here.
 
 Commands to execute before the shell is called.
 
+## Variables
+
+Each environment variable known to the devenv process can be access as go standard template in the following places:
+
+* commands
+* shell
+* shell-arguments
+* Environment variables for processes
+
+Values in env override the environment variables. An additional variable called ENV_DIRECTORY is provided containing the path to the environment.
+
+__While technically possible to inject references this is not supported!__
+
 ## Commands
 
 Commands are top level commands to work with devenv itself. The following commands are supported:

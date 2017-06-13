@@ -43,3 +43,18 @@ func Exists(path string) (bool, error) {
 	}
 	return true, err
 }
+
+// GetEnvironmentVariables returns environment variables as map
+func GetEnvironmentVariables() map[string]string {
+	var (
+		env = os.Environ()
+		m   = make(map[string]string, len(env))
+	)
+
+	for _, e := range env {
+		keyVal := strings.SplitN(e, "=", 2)
+		key, val := keyVal[0], keyVal[1]
+		m[key] = val
+	}
+	return m
+}
