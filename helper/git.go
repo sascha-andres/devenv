@@ -27,9 +27,9 @@ var (
 	gitExecutable string
 )
 
-// Git calls the system git in the project diorectory with specified arguments
+// Git calls the system git in the project directory with specified arguments
 func Git(ev map[string]string, projectPath string, args ...string) (int, error) {
-	command := exec.Command("git", args...)
+	command := exec.Command(gitExecutable, args...)
 	env := Environ(os.Environ())
 	for key := range ev {
 		env.Unset(key)
@@ -69,7 +69,7 @@ func init() {
 // HasChanges checks whether a repo is clean or has changes ( modifications or additions )
 func HasChanges(ev map[string]string, projectPath string) (bool, error) {
 	// git status --porcelain
-	command := exec.Command("git", "status", "--porcelain")
+	command := exec.Command(gitExecutable, "status", "--porcelain")
 	env := Environ(os.Environ())
 	for key := range ev {
 		env.Unset(key)

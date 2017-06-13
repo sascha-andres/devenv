@@ -29,7 +29,7 @@ var (
 	bashCmd = &cobra.Command{
 		Use:   "bash",
 		Short: "Start a bash shell",
-		Long:  `Spwans a bash shell in the directory where all code is located`,
+		Long:  `Spawns a bash shell in the directory where all code is located`,
 		Run: func(cmd *cobra.Command, args []string) {
 			projectName := strings.Join(args, " ")
 			log.Printf("Called to start shell for '%s'\n", projectName)

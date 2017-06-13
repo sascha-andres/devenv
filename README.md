@@ -4,6 +4,8 @@ devenv is a tool to manage projects containing multiple git repositories. With a
 you can setup all repositories with one command and even work with the local repositories
 as if they where one ( eg creating branches in all referenced projects) using the shell.
 
+[![Go Report Card](https://goreportcard.com/badge/github.com/sascha-andres/devenv)](https://goreportcard.com/report/github.com/sascha-andres/devenv) [![codebeat badge](https://codebeat.co/badges/8cba9986-0b0b-4142-8cbf-03c0e7c4f5d6)](https://codebeat.co/projects/github-com-sascha-andres-devenv-master)
+
 ## Prerequisites
 
 You have to have a working git commandline installation.
@@ -50,18 +52,16 @@ Where to store the project specific configurations.
 The project configuration contains references to the repositories and basic settings for the environment:
 
 1. name
-2. branch-prefix ( currently unused )
-3. repositories
-4. env
-5. shell
-6. commands
+2. repositories
+3. env
+4. shell
+5. commands
 
 A valid project configuration looks like this:
 
     ---
 
     name: devenv
-    branch-prefix:
     repositories:
       - name: devenv
         url: git@github.com:sascha-andres/devenv.git
@@ -76,10 +76,6 @@ A valid project configuration looks like this:
 
 Name must be a unique name for your project. It is used to identify the project configuration in
 devenv calls.
-
-### branch-prefix
-
-Unused
 
 ### repositories
 
@@ -120,6 +116,19 @@ default shell specify here.
 
 Commands to execute before the shell is called.
 
+## Variables
+
+Each environment variable known to the devenv process can be access as go standard template in the following places:
+
+* commands
+* shell
+* shell-arguments
+* Environment variables for processes
+
+Values in env override the environment variables. An additional variable called ENV_DIRECTORY is provided containing the path to the environment.
+
+__While technically possible to inject references this is not supported!__
+
 ## Commands
 
 Commands are top level commands to work with devenv itself. The following commands are supported:
@@ -156,7 +165,7 @@ Create project directory and clone all referenced projects
 
 ## In-App shell
 
-The in app shell provides easy methods to work with your git repositories.
+The in app shell provides easy methods to work with your git repositories. Non aliases are part of autocompletion
 
 ### addrepo command
 
@@ -375,3 +384,13 @@ to `git status`
 
 Required information:
 * name
+
+## History
+
+|Version|Description|
+|---|---|
+|v1.1.0|Completion for shell|
+||Command arguments for shell|
+||Variables|
+|v1.0.1|Enable/Disable repository|
+|v1.0.0|Initial version|

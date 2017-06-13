@@ -49,13 +49,16 @@ func (i *Interpreter) Execute(commandline string) error {
 }
 
 func (i *Interpreter) executeFromCommands(commands []Commander, specific bool, arguments []string) error {
+	commandIndex := 0
+	if specific {
+		commandIndex = 1
+	}
 	for _, val := range commands {
-		if val.IsResponsible(arguments[0]) {
+		if val.IsResponsible(arguments[commandIndex]) {
 			if specific {
-				return val.Execute(i, arguments[1], arguments[2:])
-			} else {
-				return val.Execute(i, "%", arguments[1:])
+				return val.Execute(i, arguments[0], arguments[2:])
 			}
+			return val.Execute(i, "%", arguments[1:])
 		}
 	}
 	return fmt.Errorf("'%s' is not a valid function", arguments[0])

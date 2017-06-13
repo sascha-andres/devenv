@@ -29,7 +29,11 @@ func (c logCommand) Execute(i *Interpreter, repository string, args []string) er
 		}
 		fmt.Printf("Log for '%s'\n", repo.Name)
 		repoPath := path.Join(i.ExecuteScriptDirectory, repo.Path)
-		_, err := helper.Git(i.EnvConfiguration.Environment, repoPath, "log", "-n", "10", "--oneline", "--graph", "--decorate", "--all")
+		vars, err := i.EnvConfiguration.GetReplacedEnvironment()
+		if err != nil {
+			return err
+		}
+		_, err = helper.Git(vars, repoPath, "log", "-n", "10", "--oneline", "--graph", "--decorate", "--all")
 		if err != nil {
 			return err
 		}

@@ -27,7 +27,11 @@ func (c repoPushCommand) Execute(i *Interpreter, repository string, args []strin
 	var arguments []string
 	arguments = append(arguments, "push")
 	arguments = append(arguments, args...)
-	_, err := helper.Git(i.EnvConfiguration.Environment, repoPath, arguments...)
+	vars, err := i.EnvConfiguration.GetReplacedEnvironment()
+	if err != nil {
+		return err
+	}
+	_, err = helper.Git(vars, repoPath, arguments...)
 	return err
 }
 

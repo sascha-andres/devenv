@@ -14,7 +14,7 @@
 package shell
 
 import (
-	"fmt"
+	"log"
 	"path"
 
 	"github.com/sascha-andres/devenv/helper"
@@ -27,12 +27,16 @@ func (c pullCommand) Execute(i *Interpreter, repository string, args []string) e
 		if repo.Disabled {
 			continue
 		}
-		fmt.Printf("Pull for '%s'\n", repo.Name)
+		log.Printf("Pull for '%s'\n", repo.Name)
 		repoPath := path.Join(i.ExecuteScriptDirectory, repo.Path)
 		var arguments []string
 		arguments = append(arguments, "pull")
 		arguments = append(arguments, args...)
-		if _, err := helper.Git(i.EnvConfiguration.Environment, repoPath, arguments...); err != nil {
+		vars, err := i.EnvConfiguration.GetReplacedEnvironment()
+		if err != nil {
+			return err
+		}
+		if _, err = helper.Git(vars, repoPath, arguments...); err != nil {
 			return err
 		}
 	}

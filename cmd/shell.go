@@ -14,19 +14,52 @@
 package cmd
 
 import (
-	"bufio"
-	"fmt"
+	"io"
 	"log"
 	"os"
 	"path"
 	"strings"
 
+	"github.com/chzyer/readline"
 	"github.com/sascha-andres/devenv"
 	"github.com/sascha-andres/devenv/helper"
 	"github.com/sascha-andres/devenv/shell"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
+
+var ev devenv.EnvironmentConfiguration
+
+var completer = readline.NewPrefixCompleter(
+	readline.PcItem("repo",
+		readline.PcItemDynamic(listRepositories(),
+			readline.PcItem("branch"),
+			readline.PcItem("commit"),
+			readline.PcItem("log"),
+			readline.PcItem("pull"),
+			readline.PcItem("push"),
+			readline.PcItem("status"),
+		),
+	),
+	readline.PcItem("addrepo"),
+	readline.PcItem("branch"),
+	readline.PcItem("commit"),
+	readline.PcItem("delrepo"),
+	readline.PcItem("log"),
+	readline.PcItem("pull"),
+	readline.PcItem("push"),
+	readline.PcItem("status"),
+	readline.PcItem("quit"),
+)
+
+func filterInput(r rune) (rune, bool) {
+	switch r {
+	// block CtrlZ feature
+	case readline.CharCtrlZ:
+		return r, false
+	}
+	return r, true
+}
 
 // shellCmd represents the shell command
 var shellCmd = &cobra.Command{
@@ -39,42 +72,67 @@ var shellCmd = &cobra.Command{
 		if "" == projectName || !devenv.ProjectIsCreated(projectName) {
 			log.Fatalf("Project '%s' does not yet exist", projectName)
 		}
-		var ev devenv.EnvironmentConfiguration
 		if ok, err := helper.Exists(path.Join(viper.GetString("configpath"), projectName+".yaml")); ok && err == nil {
 			if err := ev.LoadFromFile(path.Join(viper.GetString("configpath"), projectName+".yaml")); err != nil {
 				log.Fatalf("Error reading env config: '%s'", err.Error())
 			}
 		}
 
-		reader := bufio.NewReader(os.Stdin)
 		interp := shell.NewInterpreter(path.Join(viper.GetString("basepath"), projectName), ev)
+		l, err := readline.NewEx(&readline.Config{
+			Prompt:          "\033[31m»\033[0m ",
+			HistoryFile:     "/tmp/devenv-" + projectName + ".tmp",
+			AutoComplete:    completer,
+			InterruptPrompt: "^C",
+			EOFPrompt:       "exit",
+
+			HistorySearchFold:   true,
+			FuncFilterInputRune: filterInput,
+		})
+		if err != nil {
+			log.Fatalln(err)
+		}
+		defer l.Close()
+
+		log.SetOutput(l.Stderr())
+
 		for {
-			fmt.Print("> ")
-			text, err := reader.ReadString('\n')
-			if err != nil {
-				log.Fatalf("Error getting command: %#v", err)
-			}
-			text = strings.TrimSpace(text)
-			if "quit" == text || "q" == text {
+			line, err := l.Readline()
+			if err == readline.ErrInterrupt {
+				if len(line) == 0 {
+					break
+				} else {
+					continue
+				}
+			} else if err == io.EOF {
 				break
 			}
-			if err := interp.Execute(text); err != nil {
-				log.Printf("Error: '%s'", err.Error())
+
+			line = strings.TrimSpace(line)
+			switch line {
+			case "quit", "q":
+				os.Exit(0)
+				break
+			default:
+				interp.Execute(line)
+				break
 			}
 		}
 	},
 }
 
+func listRepositories() func(string) []string {
+	return func(line string) []string {
+		var repositories []string
+		for _, val := range ev.Repositories {
+			if !val.Disabled {
+				repositories = append(repositories, val.Name)
+			}
+		}
+		return repositories
+	}
+}
+
 func init() {
 	RootCmd.AddCommand(shellCmd)
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// shellCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// shellCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
