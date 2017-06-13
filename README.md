@@ -371,3 +371,12 @@ to `git status`
 
 Required information:
 * name
+
+## History
+
+|Version|Description|
+|---|---|
+|dev|Completion for shell|
+||Command arguments for shell|
+|v1.0.1|Enable/Disable repository|
+|v1.0.0|Initial version|
