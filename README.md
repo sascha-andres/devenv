@@ -152,7 +152,7 @@ Create project directory and clone all referenced projects
 
 ## In-App shell
 
-The in app shell provides easy methods to work with your git repositories.
+The in app shell provides easy methods to work with your git repositories. Non aliases are part of autocompletion
 
 ### addrepo command
 
