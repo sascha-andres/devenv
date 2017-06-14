@@ -14,9 +14,11 @@
 package helper
 
 import (
+	"fmt"
 	"os"
 	"os/exec"
 	"strings"
+	"syscall"
 )
 
 // Environ is a type alias for environment variables
@@ -31,6 +33,23 @@ func (e *Environ) Unset(key string) {
 			break
 		}
 	}
+}
+
+// StartAndWait calls the command and returns the result
+func StartAndWait(command *exec.Cmd) (int, error) {
+	if err := command.Start(); err != nil {
+		return -1, fmt.Errorf("Error running bash: %#v", err)
+	}
+	if err := command.Wait(); err != nil {
+		if exiterr, ok := err.(*exec.ExitError); ok {
+			if status, ok := exiterr.Sys().(syscall.WaitStatus); ok {
+				return status.ExitStatus(), fmt.Errorf("Error waiting for bash: %#v", err)
+			}
+		} else {
+			return -1, fmt.Errorf("Error waiting for bash: %#v", err)
+		}
+	}
+	return 0, nil
 }
 
 // Exists returns whether the given file or directory exists or not

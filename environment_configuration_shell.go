@@ -37,11 +37,12 @@ func (ev *EnvironmentConfiguration) prepareShell() error {
 			return err
 		}
 		command, err := helper.GetCommand(commandName, env, path.Join(viper.GetString("basepath"), ev.Name), arguments...)
-		if err := command.Start(); err != nil {
-			log.Printf("Error executing '%s': '%s'", cmd, err.Error())
+		if err != nil {
+			return err
 		}
-		if err := command.Wait(); err != nil {
-			log.Printf("Error executing '%s': '%s'", cmd, err.Error())
+		_, err = helper.StartAndWait(command)
+		if err != nil {
+			return err
 		}
 	}
 	return nil
@@ -71,11 +72,9 @@ func (ev *EnvironmentConfiguration) StartShell() error {
 	if err != nil {
 		return err
 	}
-	if err := command.Start(); err != nil {
-		return fmt.Errorf("Error running bash: %#v", err)
-	}
-	if err := command.Wait(); err != nil {
-		return fmt.Errorf("Error waiting for bash: %#v", err)
+	_, err = helper.StartAndWait(command)
+	if err != nil {
+		return err
 	}
 	return nil
 }

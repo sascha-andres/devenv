@@ -20,7 +20,6 @@ import (
 	"log"
 	"os"
 	"os/exec"
-	"syscall"
 )
 
 var (
@@ -43,19 +42,7 @@ func Git(ev map[string]string, projectPath string, args ...string) (int, error) 
 	command.Stdout = os.Stdout
 	command.Stdin = os.Stdin
 	command.Stderr = os.Stderr
-	if err := command.Start(); err != nil {
-		return -1, fmt.Errorf("Error running bash: %#v", err)
-	}
-	if err := command.Wait(); err != nil {
-		if exiterr, ok := err.(*exec.ExitError); ok {
-			if status, ok := exiterr.Sys().(syscall.WaitStatus); ok {
-				return status.ExitStatus(), fmt.Errorf("Error waiting for bash: %#v", err)
-			}
-		} else {
-			return -1, fmt.Errorf("Error waiting for bash: %#v", err)
-		}
-	}
-	return 0, nil
+	return StartAndWait(command)
 }
 
 func init() {
