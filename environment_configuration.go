@@ -95,25 +95,17 @@ func (ev *EnvironmentConfiguration) applyVariables(input string) (string, error)
 // StartShell executes configured shell or default shell (sh)
 func (ev *EnvironmentConfiguration) prepareShell() error {
 	for _, cmd := range ev.Commands {
-		var command *exec.Cmd
+		commandName := "bash"
 		result, err := ev.applyVariables(cmd)
 		if err != nil {
 			return err
 		}
-		command = exec.Command("bash", "-l", "-c", result)
-		env := helper.Environ(os.Environ())
-		for key := range ev.Environment {
-			env.Unset(key)
+		arguments := []string{"-l", "-c", result}
+		env, err := ev.GetEnvironment()
+		if err != nil {
+			return err
 		}
-		for key, value := range ev.Environment {
-			log.Printf("Setting '%s' to '%s'", key, value)
-			env = append(env, fmt.Sprintf("%s=%s", key, value))
-		}
-		command.Dir = path.Join(viper.GetString("basepath"), ev.Name)
-		command.Env = env
-		command.Stdout = os.Stdout
-		command.Stdin = os.Stdin
-		command.Stderr = os.Stderr
+		command, err := helper.GetCommand(commandName, env, path.Join(viper.GetString("basepath"), ev.Name), arguments...)
 		if err := command.Start(); err != nil {
 			log.Printf("Error executing '%s': '%s'", cmd, err.Error())
 		}
@@ -127,15 +119,9 @@ func (ev *EnvironmentConfiguration) prepareShell() error {
 // StartShell executes configured shell or default shell (sh)
 func (ev *EnvironmentConfiguration) StartShell() error {
 	ev.prepareShell()
-	var command *exec.Cmd
-	if ev.Shell != "" {
-		result, err := ev.applyVariables(ev.Shell)
-		if err != nil {
-			return err
-		}
-		command = exec.Command(result)
-	} else {
-		command = exec.Command("bash", "-l")
+	commandName, arguments, err := ev.GetShell()
+	if err != nil {
+		return err
 	}
 	if nil != ev.ShellArguments && len(ev.ShellArguments) > 0 {
 		for _, val := range ev.ShellArguments {
@@ -143,26 +129,17 @@ func (ev *EnvironmentConfiguration) StartShell() error {
 			if err != nil {
 				return err
 			}
-			command.Args = append(command.Args, result)
+			arguments = append(arguments, result)
 		}
 	}
-	env := helper.Environ(os.Environ())
-	for key := range ev.Environment {
-		env.Unset(key)
+	env, err := ev.GetEnvironment()
+	if err != nil {
+		return err
 	}
-	for key, value := range ev.Environment {
-		result, err := ev.applyVariables(value)
-		if err != nil {
-			return err
-		}
-		log.Printf("Setting '%s' to '%s'", key, result)
-		env = append(env, fmt.Sprintf("%s=%s", key, result))
+	command, err := helper.GetCommand(commandName, env, path.Join(viper.GetString("basepath"), ev.Name), arguments...)
+	if err != nil {
+		return err
 	}
-	command.Dir = path.Join(viper.GetString("basepath"), ev.Name)
-	command.Env = env
-	command.Stdout = os.Stdout
-	command.Stdin = os.Stdin
-	command.Stderr = os.Stderr
 	if err := command.Start(); err != nil {
 		return fmt.Errorf("Error running bash: %#v", err)
 	}
@@ -170,6 +147,35 @@ func (ev *EnvironmentConfiguration) StartShell() error {
 		return fmt.Errorf("Error waiting for bash: %#v", err)
 	}
 	return nil
+}
+
+// GetEnvironment returns the templated env vars
+func (ev *EnvironmentConfiguration) GetEnvironment() ([]string, error) {
+	env := helper.Environ(os.Environ())
+	for key := range ev.Environment {
+		env.Unset(key)
+	}
+	for key, value := range ev.Environment {
+		result, err := ev.applyVariables(value)
+		if err != nil {
+			return nil, err
+		}
+		log.Printf("Setting '%s' to '%s'", key, result)
+		env = append(env, fmt.Sprintf("%s=%s", key, result))
+	}
+	return env, nil
+}
+
+// GetShell returns the shell executable with template applied
+func (ev *EnvironmentConfiguration) GetShell() (string, []string, error) {
+	if ev.Shell != "" {
+		result, err := ev.applyVariables(ev.Shell)
+		if err != nil {
+			return "", nil, err
+		}
+		return result, nil, nil
+	}
+	return "bash", []string{"-l"}, nil
 }
 
 // RepositoryExists returns true if a repository is configured in environment

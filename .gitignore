@@ -45,3 +45,5 @@ jsconfig.json
 
 *.pb.go
 dist/
+
+.idea/

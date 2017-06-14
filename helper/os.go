@@ -15,6 +15,7 @@ package helper
 
 import (
 	"os"
+	"os/exec"
 	"strings"
 )
 
@@ -57,4 +58,13 @@ func GetEnvironmentVariables() map[string]string {
 		m[key] = val
 	}
 	return m
+}
+func GetCommand(commandName string, env Environ, path string, arguments ...string) (*exec.Cmd, error) {
+	command := exec.Command(commandName, arguments...)
+	command.Dir = path
+	command.Env = env
+	command.Stdout = os.Stdout
+	command.Stdin = os.Stdin
+	command.Stderr = os.Stderr
+	return command, nil
 }
