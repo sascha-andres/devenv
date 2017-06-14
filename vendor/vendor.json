@@ -3,6 +3,12 @@
 	"ignore": "",
 	"package": [
 		{
+			"checksumSHA1": "l9Sx3q11fbez3R/SVu43973cXKc=",
+			"path": "github.com/chzyer/readline",
+			"revision": "41eea22f717c616615e1e59aa06cf831f9901f35",
+			"revisionTime": "2017-03-13T23:49:21Z"
+		},
+		{
 			"checksumSHA1": "VpWwKARQ1/7yAepe8z8IsAhKhs8=",
 			"path": "github.com/google/gops/agent",
 			"revision": "62f833fc9f6c4d3223bdb37bd0c2f8951bed8596",
