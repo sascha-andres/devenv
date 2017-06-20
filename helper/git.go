@@ -91,17 +91,20 @@ func HasBranch(ev map[string]string, projectPath, branch string) (bool, error) {
 // HasRemoteBranch checks if there is a branch remotely
 func HasRemoteBranch(ev map[string]string, projectPath, branch string) (bool, error) {
 	exitcode, err := Git(ev, projectPath, "ls-remote", "--exit-code", ".", fmt.Sprintf("origin/%s", branch))
-	if exitcode == 0 && err == nil {
+	if exitcode == 0 {
 		return true, nil
 	}
-	return false, err
+	if err != nil {
+		return true, nil
+	}
+	return false, nil
 }
 
 // HasLocalBranch checks if there is a branch locally
 func HasLocalBranch(ev map[string]string, projectPath, branch string) (bool, error) {
-	exitcode, err := Git(ev, projectPath, "rev-parse", "--verify", branch)
-	if exitcode == 0 && err == nil {
+	exitcode, _ := Git(ev, projectPath, "rev-parse", "--verify", branch)
+	if exitcode == 0 {
 		return true, nil
 	}
-	return false, err
+	return false, nil
 }
