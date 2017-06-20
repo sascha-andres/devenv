@@ -1,5 +1,5 @@
-// Licensed under the Apache License, Version 2.0 (the "License");
 // Copyright © 2017 Sascha Andres <sascha.andres@outlook.com>
+// Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
@@ -14,27 +14,19 @@
 package shell
 
 import (
-	"fmt"
+	"github.com/sascha-andres/devenv/helper"
 )
 
-type commitCommand struct{}
-
-func (c commitCommand) Execute(i *Interpreter, repository string, args []string) error {
-	for _, repo := range i.EnvConfiguration.Repositories {
-		if repo.Disabled {
-			continue
-		}
-		fmt.Printf("Commit for '%s'\n", repo.Name)
-		r := repoCommitCommand{}
-		r.Execute(i, repo.Name, args)
+func execHelper(i *Interpreter, repoPath, command string, args []string) error {
+	var arguments []string
+	arguments = append(arguments, command)
+	arguments = append(arguments, args...)
+	vars, err := i.EnvConfiguration.GetReplacedEnvironment()
+	if err != nil {
+		return err
+	}
+	if _, err = helper.Git(vars, repoPath, arguments...); err != nil {
+		return err
 	}
 	return nil
-}
-
-func (c commitCommand) IsResponsible(commandName string) bool {
-	return commandName == "commit" || commandName == "ci"
-}
-
-func init() {
-	commands = append(commands, commitCommand{})
 }
