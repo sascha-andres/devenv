@@ -114,7 +114,10 @@ var shellCmd = &cobra.Command{
 				os.Exit(0)
 				break
 			default:
-				interp.Execute(line)
+				err := interp.Execute(line)
+				if err != nil {
+					log.Printf("Error: %s", err.Error())
+				}
 				break
 			}
 		}

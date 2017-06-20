@@ -23,13 +23,13 @@ import (
 type branchCommand struct{}
 
 func (c branchCommand) Execute(i *Interpreter, repository string, args []string) error {
-	for _, repo := range i.EnvConfiguration.Repositories {
-		if repo.Disabled {
+	for _, repository := range i.EnvConfiguration.Repositories {
+		if repository.Disabled {
 			continue
 		}
-		fmt.Printf("Push for '%s'\n", repo.Name)
-		repoPath := path.Join(i.ExecuteScriptDirectory, repo.Path)
-		hasBranch, err := helper.HasBranch(i.EnvConfiguration.Environment, repoPath, args[0])
+		fmt.Printf("Branch for '%s'\n", repository.Name)
+		repositoryPath := path.Join(i.ExecuteScriptDirectory, repository.Path)
+		hasBranch, err := helper.HasBranch(i.EnvConfiguration.Environment, repositoryPath, args[0])
 		if err != nil {
 			return err
 		}
@@ -43,7 +43,7 @@ func (c branchCommand) Execute(i *Interpreter, repository string, args []string)
 		if err != nil {
 			return err
 		}
-		if _, err = helper.Git(vars, repoPath, arguments...); err != nil {
+		if _, err = helper.Git(vars, repositoryPath, arguments...); err != nil {
 			return err
 		}
 	}

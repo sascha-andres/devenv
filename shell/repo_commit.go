@@ -29,15 +29,7 @@ func (c repoCommitCommand) Execute(i *Interpreter, repository string, args []str
 		if _, err := helper.Git(i.EnvConfiguration.Environment, repoPath, "add", "--all", ":/"); err != nil {
 			return err
 		}
-		var arguments []string
-		arguments = append(arguments, "commit")
-		arguments = append(arguments, args...)
-		vars, err := i.EnvConfiguration.GetReplacedEnvironment()
-		if err != nil {
-			return err
-		}
-		_, err = helper.Git(vars, repoPath, arguments...)
-		if err != nil {
+		if err := execHelper(i, repoPath, "commit", args); err != nil {
 			return err
 		}
 	} else {
