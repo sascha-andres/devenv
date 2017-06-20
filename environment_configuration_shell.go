@@ -55,14 +55,12 @@ func (ev *EnvironmentConfiguration) StartShell() error {
 	if err != nil {
 		return err
 	}
-	if nil != ev.ShellArguments && len(ev.ShellArguments) > 0 {
-		for _, val := range ev.ShellArguments {
-			result, err := ev.applyVariables(val)
-			if err != nil {
-				return err
-			}
-			arguments = append(arguments, result)
+	for _, val := range ev.ShellArguments {
+		result, err := ev.applyVariables(val)
+		if err != nil {
+			return err
 		}
+		arguments = append(arguments, result)
 	}
 	env, err := ev.GetEnvironment()
 	if err != nil {
