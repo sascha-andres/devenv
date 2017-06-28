@@ -49,5 +49,5 @@ func (c repoBranchCommand) IsResponsible(commandName string) bool {
 }
 
 func init() {
-	repoCommands = append(repoCommands, repoBranchCommand{})
+	repositoryCommands = append(repositoryCommands, repoBranchCommand{})
 }

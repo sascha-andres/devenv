@@ -27,7 +27,7 @@ import (
 
 var (
 	cfgFile    string
-	cfg        devenv.DevenvConfiguration
+	cfg        devenv.Configuration
 	configPath string
 )
 
@@ -61,9 +61,11 @@ func init() {
 	RootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.devenv.yaml)")
 	RootCmd.PersistentFlags().StringP("basepath", "b", "$HOME/devenv/src", "Base path for projects")
 	RootCmd.PersistentFlags().StringP("configpath", "c", "$HOME/devenv/environments", "Config path for environments")
+	RootCmd.PersistentFlags().StringP("logconfiguration", "", "--oneline --graph --decorate --all", "Additional parameters for log calls")
 
 	viper.BindPFlag("basepath", RootCmd.PersistentFlags().Lookup("basepath"))
 	viper.BindPFlag("configpath", RootCmd.PersistentFlags().Lookup("configpath"))
+	viper.BindPFlag("logconfiguration", RootCmd.PersistentFlags().Lookup("logconfiguration"))
 }
 
 // initConfig reads in config file and ENV variables if set.

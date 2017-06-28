@@ -15,9 +15,6 @@ package shell
 
 import (
 	"fmt"
-	"path"
-
-	"github.com/sascha-andres/devenv/helper"
 )
 
 type logCommand struct{}
@@ -28,15 +25,10 @@ func (c logCommand) Execute(i *Interpreter, repository string, args []string) er
 			continue
 		}
 		fmt.Printf("Log for '%s'\n", repo.Name)
-		repoPath := path.Join(i.ExecuteScriptDirectory, repo.Path)
-		vars, err := i.EnvConfiguration.GetReplacedEnvironment()
-		if err != nil {
-			return err
-		}
-		_, err = helper.Git(vars, repoPath, "log", "-n", "10", "--oneline", "--graph", "--decorate", "--all")
-		if err != nil {
-			return err
-		}
+		var params = []string{"-n", "10"}
+		params = append(params, args...)
+		var r repositoryLogCommand
+		r.Execute(i, repo.Name, params)
 	}
 	return nil
 }
