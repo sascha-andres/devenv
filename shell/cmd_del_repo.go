@@ -23,25 +23,19 @@ import (
 	"github.com/spf13/viper"
 )
 
-type delRepoCommand struct{}
+type delRepositoryCommand struct{}
 
-func (c delRepoCommand) Execute(i *Interpreter, repository string, args []string) error {
-	fmt.Println("Delete a repo")
+func (c delRepositoryCommand) Execute(i *Interpreter, repository string, args []string) error {
+	fmt.Println("Delete a repository")
 	fmt.Print("Please provide name: ")
 	name := getAnswer()
-	index, repo := i.EnvConfiguration.GetRepository(name)
-	if nil == repo {
-		log.Fatalln("Repo not found")
+	index, repositoryInstance := i.EnvConfiguration.GetRepository(name)
+	if nil == repositoryInstance {
+		log.Fatalln("Repository not found")
 	}
-	repoPath := path.Join(i.ExecuteScriptDirectory, repo.Path)
-	if ok, err := helper.HasChanges(i.EnvConfiguration.Environment, repoPath); ok || err != nil {
-		if ok {
-			log.Fatalln("Changes found, aborting")
-		} else {
-			log.Fatalf("Error determining if there are changes: '%s'", err.Error())
-		}
-	}
-	if err := os.RemoveAll(repoPath); err != nil {
+	repositoryPath := path.Join(i.ExecuteScriptDirectory, repositoryInstance.Path)
+	changes(i, repositoryPath)
+	if err := os.RemoveAll(repositoryPath); err != nil {
 		return fmt.Errorf("Error removing repository from disk: '%s'", err.Error())
 	}
 	i.EnvConfiguration.Repositories = append(i.EnvConfiguration.Repositories[:index], i.EnvConfiguration.Repositories[index+1:]...)
@@ -49,10 +43,20 @@ func (c delRepoCommand) Execute(i *Interpreter, repository string, args []string
 	return nil
 }
 
-func (c delRepoCommand) IsResponsible(commandName string) bool {
+func changes(i *Interpreter, repoPath string) {
+	if ok, err := helper.HasChanges(i.EnvConfiguration.Environment, repoPath); ok || err != nil {
+		if ok {
+			log.Fatalln("Changes found, aborting")
+		} else {
+			log.Fatalf("Error determining if there are changes: '%s'", err.Error())
+		}
+	}
+}
+
+func (c delRepositoryCommand) IsResponsible(commandName string) bool {
 	return commandName == "delrepo"
 }
 
 func init() {
-	commands = append(commands, delRepoCommand{})
+	commands = append(commands, delRepositoryCommand{})
 }
