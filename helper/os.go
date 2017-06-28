@@ -43,6 +43,9 @@ func StartAndWait(command *exec.Cmd) (int, error) {
 	if err := command.Wait(); err != nil {
 		if exiterr, ok := err.(*exec.ExitError); ok {
 			if status, ok := exiterr.Sys().(syscall.WaitStatus); ok {
+				if err.(*exec.ExitError).Stderr == nil {
+					return 0, nil
+				}
 				return status.ExitStatus(), fmt.Errorf("Error waiting for bash: %#v", err)
 			}
 		} else {
