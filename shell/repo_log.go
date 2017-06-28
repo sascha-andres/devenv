@@ -15,27 +15,32 @@ package shell
 
 import (
 	"path"
+	"strings"
 
 	"github.com/sascha-andres/devenv/helper"
+	"github.com/spf13/viper"
 )
 
-type repoLogCommand struct{}
+type repositoryLogCommand struct{}
 
-func (c repoLogCommand) Execute(i *Interpreter, repository string, args []string) error {
+func (c repositoryLogCommand) Execute(i *Interpreter, repository string, args []string) error {
 	_, repo := i.EnvConfiguration.GetRepository(repository)
-	repoPath := path.Join(i.ExecuteScriptDirectory, repo.Path)
+	repositoryPath := path.Join(i.ExecuteScriptDirectory, repo.Path)
 	vars, err := i.EnvConfiguration.GetReplacedEnvironment()
 	if err != nil {
 		return err
 	}
-	_, err = helper.Git(vars, repoPath, "log", "--oneline", "--graph", "--decorate", "--all")
+	var params = []string{"log"}
+	params = append(params, strings.Split(viper.GetString("logconfiguration"), " ")...)
+	params = append(params, args...)
+	_, err = helper.Git(vars, repositoryPath, params...)
 	return err
 }
 
-func (c repoLogCommand) IsResponsible(commandName string) bool {
+func (c repositoryLogCommand) IsResponsible(commandName string) bool {
 	return commandName == "log" || commandName == "l"
 }
 
 func init() {
-	repoCommands = append(repoCommands, repoLogCommand{})
+	repositoryCommands = append(repositoryCommands, repositoryLogCommand{})
 }

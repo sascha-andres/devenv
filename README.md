@@ -385,6 +385,10 @@ to `git status`
 Required information:
 * name
 
+## Code of conduct
+
+You can find the code of conduct [here](conde_of_conduct.md), taken from [Contributor Covenant](http://contributor-covenant.org/)
+
 ## History
 
 |Version|Description|

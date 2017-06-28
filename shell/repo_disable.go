@@ -34,5 +34,5 @@ func (c repoDisableCommand) IsResponsible(commandName string) bool {
 }
 
 func init() {
-	repoCommands = append(repoCommands, repoDisableCommand{})
+	repositoryCommands = append(repositoryCommands, repoDisableCommand{})
 }

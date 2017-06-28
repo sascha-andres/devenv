@@ -42,5 +42,5 @@ func (c repoStatusCommand) Execute(i *Interpreter, repository string, args []str
 }
 
 func init() {
-	repoCommands = append(repoCommands, repoStatusCommand{})
+	repositoryCommands = append(repositoryCommands, repoStatusCommand{})
 }
