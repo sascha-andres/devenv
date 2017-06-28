@@ -12,6 +12,3 @@ fpm:
   maintainer: Sascha Andres <sascha.andres@outlook.com>
   description: dev environment management
   license: Apache 2.0
-  formats:
-    - deb
-    - rpm
