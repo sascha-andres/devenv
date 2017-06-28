@@ -45,7 +45,7 @@ Commit all repositories at once`,
 // Execute adds all child commands to the root command sets flags appropriately.
 // This is called by main.main(). It only needs to happen once to the rootCmd.
 func Execute() {
-	fmt.Println("devenv version v1.1.0")
+	fmt.Println("devenv version v1.2.0")
 	if err := RootCmd.Execute(); err != nil {
 		fmt.Println(err)
 		os.Exit(1)
