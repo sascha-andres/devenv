@@ -13,7 +13,9 @@
 
 package devenv
 
-type DevenvConfiguration struct {
-	BasePath   string
-	ConfigPath string
+// Configuration parameters for devenv operations
+type Configuration struct {
+	BasePath      string
+	ConfigPath    string
+	LogParameters string
 }

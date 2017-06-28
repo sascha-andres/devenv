@@ -29,8 +29,8 @@ type (
 )
 
 var (
-	repoCommands []Commander
-	commands     []Commander
+	repositoryCommands []Commander
+	commands           []Commander
 )
 
 // NewInterpreter returns a new interpreter
@@ -43,7 +43,7 @@ func (i *Interpreter) Execute(commandline string) error {
 	tokenized := str.ToArgv(commandline)
 	switch tokenized[0] {
 	case "repo", "r":
-		return i.executeFromCommands(repoCommands, true, tokenized[1:])
+		return i.executeFromCommands(repositoryCommands, true, tokenized[1:])
 	}
 	return i.executeFromCommands(commands, false, tokenized)
 }
