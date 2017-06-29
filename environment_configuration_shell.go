@@ -25,7 +25,7 @@ import (
 
 // prepareShell executes configured pre shell commands
 func (ev *EnvironmentConfiguration) prepareShell() error {
-	for _, cmd := range ev.Commands {
+	for _, cmd := range ev.ProcessConfiguration.Commands {
 		commandName := "bash"
 		result, err := ev.applyVariables(cmd)
 		if err != nil {
@@ -55,7 +55,7 @@ func (ev *EnvironmentConfiguration) StartShell() error {
 	if err != nil {
 		return err
 	}
-	for _, val := range ev.ShellArguments {
+	for _, val := range ev.ProcessConfiguration.ShellArguments {
 		result, err := ev.applyVariables(val)
 		if err != nil {
 			return err
@@ -80,10 +80,10 @@ func (ev *EnvironmentConfiguration) StartShell() error {
 // GetEnvironment returns the templated env vars
 func (ev *EnvironmentConfiguration) GetEnvironment() ([]string, error) {
 	env := helper.Environ(os.Environ())
-	for key := range ev.Environment {
+	for key := range ev.ProcessConfiguration.Environment {
 		env.Unset(key)
 	}
-	for key, value := range ev.Environment {
+	for key, value := range ev.ProcessConfiguration.Environment {
 		result, err := ev.applyVariables(value)
 		if err != nil {
 			return nil, err
@@ -96,8 +96,8 @@ func (ev *EnvironmentConfiguration) GetEnvironment() ([]string, error) {
 
 // GetShell returns the shell executable with template applied
 func (ev *EnvironmentConfiguration) GetShell() (string, []string, error) {
-	if ev.Shell != "" {
-		result, err := ev.applyVariables(ev.Shell)
+	if ev.ProcessConfiguration.Shell != "" {
+		result, err := ev.applyVariables(ev.ProcessConfiguration.Shell)
 		if err != nil {
 			return "", nil, err
 		}

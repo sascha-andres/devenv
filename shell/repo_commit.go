@@ -25,8 +25,8 @@ type repoCommitCommand struct{}
 func (c repoCommitCommand) Execute(i *Interpreter, repository string, args []string) error {
 	_, repo := i.EnvConfiguration.GetRepository(repository)
 	repoPath := path.Join(i.ExecuteScriptDirectory, repo.Path)
-	if hasChanges, err := helper.HasChanges(i.EnvConfiguration.Environment, repoPath); hasChanges && err == nil {
-		if _, err := helper.Git(i.EnvConfiguration.Environment, repoPath, "add", "--all", ":/"); err != nil {
+	if hasChanges, err := helper.HasChanges(i.getProcess().Environment, repoPath); hasChanges && err == nil {
+		if _, err := helper.Git(i.getProcess().Environment, repoPath, "add", "--all", ":/"); err != nil {
 			return err
 		}
 		if err := execHelper(i, repoPath, "commit", args); err != nil {

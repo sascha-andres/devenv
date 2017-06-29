@@ -44,7 +44,7 @@ func (c delRepositoryCommand) Execute(i *Interpreter, repository string, args []
 }
 
 func changes(i *Interpreter, repoPath string) {
-	if ok, err := helper.HasChanges(i.EnvConfiguration.Environment, repoPath); ok || err != nil {
+	if ok, err := helper.HasChanges(i.getProcess().Environment, repoPath); ok || err != nil {
 		if ok {
 			log.Fatalln("Changes found, aborting")
 		} else {

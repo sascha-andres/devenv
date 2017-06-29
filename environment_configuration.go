@@ -14,50 +14,55 @@
 package devenv
 
 import (
-	"bytes"
-	"html/template"
-	"os/exec"
+  "bytes"
+  "html/template"
+  "os/exec"
 )
 
 var (
-	shPath   string
-	shExists bool
+  shPath   string
+  shExists bool
 )
 
-// EnvironmentConfiguration contains information about the project
 type (
-	EnvironmentConfiguration struct {
-		Name           string                    `yaml:"name"`
-		Repositories   []RepositoryConfiguration `yaml:"repositories"`
-		Environment    map[string]string         `yaml:"env"`
-		Shell          string                    `yaml:"shell"`
-		ShellArguments []string                  `yaml:"shell-arguments"`
-		Commands       []string                  `yaml:"commands"`
-	}
+  // EnvironmentConfiguration contains information about the project
+  EnvironmentConfiguration struct {
+    Name                 string                    `yaml:"name"`
+    Repositories         []RepositoryConfiguration `yaml:"repositories"`
+    ProcessConfiguration EnvironmentExternalProcessConfiguration `yaml:"processes"`
+  }
+
+  // EnvironmentExternalProcessConfiguration contains configuration in use with external processes
+  EnvironmentExternalProcessConfiguration struct {
+    Environment    map[string]string         `yaml:"env"`
+    Shell          string                    `yaml:"shell"`
+    ShellArguments []string                  `yaml:"shell-arguments"`
+    Commands       []string                  `yaml:"commands"`
+  }
 )
 
 // applyVariables uses GO's templating to apply the variables
 func (ev *EnvironmentConfiguration) applyVariables(input string) (string, error) {
-	templ, err := template.New("").Parse(input)
-	if err != nil {
-		return "", err
-	}
-	b := bytes.NewBuffer(nil)
-	vars, err := ev.GetVariables()
-	if err != nil {
-		return "", err
-	}
-	if err = templ.Execute(b, vars); err != nil {
-		return "", err
-	}
-	return b.String(), nil
+  templ, err := template.New("").Parse(input)
+  if err != nil {
+    return "", err
+  }
+  b := bytes.NewBuffer(nil)
+  vars, err := ev.GetVariables()
+  if err != nil {
+    return "", err
+  }
+  if err = templ.Execute(b, vars); err != nil {
+    return "", err
+  }
+  return b.String(), nil
 }
 
 func init() {
-	var err error
-	shPath, err = exec.LookPath("sh")
-	if err != nil {
-		return
-	}
-	shExists = true
+  var err error
+  shPath, err = exec.LookPath("sh")
+  if err != nil {
+    return
+  }
+  shExists = true
 }
