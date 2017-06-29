@@ -103,16 +103,20 @@ A relative path where the repository is cloned to
 
 Remote url to the repository
 
-### env
+### processes.env
 
 Key value pairs that are added to the shell and git processes
 
-### shell
+### processes.shell
 
 Executable fot the shell. If you want to use the `fish` shell in one project as opposed to your
 default shell specify here.
 
-### commands
+### processes.shellarguments
+
+Passed to the shell as arguments
+
+### processes.commands
 
 Commands to execute before the shell is called.
 
@@ -393,8 +397,12 @@ You can find the code of conduct [here](conde_of_conduct.md), taken from [Contri
 
 |Version|Description|
 |---|---|
+|v1.2.0|Make log parameters configurable|
+| |Refactorings|
+|v1.1.1|Fix for branch detection|
+| |Refactorings|
 |v1.1.0|Completion for shell|
-||Command arguments for shell|
-||Variables|
+| |Command arguments for shell|
+| |Variables|
 |v1.0.1|Enable/Disable repository|
 |v1.0.0|Initial version|

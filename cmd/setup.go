@@ -41,7 +41,7 @@ repository project.`,
 				var ev devenv.EnvironmentConfiguration
 				ev.LoadFromFile(path.Join(viper.GetString("configpath"), projectName+".yaml"))
 				for _, repo := range ev.Repositories {
-					if _, err := helper.Git(ev.Environment, projectDirectory, "clone", repo.URL, repo.Path); err != nil {
+					if _, err := helper.Git(ev.ProcessConfiguration.Environment, projectDirectory, "clone", repo.URL, repo.Path); err != nil {
 						log.Fatalf("Error executing git: '%#v'", err)
 					}
 				}

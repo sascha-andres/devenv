@@ -38,6 +38,10 @@ func NewInterpreter(path string, ev devenv.EnvironmentConfiguration) *Interprete
 	return &Interpreter{ExecuteScriptDirectory: path, EnvConfiguration: ev}
 }
 
+func (i *Interpreter) getProcess() devenv.EnvironmentExternalProcessConfiguration {
+  return i.EnvConfiguration.ProcessConfiguration
+}
+
 // Execute takes a line entered by the user and calls the command
 func (i *Interpreter) Execute(commandline string) error {
 	tokenized := str.ToArgv(commandline)

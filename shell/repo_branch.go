@@ -24,7 +24,7 @@ type repoBranchCommand struct{}
 func (c repoBranchCommand) Execute(i *Interpreter, repository string, args []string) error {
 	_, repo := i.EnvConfiguration.GetRepository(repository)
 	repoPath := path.Join(i.ExecuteScriptDirectory, repo.Path)
-	hasBranch, err := helper.HasBranch(i.EnvConfiguration.Environment, repoPath, args[0])
+	hasBranch, err := helper.HasBranch(i.getProcess().Environment, repoPath, args[0])
 	if err != nil {
 		return err
 	}
