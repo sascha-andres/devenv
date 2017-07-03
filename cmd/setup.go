@@ -44,6 +44,11 @@ repository project.`,
 					if _, err := helper.Git(ev.ProcessConfiguration.Environment, projectDirectory, "clone", repo.URL, repo.Path); err != nil {
 						log.Fatalf("Error executing git: '%#v'", err)
 					}
+					if repo.Pinned != "" {
+						if _, err := helper.Git(ev.ProcessConfiguration.Environment, path.Join(projectDirectory, repo.Path), "checkout", repo.Pinned); err != nil {
+							log.Fatalf("Error executing git: '%#v'", err)
+						}
+					}
 				}
 			} else {
 				log.Println("Project is already pulled")
