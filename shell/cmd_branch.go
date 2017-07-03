@@ -24,7 +24,7 @@ type branchCommand struct{}
 
 func (c branchCommand) Execute(i *Interpreter, repository string, args []string) error {
 	for _, repository := range i.EnvConfiguration.Repositories {
-		if repository.Disabled {
+		if repository.Disabled || repository.Pinned != "" {
 			continue
 		}
 		fmt.Printf("Branch for '%s'\n", repository.Name)

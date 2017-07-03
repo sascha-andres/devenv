@@ -21,10 +21,13 @@ import (
 
 type repoBranchCommand struct{}
 
-func (c repoBranchCommand) Execute(i *Interpreter, repository string, args []string) error {
-	_, repo := i.EnvConfiguration.GetRepository(repository)
-	repoPath := path.Join(i.ExecuteScriptDirectory, repo.Path)
-	hasBranch, err := helper.HasBranch(i.getProcess().Environment, repoPath, args[0])
+func (c repoBranchCommand) Execute(i *Interpreter, repositoryName string, args []string) error {
+	_, repository := i.EnvConfiguration.GetRepository(repositoryName)
+	if repository.Disabled || repository.Pinned != "" {
+		return nil
+	}
+	repositoryPath := path.Join(i.ExecuteScriptDirectory, repository.Path)
+	hasBranch, err := helper.HasBranch(i.getProcess().Environment, repositoryPath, args[0])
 	if err != nil {
 		return err
 	}
@@ -38,7 +41,7 @@ func (c repoBranchCommand) Execute(i *Interpreter, repository string, args []str
 	if err != nil {
 		return err
 	}
-	if _, err = helper.Git(vars, repoPath, arguments...); err != nil {
+	if _, err = helper.Git(vars, repositoryPath, arguments...); err != nil {
 		return err
 	}
 	return nil
