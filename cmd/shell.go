@@ -14,18 +14,11 @@
 package cmd
 
 import (
-	"io"
 	"log"
-	"os"
-	"path"
-	"strings"
 
 	"github.com/chzyer/readline"
 	"github.com/sascha-andres/devenv"
-	"github.com/sascha-andres/devenv/helper"
-	"github.com/sascha-andres/devenv/shell"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 var ev devenv.EnvironmentConfiguration
@@ -67,73 +60,11 @@ var shellCmd = &cobra.Command{
 	Short: "Start devenv shell",
 	Long:  `Devenv shell allows to work with all repositories at once.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		projectName := strings.Join(args, " ")
-		log.Printf("Called to start shell for '%s'\n", projectName)
-		if "" == projectName || !devenv.ProjectIsCreated(projectName) {
-			log.Fatalf("Project '%s' does not yet exist", projectName)
-		}
-		if ok, err := helper.Exists(path.Join(viper.GetString("configpath"), projectName+".yaml")); ok && err == nil {
-			if err := ev.LoadFromFile(path.Join(viper.GetString("configpath"), projectName+".yaml")); err != nil {
-				log.Fatalf("Error reading env config: '%s'", err.Error())
-			}
-		}
-
-		interp := shell.NewInterpreter(path.Join(viper.GetString("basepath"), projectName), ev)
-		l, err := readline.NewEx(&readline.Config{
-			Prompt:          "\033[31m»\033[0m ",
-			HistoryFile:     "/tmp/devenv-" + projectName + ".tmp",
-			AutoComplete:    completer,
-			InterruptPrompt: "^C",
-			EOFPrompt:       "exit",
-
-			HistorySearchFold:   true,
-			FuncFilterInputRune: filterInput,
-		})
+		err := runInterpreter(args)
 		if err != nil {
-			log.Fatalln(err)
-		}
-		defer l.Close()
-
-		log.SetOutput(l.Stderr())
-
-		for {
-			line, err := l.Readline()
-			if err == readline.ErrInterrupt {
-				if len(line) == 0 {
-					break
-				} else {
-					continue
-				}
-			} else if err == io.EOF {
-				break
-			}
-
-			line = strings.TrimSpace(line)
-			switch line {
-			case "quit", "q":
-				os.Exit(0)
-				break
-			default:
-				err := interp.Execute(line)
-				if err != nil {
-					log.Printf("Error: %s", err.Error())
-				}
-				break
-			}
+			log.Fatalf("Error: '%s'", err.Error)
 		}
 	},
-}
-
-func listRepositories() func(string) []string {
-	return func(line string) []string {
-		var repositories []string
-		for _, val := range ev.Repositories {
-			if !val.Disabled {
-				repositories = append(repositories, val.Name)
-			}
-		}
-		return repositories
-	}
 }
 
 func init() {
