@@ -37,9 +37,12 @@ var RootCmd = &cobra.Command{
 	Short: "Manage your code in project environments",
 	Long: `Manage your multi repository projects with ease.
 Commit all repositories at once`,
-	// Uncomment the following line if your bare application
-	// has an action associated with it:
-	//	Run: func(cmd *cobra.Command, args []string) { },
+	Run: func(cmd *cobra.Command, args []string) {
+		err := runInterpreter(args)
+		if err != nil {
+			log.Fatalf("Error: '%s'", err.Error)
+		}
+	},
 }
 
 // Execute adds all child commands to the root command sets flags appropriately.
