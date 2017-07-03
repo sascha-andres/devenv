@@ -19,14 +19,14 @@ import (
 
 type commitCommand struct{}
 
-func (c commitCommand) Execute(i *Interpreter, repository string, args []string) error {
-	for _, repo := range i.EnvConfiguration.Repositories {
-		if repo.Disabled {
+func (c commitCommand) Execute(i *Interpreter, repositoryName string, args []string) error {
+	for _, repository := range i.EnvConfiguration.Repositories {
+		if repository.Disabled || repository.Pinned != "" {
 			continue
 		}
-		fmt.Printf("Commit for '%s'\n", repo.Name)
-		r := repoCommitCommand{}
-		r.Execute(i, repo.Name, args)
+		fmt.Printf("Commit for '%s'\n", repository.Name)
+		r := repositoryCommitCommand{}
+		r.Execute(i, repository.Name, args)
 	}
 	return nil
 }

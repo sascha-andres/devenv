@@ -20,16 +20,19 @@ import (
 	"github.com/sascha-andres/devenv/helper"
 )
 
-type repoCommitCommand struct{}
+type repositoryCommitCommand struct{}
 
-func (c repoCommitCommand) Execute(i *Interpreter, repository string, args []string) error {
-	_, repo := i.EnvConfiguration.GetRepository(repository)
-	repoPath := path.Join(i.ExecuteScriptDirectory, repo.Path)
-	if hasChanges, err := helper.HasChanges(i.getProcess().Environment, repoPath); hasChanges && err == nil {
-		if _, err := helper.Git(i.getProcess().Environment, repoPath, "add", "--all", ":/"); err != nil {
+func (c repositoryCommitCommand) Execute(i *Interpreter, repositoryName string, args []string) error {
+	_, repository := i.EnvConfiguration.GetRepository(repositoryName)
+	if repository.Disabled || repository.Pinned != "" {
+		return nil
+	}
+	repositoryPath := path.Join(i.ExecuteScriptDirectory, repository.Path)
+	if hasChanges, err := helper.HasChanges(i.getProcess().Environment, repositoryPath); hasChanges && err == nil {
+		if _, err := helper.Git(i.getProcess().Environment, repositoryPath, "add", "--all", ":/"); err != nil {
 			return err
 		}
-		if err := execHelper(i, repoPath, "commit", args); err != nil {
+		if err := execHelper(i, repositoryPath, "commit", args); err != nil {
 			return err
 		}
 	} else {
@@ -38,10 +41,10 @@ func (c repoCommitCommand) Execute(i *Interpreter, repository string, args []str
 	return nil
 }
 
-func (c repoCommitCommand) IsResponsible(commandName string) bool {
+func (c repositoryCommitCommand) IsResponsible(commandName string) bool {
 	return commandName == "commit" || commandName == "ci"
 }
 
 func init() {
-	repositoryCommands = append(repositoryCommands, repoCommitCommand{})
+	repositoryCommands = append(repositoryCommands, repositoryCommitCommand{})
 }

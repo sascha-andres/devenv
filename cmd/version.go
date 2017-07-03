@@ -11,13 +11,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package devenv
+package cmd
 
-// RepositoryConfiguration contains information about linked repositories
-type RepositoryConfiguration struct {
-	Name     string `yaml:"name"`
-	Path     string `yaml:"path"`
-	URL      string `yaml:"url"`
-	Disabled bool   `yaml:"disabled"`
-	Pinned   string `yaml:"pinned"`
+import (
+	"fmt"
+
+	"github.com/spf13/cobra"
+)
+
+// versionCmd represents the version command
+var versionCmd = &cobra.Command{
+	Use:   "version",
+	Short: "Prints out the version",
+	Long:  ``,
+	Run: func(cmd *cobra.Command, args []string) {
+		fmt.Println("devenv version v1.2.0")
+	},
+}
+
+func init() {
+	RootCmd.AddCommand(versionCmd)
 }

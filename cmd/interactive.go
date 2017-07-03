@@ -37,6 +37,8 @@ var completer = readline.NewPrefixCompleter(
 			readline.PcItem("pull"),
 			readline.PcItem("push"),
 			readline.PcItem("status"),
+			readline.PcItem("pin"),
+			readline.PcItem("unpin"),
 		),
 	),
 	readline.PcItem("addrepo"),
@@ -99,7 +101,7 @@ func runInterpreter(args []string) error {
 		default:
 			err := interp.Execute(line)
 			if err != nil {
-				return err
+				log.Println(err)
 			}
 			break
 		}

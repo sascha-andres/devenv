@@ -20,15 +20,14 @@ import (
 	"log"
 	"os"
 	"os/exec"
+	"strings"
 )
 
 var (
 	gitExecutable string
 )
 
-// Git calls the system git in the project directory with specified arguments
-func Git(ev map[string]string, projectPath string, args ...string) (int, error) {
-	command := exec.Command(gitExecutable, args...)
+func buildEnvironment(ev map[string]string) Environ {
 	env := Environ(os.Environ())
 	for key := range ev {
 		env.Unset(key)
@@ -37,12 +36,36 @@ func Git(ev map[string]string, projectPath string, args ...string) (int, error) 
 		log.Printf("Setting '%s' to '%s'", key, value)
 		env = append(env, fmt.Sprintf("%s=%s", key, value))
 	}
+	return env
+}
+
+// Git calls the system git in the project directory with specified arguments
+func Git(ev map[string]string, projectPath string, args ...string) (int, error) {
+	command := exec.Command(gitExecutable, args...)
+	env := buildEnvironment(ev)
 	command.Dir = projectPath
 	command.Env = env
 	command.Stdout = os.Stdout
 	command.Stdin = os.Stdin
 	command.Stderr = os.Stderr
 	return StartAndWait(command)
+}
+
+// GitOutput calls the system git in the project directory with specified arguments and returns the output
+func GitOutput(ev map[string]string, projectPath string, args ...string) (string, error) {
+	command := exec.Command(gitExecutable, args...)
+	env := buildEnvironment(ev)
+	command.Dir = projectPath
+	command.Env = env
+	stdout, err := command.StdoutPipe()
+	err = command.Start()
+	if err != nil {
+		return "", err
+	}
+	buf := new(bytes.Buffer)
+	buf.ReadFrom(stdout)
+	output := buf.String()
+	return strings.TrimSpace(output), err
 }
 
 func init() {
@@ -90,8 +113,8 @@ func HasBranch(ev map[string]string, projectPath, branch string) (bool, error) {
 
 // HasRemoteBranch checks if there is a branch remotely
 func HasRemoteBranch(ev map[string]string, projectPath, branch string) (bool, error) {
-	exitcode, err := Git(ev, projectPath, "ls-remote", "--exit-code", ".", fmt.Sprintf("origin/%s", branch))
-	if exitcode == 0 {
+	exitCode, err := Git(ev, projectPath, "ls-remote", "--exit-code", ".", fmt.Sprintf("origin/%s", branch))
+	if exitCode == 0 {
 		return true, nil
 	}
 	if err != nil {
@@ -102,8 +125,8 @@ func HasRemoteBranch(ev map[string]string, projectPath, branch string) (bool, er
 
 // HasLocalBranch checks if there is a branch locally
 func HasLocalBranch(ev map[string]string, projectPath, branch string) (bool, error) {
-	exitcode, _ := Git(ev, projectPath, "rev-parse", "--verify", branch)
-	if exitcode == 0 {
+	exitCode, _ := Git(ev, projectPath, "rev-parse", "--verify", branch)
+	if exitCode == 0 {
 		return true, nil
 	}
 	return false, nil

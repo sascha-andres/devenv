@@ -14,29 +14,31 @@
 package shell
 
 import (
+	"log"
 	"path"
 
+	"fmt"
+
 	"github.com/sascha-andres/devenv/helper"
+	"github.com/spf13/viper"
 )
 
-type repoBranchCommand struct{}
+type repositoryUnpinCommand struct{}
 
-func (c repoBranchCommand) Execute(i *Interpreter, repositoryName string, args []string) error {
-	_, repository := i.EnvConfiguration.GetRepository(repositoryName)
-	if repository.Disabled || repository.Pinned != "" {
+func (c repositoryUnpinCommand) Execute(i *Interpreter, repositoryName string, args []string) error {
+	if 0 == len(args) {
+		return fmt.Errorf("Could not unpin '%s': no branch to checkout", repositoryName)
+	}
+	index, repository := i.EnvConfiguration.GetRepository(repositoryName)
+	if repository.Pinned == "" {
+		log.Printf("Already unpinned")
 		return nil
 	}
+	log.Printf("Unpinning %s", repository.Name)
 	repositoryPath := path.Join(i.ExecuteScriptDirectory, repository.Path)
-	hasBranch, err := helper.HasBranch(i.getProcess().Environment, repositoryPath, args[0])
-	if err != nil {
-		return err
-	}
 	var arguments []string
 	arguments = append(arguments, "checkout")
-	if !hasBranch {
-		arguments = append(arguments, "-b")
-	}
-	arguments = append(arguments, args...)
+	arguments = append(arguments, args[0])
 	vars, err := i.EnvConfiguration.GetReplacedEnvironment()
 	if err != nil {
 		return err
@@ -44,13 +46,17 @@ func (c repoBranchCommand) Execute(i *Interpreter, repositoryName string, args [
 	if _, err = helper.Git(vars, repositoryPath, arguments...); err != nil {
 		return err
 	}
-	return nil
+
+	repository.Pinned = ""
+	i.EnvConfiguration.Repositories = append(i.EnvConfiguration.Repositories[:index], i.EnvConfiguration.Repositories[index+1:]...)
+	i.EnvConfiguration.Repositories = append(i.EnvConfiguration.Repositories, *repository)
+	return i.EnvConfiguration.SaveToFile(path.Join(viper.GetString("configpath"), i.EnvConfiguration.Name+".yaml"))
 }
 
-func (c repoBranchCommand) IsResponsible(commandName string) bool {
-	return commandName == "branch" || commandName == "br"
+func (c repositoryUnpinCommand) IsResponsible(commandName string) bool {
+	return commandName == "unpin"
 }
 
 func init() {
-	repositoryCommands = append(repositoryCommands, repoBranchCommand{})
+	repositoryCommands = append(repositoryCommands, repositoryUnpinCommand{})
 }

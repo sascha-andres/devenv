@@ -291,6 +291,27 @@ The following commands are available for a single repository:
 * pull
 * push
 * status
+* pin
+* unpin
+
+#### pin
+
+Stores the current commit to the configuration. 
+
+- Most actions are not performed on pinned repositories
+- On setup, a checkout on the specific commit will be done.
+
+Call with
+
+    repo <name> pin
+
+#### unpin
+
+If pinned the repository will be unpinned and the specified branch will be checked out
+
+Call with
+
+    repo <name> unpin <branch>
 
 #### branch
 
