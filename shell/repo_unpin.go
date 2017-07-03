@@ -15,14 +15,24 @@ package shell
 
 import (
 	"log"
+	"path"
+
+	"github.com/spf13/viper"
 )
 
 type repositoryUnpinCommand struct{}
 
 func (c repositoryUnpinCommand) Execute(i *Interpreter, repositoryName string, args []string) error {
-	_, repository := i.EnvConfiguration.GetRepository(repositoryName)
+	index, repository := i.EnvConfiguration.GetRepository(repositoryName)
+	if repository.Pinned == "" {
+		log.Printf("Already unpinned")
+		return nil
+	}
 	log.Printf("Unpinning %s", repository.Name)
-	return nil
+	repository.Pinned = ""
+	i.EnvConfiguration.Repositories = append(i.EnvConfiguration.Repositories[:index], i.EnvConfiguration.Repositories[index+1:]...)
+	i.EnvConfiguration.Repositories = append(i.EnvConfiguration.Repositories, *repository)
+	return i.EnvConfiguration.SaveToFile(path.Join(viper.GetString("configpath"), i.EnvConfiguration.Name+".yaml"))
 }
 
 func (c repositoryUnpinCommand) IsResponsible(commandName string) bool {
