@@ -17,18 +17,36 @@ import (
 	"log"
 	"path"
 
+	"fmt"
+
+	"github.com/sascha-andres/devenv/helper"
 	"github.com/spf13/viper"
 )
 
 type repositoryUnpinCommand struct{}
 
 func (c repositoryUnpinCommand) Execute(i *Interpreter, repositoryName string, args []string) error {
+	if 0 == len(args) {
+		return fmt.Errorf("Could not unpin '%s': no branch to checkout", repositoryName)
+	}
 	index, repository := i.EnvConfiguration.GetRepository(repositoryName)
 	if repository.Pinned == "" {
 		log.Printf("Already unpinned")
 		return nil
 	}
 	log.Printf("Unpinning %s", repository.Name)
+	repositoryPath := path.Join(i.ExecuteScriptDirectory, repository.Path)
+	var arguments []string
+	arguments = append(arguments, "checkout")
+	arguments = append(arguments, args[0])
+	vars, err := i.EnvConfiguration.GetReplacedEnvironment()
+	if err != nil {
+		return err
+	}
+	if _, err = helper.Git(vars, repositoryPath, arguments...); err != nil {
+		return err
+	}
+
 	repository.Pinned = ""
 	i.EnvConfiguration.Repositories = append(i.EnvConfiguration.Repositories[:index], i.EnvConfiguration.Repositories[index+1:]...)
 	i.EnvConfiguration.Repositories = append(i.EnvConfiguration.Repositories, *repository)
