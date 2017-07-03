@@ -14,6 +14,8 @@
 package cmd
 
 import (
+	"fmt"
+
 	"github.com/spf13/cobra"
 )
 
@@ -21,9 +23,9 @@ import (
 var versionCmd = &cobra.Command{
 	Use:   "version",
 	Short: "Prints out the version",
-	Long: ``,
+	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
-    fmt.Println("devenv version v1.2.0")
+		fmt.Println("devenv version v1.2.0")
 	},
 }
 
