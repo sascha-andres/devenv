@@ -101,7 +101,7 @@ func runInterpreter(args []string) error {
 		default:
 			err := interp.Execute(line)
 			if err != nil {
-				return err
+				log.Println(err)
 			}
 			break
 		}
