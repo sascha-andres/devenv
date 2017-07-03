@@ -38,11 +38,11 @@ func (e *Environ) Unset(key string) {
 // StartAndWait calls the command and returns the result
 func StartAndWait(command *exec.Cmd) (int, error) {
 	if err := command.Start(); err != nil {
-		return -1, fmt.Errorf("Error running bash: %#v", err)
+		return -1, fmt.Errorf("Error running: %#v", err)
 	}
 	if err := command.Wait(); err != nil {
-		if exiterr, ok := err.(*exec.ExitError); ok {
-			if status, ok := exiterr.Sys().(syscall.WaitStatus); ok {
+		if exitError, ok := err.(*exec.ExitError); ok {
+			if status, ok := exitError.Sys().(syscall.WaitStatus); ok {
 				if err.(*exec.ExitError).Stderr == nil {
 					return 0, nil
 				}

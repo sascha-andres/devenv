@@ -15,9 +15,9 @@ package shell
 
 import (
 	"log"
-  "path"
-  "github.com/spf13/viper"
-  "github.com/sascha-andres/devenv/helper"
+	"path"
+
+	"github.com/sascha-andres/devenv/helper"
 )
 
 type repositoryPinCommand struct{}
@@ -26,16 +26,16 @@ func (c repositoryPinCommand) Execute(i *Interpreter, repositoryName string, arg
 	_, repository := i.EnvConfiguration.GetRepository(repositoryName)
 	log.Printf("Pinning %s", repository.Name)
 
-  repositoryPath := path.Join(i.ExecuteScriptDirectory, repo.Path)
-  vars, err := i.EnvConfiguration.GetReplacedEnvironment()
-  if err != nil {
-    return err
-  }
-  var params = []string{"rev-parse"}
-  params = append(params, "--verify", "HEAD")
-  _, err = helper.Git(vars, repositoryPath, params...)
+	repositoryPath := path.Join(i.ExecuteScriptDirectory, repository.Path)
+	vars, err := i.EnvConfiguration.GetReplacedEnvironment()
+	if err != nil {
+		return err
+	}
+	var params = []string{"rev-parse"}
+	params = append(params, "--verify", "HEAD")
+	_, output, err := helper.Git(vars, repositoryPath, params...)
 
-  // git rev-parse --verify HEAD
+	log.Println(output)
 	return nil
 }
 

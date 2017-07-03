@@ -26,9 +26,7 @@ var (
 	gitExecutable string
 )
 
-// Git calls the system git in the project directory with specified arguments
-func Git(ev map[string]string, projectPath string, args ...string) (int, error) {
-	command := exec.Command(gitExecutable, args...)
+func buildEnvironment(ev map[string]string) Environ {
 	env := Environ(os.Environ())
 	for key := range ev {
 		env.Unset(key)
@@ -37,6 +35,13 @@ func Git(ev map[string]string, projectPath string, args ...string) (int, error) 
 		log.Printf("Setting '%s' to '%s'", key, value)
 		env = append(env, fmt.Sprintf("%s=%s", key, value))
 	}
+	return env
+}
+
+// Git calls the system git in the project directory with specified arguments
+func Git(ev map[string]string, projectPath string, args ...string) (int, error) {
+	command := exec.Command(gitExecutable, args...)
+	env := buildEnvironment(ev)
 	command.Dir = projectPath
 	command.Env = env
 	command.Stdout = os.Stdout
