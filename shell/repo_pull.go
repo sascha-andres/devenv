@@ -14,16 +14,20 @@
 package shell
 
 import (
+	"fmt"
 	"path"
 
 	"github.com/sascha-andres/devenv/helper"
 )
 
-type repoPullCommand struct{}
+type repositoryPullCommand struct{}
 
-func (c repoPullCommand) Execute(i *Interpreter, repository string, args []string) error {
-	_, repo := i.EnvConfiguration.GetRepository(repository)
-	repoPath := path.Join(i.ExecuteScriptDirectory, repo.Path)
+func (c repositoryPullCommand) Execute(i *Interpreter, repositoryName string, args []string) error {
+	_, repository := i.EnvConfiguration.GetRepository(repositoryName)
+	if repository.Pinned {
+		return fmt.Errorf("Repository %s is pinned. Please unpin if you want to update", repository.Name)
+	}
+	repositoryPath := path.Join(i.ExecuteScriptDirectory, repository.Path)
 	var arguments []string
 	arguments = append(arguments, "pull")
 	arguments = append(arguments, args...)
@@ -31,14 +35,14 @@ func (c repoPullCommand) Execute(i *Interpreter, repository string, args []strin
 	if err != nil {
 		return err
 	}
-	_, err = helper.Git(vars, repoPath, arguments...)
+	_, err = helper.Git(vars, repositoryPath, arguments...)
 	return err
 }
 
-func (c repoPullCommand) IsResponsible(commandName string) bool {
+func (c repositoryPullCommand) IsResponsible(commandName string) bool {
 	return commandName == "pull" || commandName == "<"
 }
 
 func init() {
-	repositoryCommands = append(repositoryCommands, repoPullCommand{})
+	repositoryCommands = append(repositoryCommands, repositoryPullCommand{})
 }

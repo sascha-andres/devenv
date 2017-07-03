@@ -22,13 +22,13 @@ import (
 
 type pullCommand struct{}
 
-func (c pullCommand) Execute(i *Interpreter, repository string, args []string) error {
-	for _, repo := range i.EnvConfiguration.Repositories {
-		if repo.Disabled {
+func (c pullCommand) Execute(i *Interpreter, repositoryName string, args []string) error {
+	for _, repository := range i.EnvConfiguration.Repositories {
+		if repository.Disabled || repository.Pinned {
 			continue
 		}
-		log.Printf("Pull for '%s'\n", repo.Name)
-		repoPath := path.Join(i.ExecuteScriptDirectory, repo.Path)
+		log.Printf("Pull for '%s'\n", repository.Name)
+		repositoryPath := path.Join(i.ExecuteScriptDirectory, repository.Path)
 		var arguments []string
 		arguments = append(arguments, "pull")
 		arguments = append(arguments, args...)
@@ -36,7 +36,7 @@ func (c pullCommand) Execute(i *Interpreter, repository string, args []string) e
 		if err != nil {
 			return err
 		}
-		if _, err = helper.Git(vars, repoPath, arguments...); err != nil {
+		if _, err = helper.Git(vars, repositoryPath, arguments...); err != nil {
 			return err
 		}
 	}
