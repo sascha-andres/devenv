@@ -24,7 +24,7 @@ type repositoryPullCommand struct{}
 
 func (c repositoryPullCommand) Execute(i *Interpreter, repositoryName string, args []string) error {
 	_, repository := i.EnvConfiguration.GetRepository(repositoryName)
-	if repository.Pinned {
+	if repository.Pinned != "" {
 		return fmt.Errorf("Repository %s is pinned. Please unpin if you want to update", repository.Name)
 	}
 	repositoryPath := path.Join(i.ExecuteScriptDirectory, repository.Path)

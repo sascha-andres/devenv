@@ -19,5 +19,5 @@ type RepositoryConfiguration struct {
 	Path     string `yaml:"path"`
 	URL      string `yaml:"url"`
 	Disabled bool   `yaml:"disabled"`
-	Pinned   bool   `yaml:"pinned"`
+	Pinned   string `yaml:"pinned"`
 }

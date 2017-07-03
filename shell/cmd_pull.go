@@ -24,7 +24,7 @@ type pullCommand struct{}
 
 func (c pullCommand) Execute(i *Interpreter, repositoryName string, args []string) error {
 	for _, repository := range i.EnvConfiguration.Repositories {
-		if repository.Disabled || repository.Pinned {
+		if repository.Disabled || repository.Pinned != "" {
 			continue
 		}
 		log.Printf("Pull for '%s'\n", repository.Name)
