@@ -80,14 +80,7 @@ func init() {
 func HasChanges(ev map[string]string, projectPath string) (bool, error) {
 	// git status --porcelain
 	command := exec.Command(gitExecutable, "status", "--porcelain")
-	env := Environ(os.Environ())
-	for key := range ev {
-		env.Unset(key)
-	}
-	for key, value := range ev {
-		log.Printf("Setting '%s' to '%s'", key, value)
-		env = append(env, fmt.Sprintf("%s=%s", key, value))
-	}
+	env := buildEnvironment(ev)
 	command.Dir = projectPath
 	command.Env = env
 	out, err := command.Output()

@@ -13,9 +13,7 @@
 
 package shell
 
-import (
-	"fmt"
-)
+import "log"
 
 type commitCommand struct{}
 
@@ -24,7 +22,7 @@ func (c commitCommand) Execute(i *Interpreter, repositoryName string, args []str
 		if repository.Disabled || repository.Pinned != "" {
 			continue
 		}
-		fmt.Printf("Commit for '%s'\n", repository.Name)
+		log.Printf("Commit for '%s'\n", repository.Name)
 		r := repositoryCommitCommand{}
 		r.Execute(i, repository.Name, args)
 	}

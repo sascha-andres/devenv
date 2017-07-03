@@ -14,7 +14,7 @@
 package shell
 
 import (
-	"fmt"
+	"log"
 	"path"
 
 	"github.com/sascha-andres/devenv/helper"
@@ -27,7 +27,7 @@ func (c statusCommand) Execute(i *Interpreter, repository string, args []string)
 		if repo.Disabled {
 			continue
 		}
-		fmt.Printf("Status for '%s'\n", repo.Name)
+		log.Printf("Status for '%s'\n", repo.Name)
 		repoPath := path.Join(i.ExecuteScriptDirectory, repo.Path)
 		var arguments []string
 		arguments = append(arguments, "status")

@@ -14,7 +14,7 @@
 package shell
 
 import (
-	"fmt"
+	"log"
 	"path"
 
 	"github.com/sascha-andres/devenv/helper"
@@ -27,7 +27,7 @@ func (c pushCommand) Execute(i *Interpreter, repository string, args []string) e
 		if repo.Disabled {
 			continue
 		}
-		fmt.Printf("Push for '%s'\n", repo.Name)
+		log.Printf("Push for '%s'\n", repo.Name)
 		repoPath := path.Join(i.ExecuteScriptDirectory, repo.Path)
 		var arguments []string
 		arguments = append(arguments, "push")

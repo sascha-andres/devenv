@@ -26,8 +26,8 @@ import (
 type delRepositoryCommand struct{}
 
 func (c delRepositoryCommand) Execute(i *Interpreter, repository string, args []string) error {
-	fmt.Println("Delete a repository")
-	fmt.Print("Please provide name: ")
+	log.Println("Delete a repository")
+	log.Print("Please provide name: ")
 	name := getAnswer()
 	index, repositoryInstance := i.EnvConfiguration.GetRepository(name)
 	if nil == repositoryInstance {

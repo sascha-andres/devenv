@@ -49,12 +49,12 @@ func (i *Interpreter) Execute(commandline string) error {
 	if strings.TrimSpace(commandline) == "" {
 		return nil
 	}
-	tokenized := str.ToArgv(commandline)
-	switch tokenized[0] {
+	tokenize := str.ToArgv(commandline)
+	switch tokenize[0] {
 	case "repo", "r":
-		return i.executeFromCommands(repositoryCommands, true, tokenized[1:])
+		return i.executeFromCommands(repositoryCommands, true, tokenize[1:])
 	}
-	return i.executeFromCommands(commands, false, tokenized)
+	return i.executeFromCommands(commands, false, tokenize)
 }
 
 func (i *Interpreter) executeFromCommands(commands []Commander, specific bool, arguments []string) error {

@@ -14,7 +14,6 @@
 package shell
 
 import (
-	"fmt"
 	"log"
 	"path"
 
@@ -26,12 +25,12 @@ import (
 type addRepoCommand struct{}
 
 func (c addRepoCommand) Execute(i *Interpreter, repository string, args []string) error {
-	fmt.Println("Add a repo")
-	fmt.Print("Please provide a link: ")
+	log.Println("Add a repo")
+	log.Print("Please provide a link: ")
 	link := getAnswer()
-	fmt.Print("Please provide a name: ")
+	log.Print("Please provide a name: ")
 	name := getAnswer()
-	fmt.Print("Please provide a relative path: ")
+	log.Print("Please provide a relative path: ")
 	rpath := getAnswer()
 	repoPath := path.Join(i.ExecuteScriptDirectory, rpath)
 	vars, err := i.EnvConfiguration.GetReplacedEnvironment()
@@ -41,7 +40,7 @@ func (c addRepoCommand) Execute(i *Interpreter, repository string, args []string
 	if _, err := helper.Git(vars, i.ExecuteScriptDirectory, "clone", link, repoPath); err != nil {
 		log.Fatalf("Error executing git: '%#v'", err)
 	}
-	fmt.Printf("Repository '%s' saved as '%s' to relative path '%s'\n", link, name, rpath)
+	log.Printf("Repository '%s' saved as '%s' to relative path '%s'\n", link, name, rpath)
 	rc := devenv.RepositoryConfiguration{Name: name, Path: rpath, URL: link}
 	i.EnvConfiguration.Repositories = append(i.EnvConfiguration.Repositories, rc)
 	return i.EnvConfiguration.SaveToFile(path.Join(viper.GetString("configpath"), i.EnvConfiguration.Name+".yaml"))

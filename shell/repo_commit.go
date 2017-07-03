@@ -14,7 +14,7 @@
 package shell
 
 import (
-	"fmt"
+	"log"
 	"path"
 
 	"github.com/sascha-andres/devenv/helper"
@@ -36,7 +36,7 @@ func (c repositoryCommitCommand) Execute(i *Interpreter, repositoryName string, 
 			return err
 		}
 	} else {
-		fmt.Println(" --> no changes")
+		log.Println(" --> no changes")
 	}
 	return nil
 }
