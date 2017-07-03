@@ -22,6 +22,7 @@ type repositoryPinCommand struct{}
 func (c repositoryPinCommand) Execute(i *Interpreter, repositoryName string, args []string) error {
 	_, repository := i.EnvConfiguration.GetRepository(repositoryName)
 	log.Printf("Pinning %s", repository.Name)
+  // git rev-parse --verify HEAD
 	return nil
 }
 
