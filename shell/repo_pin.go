@@ -18,12 +18,13 @@ import (
 	"path"
 
 	"github.com/sascha-andres/devenv/helper"
+	"github.com/spf13/viper"
 )
 
 type repositoryPinCommand struct{}
 
 func (c repositoryPinCommand) Execute(i *Interpreter, repositoryName string, args []string) error {
-	_, repository := i.EnvConfiguration.GetRepository(repositoryName)
+	index, repository := i.EnvConfiguration.GetRepository(repositoryName)
 	log.Printf("Pinning %s", repository.Name)
 
 	repositoryPath := path.Join(i.ExecuteScriptDirectory, repository.Path)
@@ -33,9 +34,14 @@ func (c repositoryPinCommand) Execute(i *Interpreter, repositoryName string, arg
 	}
 	var params = []string{"rev-parse"}
 	params = append(params, "--verify", "HEAD")
-	_, output, err := helper.Git(vars, repositoryPath, params...)
-
-	log.Println(output)
+	output, err := helper.GitOutput(vars, repositoryPath, params...)
+	if err != nil {
+		return err
+	}
+	repository.Pinned = output
+	i.EnvConfiguration.Repositories = append(i.EnvConfiguration.Repositories[:index], i.EnvConfiguration.Repositories[index+1:]...)
+	i.EnvConfiguration.Repositories = append(i.EnvConfiguration.Repositories, *repository)
+	return i.EnvConfiguration.SaveToFile(path.Join(viper.GetString("configpath"), i.EnvConfiguration.Name+".yaml"))
 	return nil
 }
 

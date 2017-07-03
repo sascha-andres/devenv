@@ -20,6 +20,7 @@ import (
 	"log"
 	"os"
 	"os/exec"
+	"strings"
 )
 
 var (
@@ -48,6 +49,23 @@ func Git(ev map[string]string, projectPath string, args ...string) (int, error) 
 	command.Stdin = os.Stdin
 	command.Stderr = os.Stderr
 	return StartAndWait(command)
+}
+
+// GitOutput calls the system git in the project directory with specified arguments and returns the output
+func GitOutput(ev map[string]string, projectPath string, args ...string) (string, error) {
+	command := exec.Command(gitExecutable, args...)
+	env := buildEnvironment(ev)
+	command.Dir = projectPath
+	command.Env = env
+	stdout, err := command.StdoutPipe()
+	err = command.Start()
+	if err != nil {
+		return "", err
+	}
+	buf := new(bytes.Buffer)
+	buf.ReadFrom(stdout)
+	output := buf.String()
+	return strings.TrimSpace(output), err
 }
 
 func init() {
