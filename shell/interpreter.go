@@ -16,6 +16,8 @@ package shell
 import (
 	"fmt"
 
+	"strings"
+
 	"github.com/mgutz/str"
 	"github.com/sascha-andres/devenv"
 )
@@ -39,11 +41,14 @@ func NewInterpreter(path string, ev devenv.EnvironmentConfiguration) *Interprete
 }
 
 func (i *Interpreter) getProcess() devenv.EnvironmentExternalProcessConfiguration {
-  return i.EnvConfiguration.ProcessConfiguration
+	return i.EnvConfiguration.ProcessConfiguration
 }
 
 // Execute takes a line entered by the user and calls the command
 func (i *Interpreter) Execute(commandline string) error {
+	if strings.TrimSpace(commandline) == "" {
+		return nil
+	}
 	tokenized := str.ToArgv(commandline)
 	switch tokenized[0] {
 	case "repo", "r":
