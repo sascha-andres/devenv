@@ -26,6 +26,39 @@ import (
 	"github.com/spf13/viper"
 )
 
+var ev devenv.EnvironmentConfiguration
+
+var completer = readline.NewPrefixCompleter(
+	readline.PcItem("repo",
+		readline.PcItemDynamic(listRepositories(),
+			readline.PcItem("branch"),
+			readline.PcItem("commit"),
+			readline.PcItem("log"),
+			readline.PcItem("pull"),
+			readline.PcItem("push"),
+			readline.PcItem("status"),
+		),
+	),
+	readline.PcItem("addrepo"),
+	readline.PcItem("branch"),
+	readline.PcItem("commit"),
+	readline.PcItem("delrepo"),
+	readline.PcItem("log"),
+	readline.PcItem("pull"),
+	readline.PcItem("push"),
+	readline.PcItem("status"),
+	readline.PcItem("quit"),
+)
+
+func filterInput(r rune) (rune, bool) {
+	switch r {
+	// block CtrlZ feature
+	case readline.CharCtrlZ:
+		return r, false
+	}
+	return r, true
+}
+
 func runInterpreter(args []string) error {
 	projectName := strings.Join(args, " ")
 	log.Printf("Called to start shell for '%s'\n", projectName)

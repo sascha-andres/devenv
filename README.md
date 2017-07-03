@@ -66,11 +66,12 @@ A valid project configuration looks like this:
       - name: devenv
         url: git@github.com:sascha-andres/devenv.git
         path: src/devenv
-    shell: bash
-    commands:
-      - echo Hello
-    env:
-      VAR: VALUE
+    processes:
+      shell: bash
+      commands:
+        - echo Hello
+      env:
+        VAR: VALUE
 
 ### name
 
@@ -138,10 +139,17 @@ __While technically possible to inject references this is not supported!__
 Commands are top level commands to work with devenv itself. The following commands are supported:
 
 * add
-* bash
 * shell
 * clean
 * setup
+
+### Interactive shell
+
+**Breaking change in 1.3.0**
+
+Call `devenv -- <environment>` to start the interactive shell. With `devenv shell <environment>` the bash shell or configured shell will be called.
+
+For commands see `In-App shell`
 
 ### add
 
@@ -151,13 +159,9 @@ Create a new project stub:
 
 This will create a new configuration in your configuration directory.
 
-### bash
-
-Open a system shell in the project directory with environment variables preconfigured.
-
 ### shell
 
-Activate the interactive shell. For commands see `In-App shell`
+Open a system shell in the project directory with environment variables preconfigured.
 
 ### clean
 

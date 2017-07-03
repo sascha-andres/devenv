@@ -15,57 +15,43 @@ package cmd
 
 import (
 	"log"
+	"path"
+	"strings"
 
-	"github.com/chzyer/readline"
 	"github.com/sascha-andres/devenv"
+	"github.com/sascha-andres/devenv/helper"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
-var ev devenv.EnvironmentConfiguration
+// bashCmd represents the bash command
+var (
+	shellCmd = &cobra.Command{
+		Use:   "shell",
+		Short: "Start a shell",
+		Long:  `Spawns a shell in the directory where all code is located`,
+		Run: func(cmd *cobra.Command, args []string) {
+			projectName := strings.Join(args, " ")
+			log.Printf("Called to start shell for '%s'\n", projectName)
+			if "" == projectName || !devenv.ProjectIsCreated(projectName) {
+				log.Fatalf("Project '%s' does not yet exist", projectName)
+			}
+			projectFileNamePath := path.Join(viper.GetString("configpath"), projectName+".yaml")
+			if ok, err := helper.Exists(projectFileNamePath); !ok || err != nil {
+				log.Fatalf("'%s' does not exist", projectFileNamePath)
+			}
+			log.Printf("Loading from '%s'\n", projectFileNamePath)
 
-var completer = readline.NewPrefixCompleter(
-	readline.PcItem("repo",
-		readline.PcItemDynamic(listRepositories(),
-			readline.PcItem("branch"),
-			readline.PcItem("commit"),
-			readline.PcItem("log"),
-			readline.PcItem("pull"),
-			readline.PcItem("push"),
-			readline.PcItem("status"),
-		),
-	),
-	readline.PcItem("addrepo"),
-	readline.PcItem("branch"),
-	readline.PcItem("commit"),
-	readline.PcItem("delrepo"),
-	readline.PcItem("log"),
-	readline.PcItem("pull"),
-	readline.PcItem("push"),
-	readline.PcItem("status"),
-	readline.PcItem("quit"),
-)
-
-func filterInput(r rune) (rune, bool) {
-	switch r {
-	// block CtrlZ feature
-	case readline.CharCtrlZ:
-		return r, false
+			var ev devenv.EnvironmentConfiguration
+			if err := ev.LoadFromFile(projectFileNamePath); err != nil {
+				log.Fatalf("Error loading environment config: %#v\n", err)
+			}
+			if err := ev.StartShell(); err != nil {
+				log.Fatalf("Error starting shell: %#v\n", err)
+			}
+		},
 	}
-	return r, true
-}
-
-// shellCmd represents the shell command
-var shellCmd = &cobra.Command{
-	Use:   "shell",
-	Short: "Start devenv shell",
-	Long:  `Devenv shell allows to work with all repositories at once.`,
-	Run: func(cmd *cobra.Command, args []string) {
-		err := runInterpreter(args)
-		if err != nil {
-			log.Fatalf("Error: '%s'", err.Error)
-		}
-	},
-}
+)
 
 func init() {
 	RootCmd.AddCommand(shellCmd)
