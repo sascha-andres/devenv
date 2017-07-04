@@ -17,8 +17,7 @@ import (
 	"log"
 	"path"
 
-	"fmt"
-
+	"github.com/pkg/errors"
 	"github.com/sascha-andres/devenv/helper"
 	"github.com/spf13/viper"
 )
@@ -27,7 +26,7 @@ type repositoryUnpinCommand struct{}
 
 func (c repositoryUnpinCommand) Execute(i *Interpreter, repositoryName string, args []string) error {
 	if 0 == len(args) {
-		return fmt.Errorf("Could not unpin '%s': no branch to checkout", repositoryName)
+		return errors.New("Could not unpin '" + repositoryName + "';no branch to checkout")
 	}
 	index, repository := i.EnvConfiguration.GetRepository(repositoryName)
 	if repository.Pinned == "" {

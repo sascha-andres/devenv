@@ -14,11 +14,11 @@
 package shell
 
 import (
-	"fmt"
 	"log"
 	"os"
 	"path"
 
+	"github.com/pkg/errors"
 	"github.com/sascha-andres/devenv/helper"
 	"github.com/spf13/viper"
 )
@@ -36,7 +36,7 @@ func (c delRepositoryCommand) Execute(i *Interpreter, repository string, args []
 	repositoryPath := path.Join(i.ExecuteScriptDirectory, repositoryInstance.Path)
 	changes(i, repositoryPath)
 	if err := os.RemoveAll(repositoryPath); err != nil {
-		return fmt.Errorf("Error removing repository from disk: '%s'", err.Error())
+		return errors.Wrap(err, "could not remove repository from disk")
 	}
 	i.EnvConfiguration.Repositories = append(i.EnvConfiguration.Repositories[:index], i.EnvConfiguration.Repositories[index+1:]...)
 	i.EnvConfiguration.SaveToFile(path.Join(viper.GetString("configpath"), i.EnvConfiguration.Name+".yaml"))

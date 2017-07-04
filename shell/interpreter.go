@@ -14,11 +14,10 @@
 package shell
 
 import (
-	"fmt"
-
 	"strings"
 
 	"github.com/mgutz/str"
+	"github.com/pkg/errors"
 	"github.com/sascha-andres/devenv"
 )
 
@@ -70,5 +69,5 @@ func (i *Interpreter) executeFromCommands(commands []Commander, specific bool, a
 			return val.Execute(i, "%", arguments[1:])
 		}
 	}
-	return fmt.Errorf("'%s' is not a valid function", arguments[0])
+	return errors.New("'" + arguments[0] + "' is not a valid function")
 }

@@ -14,9 +14,9 @@
 package shell
 
 import (
-	"fmt"
 	"path"
 
+	"github.com/pkg/errors"
 	"github.com/sascha-andres/devenv/helper"
 )
 
@@ -25,7 +25,7 @@ type repositoryPullCommand struct{}
 func (c repositoryPullCommand) Execute(i *Interpreter, repositoryName string, args []string) error {
 	_, repository := i.EnvConfiguration.GetRepository(repositoryName)
 	if repository.Pinned != "" {
-		return fmt.Errorf("Repository %s is pinned. Please unpin if you want to update", repository.Name)
+		return errors.New("Repository " + repository.Name + " is pinned. Please unpin if you want to update")
 	}
 	repositoryPath := path.Join(i.ExecuteScriptDirectory, repository.Path)
 	var arguments []string
