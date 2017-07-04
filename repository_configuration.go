@@ -13,6 +13,8 @@
 
 package devenv
 
+import "fmt"
+
 // RepositoryConfiguration contains information about linked repositories
 type RepositoryConfiguration struct {
 	Name     string `yaml:"name"`
@@ -20,4 +22,8 @@ type RepositoryConfiguration struct {
 	URL      string `yaml:"url"`
 	Disabled bool   `yaml:"disabled"`
 	Pinned   string `yaml:"pinned"`
+}
+
+func (rc RepositoryConfiguration) ToString() string {
+	return fmt.Sprintf("%s at %s cloned from %s", rc.Name, rc.Path, rc.URL)
 }
