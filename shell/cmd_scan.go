@@ -63,18 +63,16 @@ func handleGitDirectory(localPath string) error {
 }
 
 func handleUnknownRepository(localPath string) error {
-	log.Println("Unknown repository found")
+	log.Printf("Unknown repository found at %s\n", localPath)
 	log.Print("  Type y to add ")
 	add := getAnswer()
 	if strings.ToLower(add) == "y" {
-		log.Print("  Please provide a name: ")
-		name := getAnswer()
 		remote, err := getRemote(localPath)
 		if remote == "" || err != nil {
 			log.Println("Cannot use empty remote, probably local only?")
 			return filepath.SkipDir
 		}
-		return addConfiguration(localPath, "", name, remote, false)
+		return addConfiguration(localPath, "", localPath, remote, false)
 	}
 	return filepath.SkipDir
 }
