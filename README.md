@@ -104,20 +104,22 @@ A relative path where the repository is cloned to
 
 Remote url to the repository
 
-### processes.env
+### External process configuration
+
+#### env
 
 Key value pairs that are added to the shell and git processes
 
-### processes.shell
+#### shell
 
 Executable fot the shell. If you want to use the `fish` shell in one project as opposed to your
 default shell specify here.
 
-### processes.shellarguments
+#### shellarguments
 
 Passed to the shell as arguments
 
-### processes.commands
+#### commands
 
 Commands to execute before the shell is called.
 
@@ -275,6 +277,16 @@ Call with
   
 You can add any number of additional arguments as long as they are valid arguments
 to `git status`
+
+### scan
+
+|Info||
+|---|---|
+|Description|Iterates over the directories within the projects path searching for git repositories|
+
+Call with 
+
+    scan
 
 ### Repository commands
 
