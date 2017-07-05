@@ -22,9 +22,9 @@ import (
 	"github.com/spf13/viper"
 )
 
-type addRepoCommand struct{}
+type addRepositoryCommand struct{}
 
-func (c addRepoCommand) Execute(i *Interpreter, repository string, args []string) error {
+func (c addRepositoryCommand) Execute(i *Interpreter, repository string, args []string) error {
 	log.Println("Add a repo")
 	log.Print("Please provide a link: ")
 	link := getAnswer()
@@ -32,12 +32,12 @@ func (c addRepoCommand) Execute(i *Interpreter, repository string, args []string
 	name := getAnswer()
 	log.Print("Please provide a relative path: ")
 	rpath := getAnswer()
-	repoPath := path.Join(i.ExecuteScriptDirectory, rpath)
+	repositoryPath := path.Join(i.ExecuteScriptDirectory, rpath)
 	vars, err := i.EnvConfiguration.GetReplacedEnvironment()
 	if err != nil {
 		return err
 	}
-	if _, err := helper.Git(vars, i.ExecuteScriptDirectory, "clone", link, repoPath); err != nil {
+	if _, err := helper.Git(vars, i.ExecuteScriptDirectory, "clone", link, repositoryPath); err != nil {
 		log.Fatalf("Error executing git: '%#v'", err)
 	}
 	log.Printf("Repository '%s' saved as '%s' to relative path '%s'\n", link, name, rpath)
@@ -46,10 +46,10 @@ func (c addRepoCommand) Execute(i *Interpreter, repository string, args []string
 	return i.EnvConfiguration.SaveToFile(path.Join(viper.GetString("configpath"), i.EnvConfiguration.Name+".yaml"))
 }
 
-func (c addRepoCommand) IsResponsible(commandName string) bool {
+func (c addRepositoryCommand) IsResponsible(commandName string) bool {
 	return commandName == "addrepo"
 }
 
 func init() {
-	commands = append(commands, addRepoCommand{})
+	commands = append(commands, addRepositoryCommand{})
 }
