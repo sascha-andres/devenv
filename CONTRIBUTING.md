@@ -27,7 +27,7 @@ This project and everyone participating in it is governed by the [devenv Code of
 
 ## What should I know before I get started?
 
-Atom is a small open source project &mdash; it started because there was a need for a simple, local log aggregation tool. It is by no means a competitor for the ELK stack or logstash or splunk &mdash; you name it.
+devenv is a small open source project &mdash; it started because there was a need for a simple, local log aggregation tool. It is by no means a competitor for the ELK stack or logstash or splunk &mdash; you name it.
 
 
 ## How Can I Contribute?
@@ -65,7 +65,7 @@ Provide more context by answering these questions:
 
 Include details about your configuration and environment:
 
-* **Which version of devenv are you using?** You can get the exact version by running `devenv` in your terminal
+* **Which version of devenv are you using?** You can get the exact version by running `devenv version` in your terminal
 * **What's the name and version of the OS you're using**?
 * **Are you using local configuration files?**
 

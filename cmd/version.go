@@ -25,7 +25,7 @@ var versionCmd = &cobra.Command{
 	Short: "Prints out the version",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
-		log.Println("devenv version v1.2.0")
+		log.Println("devenv version v1.3.0")
 	},
 }
 
