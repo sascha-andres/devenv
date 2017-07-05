@@ -14,7 +14,6 @@
 package cmd
 
 import (
-	"fmt"
 	"log"
 	"os"
 	"os/exec"
@@ -37,17 +36,19 @@ var RootCmd = &cobra.Command{
 	Short: "Manage your code in project environments",
 	Long: `Manage your multi repository projects with ease.
 Commit all repositories at once`,
-	// Uncomment the following line if your bare application
-	// has an action associated with it:
-	//	Run: func(cmd *cobra.Command, args []string) { },
+	Run: func(cmd *cobra.Command, args []string) {
+		err := runInterpreter(args)
+		if err != nil {
+			log.Fatalf("Error: '%s'", err.Error)
+		}
+	},
 }
 
 // Execute adds all child commands to the root command sets flags appropriately.
 // This is called by main.main(). It only needs to happen once to the rootCmd.
 func Execute() {
-	fmt.Println("devenv version v1.2.0")
 	if err := RootCmd.Execute(); err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		os.Exit(1)
 	}
 }
@@ -77,7 +78,7 @@ func initConfig() {
 		// Find home directory.
 		home, err := homedir.Dir()
 		if err != nil {
-			fmt.Println(home)
+			log.Println(home)
 			os.Exit(1)
 		}
 
@@ -91,7 +92,7 @@ func initConfig() {
 
 	// If a config file is found, read it in.
 	if err := viper.ReadInConfig(); err == nil {
-		fmt.Println("Using config file:", viper.ConfigFileUsed())
+		log.Println("Using config file:", viper.ConfigFileUsed())
 	}
 
 	path, err := exec.LookPath("git")

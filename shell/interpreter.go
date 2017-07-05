@@ -14,9 +14,10 @@
 package shell
 
 import (
-	"fmt"
+	"strings"
 
 	"github.com/mgutz/str"
+	"github.com/pkg/errors"
 	"github.com/sascha-andres/devenv"
 )
 
@@ -38,14 +39,21 @@ func NewInterpreter(path string, ev devenv.EnvironmentConfiguration) *Interprete
 	return &Interpreter{ExecuteScriptDirectory: path, EnvConfiguration: ev}
 }
 
+func (i *Interpreter) getProcess() devenv.EnvironmentExternalProcessConfiguration {
+	return i.EnvConfiguration.ProcessConfiguration
+}
+
 // Execute takes a line entered by the user and calls the command
 func (i *Interpreter) Execute(commandline string) error {
-	tokenized := str.ToArgv(commandline)
-	switch tokenized[0] {
-	case "repo", "r":
-		return i.executeFromCommands(repositoryCommands, true, tokenized[1:])
+	if strings.TrimSpace(commandline) == "" {
+		return nil
 	}
-	return i.executeFromCommands(commands, false, tokenized)
+	tokenize := str.ToArgv(commandline)
+	switch tokenize[0] {
+	case "repo", "r":
+		return i.executeFromCommands(repositoryCommands, true, tokenize[1:])
+	}
+	return i.executeFromCommands(commands, false, tokenize)
 }
 
 func (i *Interpreter) executeFromCommands(commands []Commander, specific bool, arguments []string) error {
@@ -61,5 +69,5 @@ func (i *Interpreter) executeFromCommands(commands []Commander, specific bool, a
 			return val.Execute(i, "%", arguments[1:])
 		}
 	}
-	return fmt.Errorf("'%s' is not a valid function", arguments[0])
+	return errors.New("'" + arguments[0] + "' is not a valid function")
 }

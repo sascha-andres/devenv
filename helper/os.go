@@ -14,11 +14,12 @@
 package helper
 
 import (
-	"fmt"
 	"os"
 	"os/exec"
 	"strings"
 	"syscall"
+
+	"github.com/pkg/errors"
 )
 
 // Environ is a type alias for environment variables
@@ -38,18 +39,18 @@ func (e *Environ) Unset(key string) {
 // StartAndWait calls the command and returns the result
 func StartAndWait(command *exec.Cmd) (int, error) {
 	if err := command.Start(); err != nil {
-		return -1, fmt.Errorf("Error running bash: %#v", err)
+		return -1, errors.Wrap(err, "could not start command")
 	}
 	if err := command.Wait(); err != nil {
-		if exiterr, ok := err.(*exec.ExitError); ok {
-			if status, ok := exiterr.Sys().(syscall.WaitStatus); ok {
+		if exitError, ok := err.(*exec.ExitError); ok {
+			if status, ok := exitError.Sys().(syscall.WaitStatus); ok {
 				if err.(*exec.ExitError).Stderr == nil {
 					return 0, nil
 				}
-				return status.ExitStatus(), fmt.Errorf("Error waiting for bash: %#v", err)
+				return status.ExitStatus(), errors.Wrap(err, "Error waiting for command")
 			}
 		} else {
-			return -1, fmt.Errorf("Error waiting for bash: %#v", err)
+			return -1, errors.Wrap(err, "Error waiting for command")
 		}
 	}
 	return 0, nil
@@ -81,6 +82,8 @@ func GetEnvironmentVariables() map[string]string {
 	}
 	return m
 }
+
+// GetCommand creates a command structure
 func GetCommand(commandName string, env Environ, path string, arguments ...string) (*exec.Cmd, error) {
 	command := exec.Command(commandName, arguments...)
 	command.Dir = path

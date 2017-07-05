@@ -66,11 +66,12 @@ A valid project configuration looks like this:
       - name: devenv
         url: git@github.com:sascha-andres/devenv.git
         path: src/devenv
-    shell: bash
-    commands:
-      - echo Hello
-    env:
-      VAR: VALUE
+    processes:
+      shell: bash
+      commands:
+        - echo Hello
+      env:
+        VAR: VALUE
 
 ### name
 
@@ -103,16 +104,22 @@ A relative path where the repository is cloned to
 
 Remote url to the repository
 
-### env
+### External process configuration
+
+#### env
 
 Key value pairs that are added to the shell and git processes
 
-### shell
+#### shell
 
 Executable fot the shell. If you want to use the `fish` shell in one project as opposed to your
 default shell specify here.
 
-### commands
+#### shellarguments
+
+Passed to the shell as arguments
+
+#### commands
 
 Commands to execute before the shell is called.
 
@@ -134,10 +141,17 @@ __While technically possible to inject references this is not supported!__
 Commands are top level commands to work with devenv itself. The following commands are supported:
 
 * add
-* bash
 * shell
 * clean
 * setup
+
+### Interactive shell
+
+**Breaking change in 1.3.0**
+
+Call `devenv -- <environment>` to start the interactive shell. With `devenv shell <environment>` the bash shell or configured shell will be called.
+
+For commands see `In-App shell`
 
 ### add
 
@@ -147,13 +161,9 @@ Create a new project stub:
 
 This will create a new configuration in your configuration directory.
 
-### bash
-
-Open a system shell in the project directory with environment variables preconfigured.
-
 ### shell
 
-Activate the interactive shell. For commands see `In-App shell`
+Open a system shell in the project directory with environment variables preconfigured.
 
 ### clean
 
@@ -166,6 +176,10 @@ Create project directory and clone all referenced projects
 ## In-App shell
 
 The in app shell provides easy methods to work with your git repositories. Non aliases are part of autocompletion
+
+## version
+
+Call to have the version printed out
 
 ### addrepo command
 
@@ -268,6 +282,16 @@ Call with
 You can add any number of additional arguments as long as they are valid arguments
 to `git status`
 
+### scan
+
+|Info||
+|---|---|
+|Description|Iterates over the directories within the projects path searching for git repositories|
+
+Call with 
+
+    scan
+
 ### Repository commands
 
 Repository commands take the name of a repository as they work on a single repository and not on every referenced repository.
@@ -283,6 +307,27 @@ The following commands are available for a single repository:
 * pull
 * push
 * status
+* pin
+* unpin
+
+#### pin
+
+Stores the current commit to the configuration. 
+
+- Most actions are not performed on pinned repositories
+- On setup, a checkout on the specific commit will be done.
+
+Call with
+
+    repo <name> pin
+
+#### unpin
+
+If pinned the repository will be unpinned and the specified branch will be checked out
+
+Call with
+
+    repo <name> unpin <branch>
 
 #### branch
 
@@ -393,8 +438,12 @@ You can find the code of conduct [here](conde_of_conduct.md), taken from [Contri
 
 |Version|Description|
 |---|---|
+|v1.2.0|Make log parameters configurable|
+| |Refactorings|
+|v1.1.1|Fix for branch detection|
+| |Refactorings|
 |v1.1.0|Completion for shell|
-||Command arguments for shell|
-||Variables|
+| |Command arguments for shell|
+| |Variables|
 |v1.0.1|Enable/Disable repository|
 |v1.0.0|Initial version|

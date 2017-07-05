@@ -13,9 +13,7 @@
 
 package shell
 
-import (
-	"fmt"
-)
+import "log"
 
 type logCommand struct{}
 
@@ -24,7 +22,7 @@ func (c logCommand) Execute(i *Interpreter, repository string, args []string) er
 		if repo.Disabled {
 			continue
 		}
-		fmt.Printf("Log for '%s'\n", repo.Name)
+		log.Printf("Log for '%s'\n", repo.Name)
 		var params = []string{"-n", "10"}
 		params = append(params, args...)
 		var r repositoryLogCommand

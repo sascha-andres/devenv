@@ -1,11 +1,8 @@
 build:
   binary: devenv
   goos:
-    - windows
     - darwin
     - linux
   goarch:
     - amd64
-
-release:
-  draft: true
+    - x86

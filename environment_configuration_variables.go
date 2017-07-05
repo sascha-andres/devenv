@@ -26,7 +26,7 @@ func (ev *EnvironmentConfiguration) GetVariables() (map[string]string, error) {
 	for key, value := range helper.GetEnvironmentVariables() {
 		localVariables[key] = value
 	}
-	for key, value := range ev.Environment {
+	for key, value := range ev.ProcessConfiguration.Environment {
 		localVariables[key] = value
 	}
 	localVariables["ENV_DIRECTORY"] = path.Join(viper.GetString("basepath"), ev.Name)
@@ -36,7 +36,7 @@ func (ev *EnvironmentConfiguration) GetVariables() (map[string]string, error) {
 // GetReplacedEnvironment provides a way to get the environment variables with replaced values
 func (ev *EnvironmentConfiguration) GetReplacedEnvironment() (map[string]string, error) {
 	var localvars map[string]string
-	for key, val := range ev.Environment {
+	for key, val := range ev.ProcessConfiguration.Environment {
 		result, err := ev.applyVariables(val)
 		if err != nil {
 			return nil, err

@@ -41,7 +41,7 @@ changes before deleting the complete directory tree.`,
 				}
 			}
 			for _, repo := range ev.Repositories {
-				if hasChanges, err := helper.HasChanges(ev.Environment, path.Join(path.Join(viper.GetString("basepath"), projectName, repo.Path))); hasChanges || err != nil {
+				if hasChanges, err := helper.HasChanges(ev.ProcessConfiguration.Environment, path.Join(path.Join(viper.GetString("basepath"), projectName, repo.Path))); hasChanges || err != nil {
 					log.Printf("'%s' has changes", repo.Name)
 					os.Exit(1)
 				}

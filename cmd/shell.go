@@ -14,127 +14,44 @@
 package cmd
 
 import (
-	"io"
 	"log"
-	"os"
 	"path"
 	"strings"
 
-	"github.com/chzyer/readline"
 	"github.com/sascha-andres/devenv"
 	"github.com/sascha-andres/devenv/helper"
-	"github.com/sascha-andres/devenv/shell"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
-var ev devenv.EnvironmentConfiguration
+// bashCmd represents the bash command
+var (
+	shellCmd = &cobra.Command{
+		Use:   "shell",
+		Short: "Start a shell",
+		Long:  `Spawns a shell in the directory where all code is located`,
+		Run: func(cmd *cobra.Command, args []string) {
+			projectName := strings.Join(args, " ")
+			log.Printf("Called to start shell for '%s'\n", projectName)
+			if "" == projectName || !devenv.ProjectIsCreated(projectName) {
+				log.Fatalf("Project '%s' does not yet exist", projectName)
+			}
+			projectFileNamePath := path.Join(viper.GetString("configpath"), projectName+".yaml")
+			if ok, err := helper.Exists(projectFileNamePath); !ok || err != nil {
+				log.Fatalf("'%s' does not exist", projectFileNamePath)
+			}
+			log.Printf("Loading from '%s'\n", projectFileNamePath)
 
-var completer = readline.NewPrefixCompleter(
-	readline.PcItem("repo",
-		readline.PcItemDynamic(listRepositories(),
-			readline.PcItem("branch"),
-			readline.PcItem("commit"),
-			readline.PcItem("log"),
-			readline.PcItem("pull"),
-			readline.PcItem("push"),
-			readline.PcItem("status"),
-		),
-	),
-	readline.PcItem("addrepo"),
-	readline.PcItem("branch"),
-	readline.PcItem("commit"),
-	readline.PcItem("delrepo"),
-	readline.PcItem("log"),
-	readline.PcItem("pull"),
-	readline.PcItem("push"),
-	readline.PcItem("status"),
-	readline.PcItem("quit"),
+			var ev devenv.EnvironmentConfiguration
+			if err := ev.LoadFromFile(projectFileNamePath); err != nil {
+				log.Fatalf("Error loading environment config: %#v\n", err)
+			}
+			if err := ev.StartShell(); err != nil {
+				log.Fatalf("Error starting shell: %#v\n", err)
+			}
+		},
+	}
 )
-
-func filterInput(r rune) (rune, bool) {
-	switch r {
-	// block CtrlZ feature
-	case readline.CharCtrlZ:
-		return r, false
-	}
-	return r, true
-}
-
-// shellCmd represents the shell command
-var shellCmd = &cobra.Command{
-	Use:   "shell",
-	Short: "Start devenv shell",
-	Long:  `Devenv shell allows to work with all repositories at once.`,
-	Run: func(cmd *cobra.Command, args []string) {
-		projectName := strings.Join(args, " ")
-		log.Printf("Called to start shell for '%s'\n", projectName)
-		if "" == projectName || !devenv.ProjectIsCreated(projectName) {
-			log.Fatalf("Project '%s' does not yet exist", projectName)
-		}
-		if ok, err := helper.Exists(path.Join(viper.GetString("configpath"), projectName+".yaml")); ok && err == nil {
-			if err := ev.LoadFromFile(path.Join(viper.GetString("configpath"), projectName+".yaml")); err != nil {
-				log.Fatalf("Error reading env config: '%s'", err.Error())
-			}
-		}
-
-		interp := shell.NewInterpreter(path.Join(viper.GetString("basepath"), projectName), ev)
-		l, err := readline.NewEx(&readline.Config{
-			Prompt:          "\033[31m»\033[0m ",
-			HistoryFile:     "/tmp/devenv-" + projectName + ".tmp",
-			AutoComplete:    completer,
-			InterruptPrompt: "^C",
-			EOFPrompt:       "exit",
-
-			HistorySearchFold:   true,
-			FuncFilterInputRune: filterInput,
-		})
-		if err != nil {
-			log.Fatalln(err)
-		}
-		defer l.Close()
-
-		log.SetOutput(l.Stderr())
-
-		for {
-			line, err := l.Readline()
-			if err == readline.ErrInterrupt {
-				if len(line) == 0 {
-					break
-				} else {
-					continue
-				}
-			} else if err == io.EOF {
-				break
-			}
-
-			line = strings.TrimSpace(line)
-			switch line {
-			case "quit", "q":
-				os.Exit(0)
-				break
-			default:
-				err := interp.Execute(line)
-				if err != nil {
-					log.Printf("Error: %s", err.Error())
-				}
-				break
-			}
-		}
-	},
-}
-
-func listRepositories() func(string) []string {
-	return func(line string) []string {
-		var repositories []string
-		for _, val := range ev.Repositories {
-			if !val.Disabled {
-				repositories = append(repositories, val.Name)
-			}
-		}
-		return repositories
-	}
-}
 
 func init() {
 	RootCmd.AddCommand(shellCmd)

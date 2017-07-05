@@ -14,7 +14,7 @@
 package shell
 
 import (
-	"fmt"
+	"log"
 	"path"
 
 	"github.com/sascha-andres/devenv/helper"
@@ -24,12 +24,12 @@ type branchCommand struct{}
 
 func (c branchCommand) Execute(i *Interpreter, repository string, args []string) error {
 	for _, repository := range i.EnvConfiguration.Repositories {
-		if repository.Disabled {
+		if repository.Disabled || repository.Pinned != "" {
 			continue
 		}
-		fmt.Printf("Branch for '%s'\n", repository.Name)
+		log.Printf("Branch for '%s'\n", repository.Name)
 		repositoryPath := path.Join(i.ExecuteScriptDirectory, repository.Path)
-		hasBranch, err := helper.HasBranch(i.EnvConfiguration.Environment, repositoryPath, args[0])
+		hasBranch, err := helper.HasBranch(i.getProcess().Environment, repositoryPath, args[0])
 		if err != nil {
 			return err
 		}
