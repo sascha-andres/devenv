@@ -5,4 +5,3 @@ build:
     - linux
   goarch:
     - amd64
-    - x86
