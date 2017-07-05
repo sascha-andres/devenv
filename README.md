@@ -177,6 +177,10 @@ Create project directory and clone all referenced projects
 
 The in app shell provides easy methods to work with your git repositories. Non aliases are part of autocompletion
 
+## version
+
+Call to have the version printed out
+
 ### addrepo command
 
 |Info||
