@@ -50,7 +50,7 @@ func (i *Interpreter) Execute(commandline string) error {
 	}
 	tokenize := str.ToArgv(commandline)
 	switch tokenize[0] {
-	case "repo", "r":
+	case "repo":
 		return i.executeFromCommands(repositoryCommands, true, tokenize[1:])
 	}
 	return i.executeFromCommands(commands, false, tokenize)
@@ -69,5 +69,8 @@ func (i *Interpreter) executeFromCommands(commands []Commander, specific bool, a
 			return val.Execute(i, "%", arguments[1:])
 		}
 	}
-	return errors.New("'" + arguments[0] + "' is not a valid function")
+	if specific {
+		return errors.New("'" + arguments[0] + "' is not a valid function")
+	}
+	return errors.New("'" + arguments[1] + "' is not a valid function")
 }
