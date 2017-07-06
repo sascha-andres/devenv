@@ -36,7 +36,7 @@ func (c repoPushCommand) Execute(i *Interpreter, repository string, args []strin
 }
 
 func (c repoPushCommand) IsResponsible(commandName string) bool {
-	return commandName == "pull" || commandName == "<"
+	return commandName == "push" || commandName == ">"
 }
 
 func init() {
