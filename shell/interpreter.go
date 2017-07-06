@@ -57,20 +57,32 @@ func (i *Interpreter) Execute(commandline string) error {
 }
 
 func (i *Interpreter) executeFromCommands(commands []Commander, specific bool, arguments []string) error {
-	commandIndex := 0
-	if specific {
-		commandIndex = 1
-	}
+	var err error
+	var responsible bool
 	for _, val := range commands {
-		if val.IsResponsible(arguments[commandIndex]) {
-			if specific {
-				return val.Execute(i, arguments[0], arguments[2:])
-			}
-			return val.Execute(i, "%", arguments[1:])
+		if responsible, err = tryExecuteCommand(val, i, specific, arguments); responsible {
+			break
 		}
+	}
+	if err != nil {
+		return err
 	}
 	if specific {
 		return errors.New("'" + arguments[0] + "' is not a valid function")
 	}
 	return errors.New("'" + arguments[1] + "' is not a valid function")
+}
+
+func tryExecuteCommand(val Commander, i *Interpreter, specific bool, arguments []string) (bool, error) {
+	commandIndex := 0
+	if specific {
+		commandIndex = 1
+	}
+	if val.IsResponsible(arguments[commandIndex]) {
+		if specific {
+			return true, val.Execute(i, arguments[0], arguments[2:])
+		}
+		return true, val.Execute(i, "%", arguments[1:])
+	}
+	return false, nil
 }
