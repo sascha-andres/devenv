@@ -40,8 +40,14 @@ func (c addRepositoryCommand) Execute(i *Interpreter, repository string, args []
 	if _, err := helper.Git(vars, i.ExecuteScriptDirectory, "clone", link, repositoryPath); err != nil {
 		log.Fatalf("Error executing git: '%#v'", err)
 	}
-	log.Printf("Repository '%s' saved as '%s' to relative path '%s'\n", link, name, rpath)
-	rc := devenv.RepositoryConfiguration{Name: name, Path: rpath, URL: link}
+	rc := devenv.RepositoryConfiguration{
+		Path:     rpath,
+		Pinned:   "",
+		Disabled: false,
+		Name:     name,
+		URL:      link,
+	}
+	log.Println(rc)
 	i.EnvConfiguration.Repositories = append(i.EnvConfiguration.Repositories, rc)
 	return i.EnvConfiguration.SaveToFile(path.Join(viper.GetString("configpath"), i.EnvConfiguration.Name+".yaml"))
 }

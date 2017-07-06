@@ -72,19 +72,18 @@ func handleUnknownRepository(localPath string) error {
 			log.Println("Cannot use empty remote, probably local only?")
 			return filepath.SkipDir
 		}
-		return addConfiguration(localPath, "", localPath, remote, false)
+		return addConfiguration(devenv.RepositoryConfiguration{
+			Path:     localPath,
+			Pinned:   "",
+			Disabled: false,
+			Name:     remote,
+			URL:      remote,
+		})
 	}
 	return filepath.SkipDir
 }
 
-func addConfiguration(localPath, pinned, name, url string, disabled bool) error {
-	cfg := devenv.RepositoryConfiguration{
-		Path:     localPath,
-		Pinned:   pinned,
-		Disabled: disabled,
-		Name:     name,
-		URL:      url,
-	}
+func addConfiguration(cfg devenv.RepositoryConfiguration) error {
 	log.Println(cfg)
 	interpreter.EnvConfiguration.Repositories = append(interpreter.EnvConfiguration.Repositories, cfg)
 	return interpreter.EnvConfiguration.SaveToFile(path.Join(viper.GetString("configpath"), interpreter.EnvConfiguration.Name+".yaml"))
