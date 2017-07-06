@@ -35,7 +35,7 @@ func (c repositoryUnpinCommand) Execute(i *Interpreter, repositoryName string, a
 		return nil
 	}
 	log.Printf("Unpinning %s", repository.Name)
-	if err := checkoutBranch(i, repository); err != nil {
+	if err := checkoutBranch(i, repository, args); err != nil {
 		return err
 	}
 	repository.Pinned = ""
@@ -44,7 +44,7 @@ func (c repositoryUnpinCommand) Execute(i *Interpreter, repositoryName string, a
 	return i.EnvConfiguration.SaveToFile(path.Join(viper.GetString("configpath"), i.EnvConfiguration.Name+".yaml"))
 }
 
-func checkoutBranch(i *Interpreter, repository *devenv.RepositoryConfiguration) error {
+func checkoutBranch(i *Interpreter, repository *devenv.RepositoryConfiguration, args []string) error {
 	repositoryPath := path.Join(i.ExecuteScriptDirectory, repository.Path)
 	var arguments []string
 	arguments = append(arguments, "checkout")
