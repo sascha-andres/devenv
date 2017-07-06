@@ -38,20 +38,23 @@ func (e *Environ) Unset(key string) {
 
 // StartAndWait calls the command and returns the result
 func StartAndWait(command *exec.Cmd) (int, error) {
-	if err := command.Start(); err != nil {
+	var err error
+	if err = command.Start(); err != nil {
 		return -1, errors.Wrap(err, "could not start command")
 	}
-	if err := command.Wait(); err != nil {
-		if exitError, ok := err.(*exec.ExitError); ok {
-			if status, ok := exitError.Sys().(syscall.WaitStatus); ok {
-				if err.(*exec.ExitError).Stderr == nil {
-					return 0, nil
-				}
-				return status.ExitStatus(), errors.Wrap(err, "Error waiting for command")
-			}
-		} else {
-			return -1, errors.Wrap(err, "Error waiting for command")
+	err = command.Wait()
+	if err == nil {
+		return 0, nil
+	}
+	if exitError, ok := err.(*exec.ExitError); ok {
+		if err.(*exec.ExitError).Stderr == nil {
+			return 0, nil
 		}
+		if status, ok := exitError.Sys().(syscall.WaitStatus); ok {
+			return status.ExitStatus(), errors.Wrap(err, "Error waiting for command")
+		}
+	} else {
+		return -1, errors.Wrap(err, "Error waiting for command")
 	}
 	return 0, nil
 }
