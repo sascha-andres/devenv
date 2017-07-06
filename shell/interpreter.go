@@ -62,7 +62,7 @@ func (i *Interpreter) executeFromCommands(commands []Commander, specific bool, a
 		var responsible bool
 		responsible, err = tryExecuteCommand(val, i, specific, arguments)
 		if responsible {
-			return nil
+			return err
 		}
 	}
 	if err != nil {
@@ -81,7 +81,7 @@ func tryExecuteCommand(val Commander, i *Interpreter, specific bool, arguments [
 	}
 	if val.IsResponsible(arguments[commandIndex]) {
 		if specific {
-			return true, val.Execute(i, arguments[1], arguments[2:])
+			return true, val.Execute(i, arguments[0], arguments[2:])
 		}
 		return true, val.Execute(i, "%", arguments[1:])
 	}
