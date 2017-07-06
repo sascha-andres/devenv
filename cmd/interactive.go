@@ -36,6 +36,7 @@ var completer = readline.NewPrefixCompleter(
 			readline.PcItem("branch"),
 			readline.PcItem("commit"),
 			readline.PcItem("log"),
+			readline.PcItem("shell"),
 			readline.PcItem("pull"),
 			readline.PcItem("push"),
 			readline.PcItem("status"),
@@ -53,6 +54,7 @@ var completer = readline.NewPrefixCompleter(
 	readline.PcItem("status"),
 	readline.PcItem("quit"),
 	readline.PcItem("scan"),
+	readline.PcItem("shell"),
 )
 
 func filterInput(r rune) (rune, bool) {
