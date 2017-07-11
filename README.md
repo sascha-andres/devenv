@@ -332,7 +332,7 @@ The following commands are available for a single repository:
 Call with
 
    repo <name> shell
-   
+
 #### pin
 
 Stores the current commit to the configuration. 
@@ -461,6 +461,12 @@ You can find the code of conduct [here](conde_of_conduct.md), taken from [Contri
 
 |Version|Description|
 |---|---|
+|v1.4.0|Added shell command for interactive shell||
+|v1.3.1|Fix for push command|
+|v1.3.0|scan for repositories|
+||pin repositories|
+||shell command calls bash/os shell|
+||`--` calls interactive shell|
 |v1.2.0|Make log parameters configurable|
 | |Refactorings|
 |v1.1.1|Fix for branch detection|
