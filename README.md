@@ -173,13 +173,24 @@ Remove project from basepath. Checks for uncommited changes.
 
 Create project directory and clone all referenced projects
 
+## version
+
+Call to have the version printed out
+
 ## In-App shell
 
 The in app shell provides easy methods to work with your git repositories. Non aliases are part of autocompletion
 
-## version
+### shell command
 
-Call to have the version printed out
+|Info||
+|---|---|
+|Aliases|none|
+|Description|Opens an operating system shell at the project root directory|
+
+Call with
+
+   shell
 
 ### addrepo command
 
@@ -309,7 +320,19 @@ The following commands are available for a single repository:
 * status
 * pin
 * unpin
+* shell
 
+### shell command
+
+|Info||
+|---|---|
+|Aliases|none|
+|Description|Opens an operating system shell at the project root directory|
+
+Call with
+
+   repo <name> shell
+   
 #### pin
 
 Stores the current commit to the configuration. 
