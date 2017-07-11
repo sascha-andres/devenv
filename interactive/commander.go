@@ -11,24 +11,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package cmd
+package interactive
 
-import (
-	"log"
-
-	"github.com/spf13/cobra"
-)
-
-// versionCmd represents the version command
-var versionCmd = &cobra.Command{
-	Use:   "version",
-	Short: "Prints out the version",
-	Long:  ``,
-	Run: func(cmd *cobra.Command, args []string) {
-		log.Println("devenv version v1.4.0")
-	},
-}
-
-func init() {
-	RootCmd.AddCommand(versionCmd)
+// Commander represents a unit of work for rhe shell
+type Commander interface {
+	IsResponsible(commandName string) bool
+	Execute(i *Interpreter, repository string, args []string) error
 }

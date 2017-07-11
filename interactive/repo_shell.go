@@ -11,24 +11,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package cmd
+package interactive
 
-import (
-	"log"
+type repositoryShellCommand struct{}
 
-	"github.com/spf13/cobra"
-)
+func (c repositoryShellCommand) IsResponsible(commandName string) bool {
+	return commandName == "shell"
+}
 
-// versionCmd represents the version command
-var versionCmd = &cobra.Command{
-	Use:   "version",
-	Short: "Prints out the version",
-	Long:  ``,
-	Run: func(cmd *cobra.Command, args []string) {
-		log.Println("devenv version v1.4.0")
-	},
+func (c repositoryShellCommand) Execute(i *Interpreter, repositoryName string, args []string) error {
+	_, repository := i.EnvConfiguration.GetRepository(repositoryName)
+	return i.EnvConfiguration.StartShellForSubdirectory(repository.Path)
 }
 
 func init() {
-	RootCmd.AddCommand(versionCmd)
+	repositoryCommands = append(repositoryCommands, repositoryShellCommand{})
 }

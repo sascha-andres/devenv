@@ -11,7 +11,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package shell
+package interactive
 
 import (
 	"log"
@@ -20,40 +20,33 @@ import (
 	"github.com/sascha-andres/devenv/helper"
 )
 
-type branchCommand struct{}
+type statusCommand struct{}
 
-func (c branchCommand) Execute(i *Interpreter, repository string, args []string) error {
-	for _, repository := range i.EnvConfiguration.Repositories {
-		if repository.Disabled || repository.Pinned != "" {
+func (c statusCommand) Execute(i *Interpreter, repository string, args []string) error {
+	for _, repo := range i.EnvConfiguration.Repositories {
+		if repo.Disabled {
 			continue
 		}
-		log.Printf("Branch for '%s'\n", repository.Name)
-		repositoryPath := path.Join(i.ExecuteScriptDirectory, repository.Path)
-		hasBranch, err := helper.HasBranch(i.getProcess().Environment, repositoryPath, args[0])
-		if err != nil {
-			return err
-		}
+		log.Printf("Status for '%s'\n", repo.Name)
+		repoPath := path.Join(i.ExecuteScriptDirectory, repo.Path)
 		var arguments []string
-		arguments = append(arguments, "checkout")
-		if !hasBranch {
-			arguments = append(arguments, "-b")
-		}
+		arguments = append(arguments, "status")
 		arguments = append(arguments, args...)
 		vars, err := i.EnvConfiguration.GetReplacedEnvironment()
 		if err != nil {
 			return err
 		}
-		if _, err = helper.Git(vars, repositoryPath, arguments...); err != nil {
+		if _, err = helper.Git(vars, repoPath, arguments...); err != nil {
 			return err
 		}
 	}
 	return nil
 }
 
-func (c branchCommand) IsResponsible(commandName string) bool {
-	return commandName == "branch" || commandName == "br"
+func (c statusCommand) IsResponsible(commandName string) bool {
+	return commandName == "status" || commandName == "st"
 }
 
 func init() {
-	commands = append(commands, branchCommand{})
+	commands = append(commands, statusCommand{})
 }

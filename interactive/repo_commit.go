@@ -11,46 +11,40 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package shell
+package interactive
 
 import (
+	"log"
 	"path"
 
 	"github.com/sascha-andres/devenv/helper"
 )
 
-type repoBranchCommand struct{}
+type repositoryCommitCommand struct{}
 
-func (c repoBranchCommand) Execute(i *Interpreter, repositoryName string, args []string) error {
+func (c repositoryCommitCommand) Execute(i *Interpreter, repositoryName string, args []string) error {
 	_, repository := i.EnvConfiguration.GetRepository(repositoryName)
 	if repository.Disabled || repository.Pinned != "" {
 		return nil
 	}
 	repositoryPath := path.Join(i.ExecuteScriptDirectory, repository.Path)
-	hasBranch, err := helper.HasBranch(i.getProcess().Environment, repositoryPath, args[0])
-	if err != nil {
-		return err
-	}
-	var arguments []string
-	arguments = append(arguments, "checkout")
-	if !hasBranch {
-		arguments = append(arguments, "-b")
-	}
-	arguments = append(arguments, args...)
-	vars, err := i.EnvConfiguration.GetReplacedEnvironment()
-	if err != nil {
-		return err
-	}
-	if _, err = helper.Git(vars, repositoryPath, arguments...); err != nil {
-		return err
+	if hasChanges, err := helper.HasChanges(i.getProcess().Environment, repositoryPath); hasChanges && err == nil {
+		if _, err := helper.Git(i.getProcess().Environment, repositoryPath, "add", "--all", ":/"); err != nil {
+			return err
+		}
+		if err := execHelper(i, repositoryPath, "commit", args); err != nil {
+			return err
+		}
+	} else {
+		log.Println(" --> no changes")
 	}
 	return nil
 }
 
-func (c repoBranchCommand) IsResponsible(commandName string) bool {
-	return commandName == "branch" || commandName == "br"
+func (c repositoryCommitCommand) IsResponsible(commandName string) bool {
+	return commandName == "commit" || commandName == "ci"
 }
 
 func init() {
-	repositoryCommands = append(repositoryCommands, repoBranchCommand{})
+	repositoryCommands = append(repositoryCommands, repositoryCommitCommand{})
 }

@@ -14,15 +14,17 @@
 package cmd
 
 import (
+	"fmt"
 	"io"
 	"log"
 	"path"
 	"strings"
 
 	"github.com/chzyer/readline"
+	"github.com/pkg/errors"
 	"github.com/sascha-andres/devenv"
 	"github.com/sascha-andres/devenv/helper"
-	"github.com/sascha-andres/devenv/shell"
+	"github.com/sascha-andres/devenv/interactive"
 	"github.com/spf13/viper"
 )
 
@@ -34,6 +36,7 @@ var completer = readline.NewPrefixCompleter(
 			readline.PcItem("branch"),
 			readline.PcItem("commit"),
 			readline.PcItem("log"),
+			readline.PcItem("shell"),
 			readline.PcItem("pull"),
 			readline.PcItem("push"),
 			readline.PcItem("status"),
@@ -51,6 +54,7 @@ var completer = readline.NewPrefixCompleter(
 	readline.PcItem("status"),
 	readline.PcItem("quit"),
 	readline.PcItem("scan"),
+	readline.PcItem("shell"),
 )
 
 func filterInput(r rune) (rune, bool) {
@@ -62,54 +66,72 @@ func filterInput(r rune) (rune, bool) {
 	return r, true
 }
 
-func runInterpreter(args []string) error {
-	projectName := strings.Join(args, " ")
-	log.Printf("Called to start shell for '%s'\n", projectName)
+func setup(projectName string) error {
 	if "" == projectName || !devenv.ProjectIsCreated(projectName) {
-		log.Fatalf("Project '%s' does not yet exist", projectName)
+		return errors.New(fmt.Sprintf("Project '%s' does not yet exist", projectName))
 	}
 	if ok, err := helper.Exists(path.Join(viper.GetString("configpath"), projectName+".yaml")); ok && err == nil {
 		if err := ev.LoadFromFile(path.Join(viper.GetString("configpath"), projectName+".yaml")); err != nil {
-			log.Fatalf("Error reading env config: '%s'", err.Error())
+			return errors.New(fmt.Sprintf("Error reading env config: '%s'", err.Error()))
 		}
 	}
+	return nil
+}
 
-	interp := shell.NewInterpreter(path.Join(viper.GetString("basepath"), projectName), ev)
+func runInterpreter(args []string) error {
+	projectName := strings.Join(args, " ")
+	log.Printf("Called to start shell for '%s'\n", projectName)
+	setup(projectName)
+
+	interpreter := interactive.NewInterpreter(path.Join(viper.GetString("basepath"), projectName), ev)
 	l, err := getReadlineConfig(projectName)
 	if err != nil {
 		return err
 	}
-	defer l.Close()
+	defer func() {
+		if err := l.Close(); err != nil {
+			log.Fatalf("Error closing readline: " + err.Error())
+		}
+	}()
 
 	log.SetOutput(l.Stderr())
 
 	for {
-		line, err := l.Readline()
-		if err == readline.ErrInterrupt {
-			if len(line) == 0 {
-				break
-			} else {
-				continue
-			}
-		} else if err == io.EOF {
+		line, doBreak := getLine(l)
+		if doBreak {
 			break
 		}
-
 		line = strings.TrimSpace(line)
 		switch line {
 		case "quit", "q":
 			return nil
 		default:
-			err := interp.Execute(line)
-			if err != nil {
-				log.Println(err)
-			}
+			executeLine(interpreter, line)
 			break
 		}
 	}
 	return nil
 }
 
+func getLine(l *readline.Instance) (string, bool) {
+	line, err := l.Readline()
+	if err == readline.ErrInterrupt {
+		if len(line) == 0 {
+			return "", true
+		} else {
+			return line, false
+		}
+	} else if err == io.EOF {
+		return "", true
+	}
+	return line, false
+}
+func executeLine(interpreter *interactive.Interpreter, line string) {
+	err := interpreter.Execute(line)
+	if err != nil {
+		log.Println(err)
+	}
+}
 func getReadlineConfig(projectName string) (*readline.Instance, error) {
 	return readline.NewEx(&readline.Config{
 		Prompt:          "\033[31m»\033[0m ",

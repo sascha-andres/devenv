@@ -11,13 +11,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package shell
+package interactive
 
 import (
 	"log"
 	"path"
 
 	"github.com/pkg/errors"
+	"github.com/sascha-andres/devenv"
 	"github.com/sascha-andres/devenv/helper"
 	"github.com/spf13/viper"
 )
@@ -26,7 +27,7 @@ type repositoryUnpinCommand struct{}
 
 func (c repositoryUnpinCommand) Execute(i *Interpreter, repositoryName string, args []string) error {
 	if 0 == len(args) {
-		return errors.New("Could not unpin '" + repositoryName + "';no branch to checkout")
+		return errors.New("Could not unpin '" + repositoryName + "'; no branch to checkout")
 	}
 	index, repository := i.EnvConfiguration.GetRepository(repositoryName)
 	if repository.Pinned == "" {
@@ -34,6 +35,16 @@ func (c repositoryUnpinCommand) Execute(i *Interpreter, repositoryName string, a
 		return nil
 	}
 	log.Printf("Unpinning %s", repository.Name)
+	if err := checkoutBranch(i, repository, args); err != nil {
+		return err
+	}
+	repository.Pinned = ""
+	i.EnvConfiguration.Repositories = append(i.EnvConfiguration.Repositories[:index], i.EnvConfiguration.Repositories[index+1:]...)
+	i.EnvConfiguration.Repositories = append(i.EnvConfiguration.Repositories, *repository)
+	return i.EnvConfiguration.SaveToFile(path.Join(viper.GetString("configpath"), i.EnvConfiguration.Name+".yaml"))
+}
+
+func checkoutBranch(i *Interpreter, repository *devenv.RepositoryConfiguration, args []string) error {
 	repositoryPath := path.Join(i.ExecuteScriptDirectory, repository.Path)
 	var arguments []string
 	arguments = append(arguments, "checkout")
@@ -45,11 +56,7 @@ func (c repositoryUnpinCommand) Execute(i *Interpreter, repositoryName string, a
 	if _, err = helper.Git(vars, repositoryPath, arguments...); err != nil {
 		return err
 	}
-
-	repository.Pinned = ""
-	i.EnvConfiguration.Repositories = append(i.EnvConfiguration.Repositories[:index], i.EnvConfiguration.Repositories[index+1:]...)
-	i.EnvConfiguration.Repositories = append(i.EnvConfiguration.Repositories, *repository)
-	return i.EnvConfiguration.SaveToFile(path.Join(viper.GetString("configpath"), i.EnvConfiguration.Name+".yaml"))
+	return nil
 }
 
 func (c repositoryUnpinCommand) IsResponsible(commandName string) bool {

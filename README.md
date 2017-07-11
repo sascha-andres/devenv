@@ -173,13 +173,24 @@ Remove project from basepath. Checks for uncommited changes.
 
 Create project directory and clone all referenced projects
 
+## version
+
+Call to have the version printed out
+
 ## In-App shell
 
 The in app shell provides easy methods to work with your git repositories. Non aliases are part of autocompletion
 
-## version
+### shell command
 
-Call to have the version printed out
+|Info||
+|---|---|
+|Aliases|none|
+|Description|Opens an operating system shell at the project root directory|
+
+Call with
+
+   shell
 
 ### addrepo command
 
@@ -309,6 +320,18 @@ The following commands are available for a single repository:
 * status
 * pin
 * unpin
+* shell
+
+### shell command
+
+|Info||
+|---|---|
+|Aliases|none|
+|Description|Opens an operating system shell at the project root directory|
+
+Call with
+
+   repo <name> shell
 
 #### pin
 
@@ -438,6 +461,12 @@ You can find the code of conduct [here](conde_of_conduct.md), taken from [Contri
 
 |Version|Description|
 |---|---|
+|v1.4.0|Added shell command for interactive shell||
+|v1.3.1|Fix for push command|
+|v1.3.0|scan for repositories|
+||pin repositories|
+||shell command calls bash/os shell|
+||`--` calls interactive shell|
 |v1.2.0|Make log parameters configurable|
 | |Refactorings|
 |v1.1.1|Fix for branch detection|

@@ -11,20 +11,30 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package shell
+package interactive
 
-import (
-	"bufio"
-	"log"
-	"os"
-	"strings"
-)
+import "log"
 
-func getAnswer() string {
-	reader := bufio.NewReader(os.Stdin)
-	text, err := reader.ReadString('\n')
-	if err != nil {
-		log.Fatalf("Error getting command: %#v", err)
+type logCommand struct{}
+
+func (c logCommand) Execute(i *Interpreter, repository string, args []string) error {
+	for _, repo := range i.EnvConfiguration.Repositories {
+		if repo.Disabled {
+			continue
+		}
+		log.Printf("Log for '%s'\n", repo.Name)
+		var params = []string{"-n", "10"}
+		params = append(params, args...)
+		var r repositoryLogCommand
+		r.Execute(i, repo.Name, params)
 	}
-	return strings.TrimSpace(text)
+	return nil
+}
+
+func (c logCommand) IsResponsible(commandName string) bool {
+	return commandName == "log" || commandName == "l"
+}
+
+func init() {
+	commands = append(commands, logCommand{})
 }

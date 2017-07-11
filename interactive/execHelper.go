@@ -11,34 +11,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package shell
+package interactive
 
 import (
-	"path"
-
 	"github.com/sascha-andres/devenv/helper"
 )
 
-type repoMergeCommand struct{}
-
-func (c repoMergeCommand) Execute(i *Interpreter, repository string, args []string) error {
-	_, repo := i.EnvConfiguration.GetRepository(repository)
-	repoPath := path.Join(i.ExecuteScriptDirectory, repo.Path)
+func execHelper(i *Interpreter, repoPath, command string, args []string) error {
 	var arguments []string
-	arguments = append(arguments, "merge")
+	arguments = append(arguments, command)
 	arguments = append(arguments, args...)
 	vars, err := i.EnvConfiguration.GetReplacedEnvironment()
 	if err != nil {
 		return err
 	}
-	_, err = helper.Git(vars, repoPath, arguments...)
-	return err
-}
-
-func (c repoMergeCommand) IsResponsible(commandName string) bool {
-	return commandName == "merge"
-}
-
-func init() {
-	repositoryCommands = append(repositoryCommands, repoMergeCommand{})
+	if _, err = helper.Git(vars, repoPath, arguments...); err != nil {
+		return err
+	}
+	return nil
 }

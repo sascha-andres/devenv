@@ -11,7 +11,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package shell
+package interactive
 
 import (
 	"strings"
@@ -57,20 +57,33 @@ func (i *Interpreter) Execute(commandline string) error {
 }
 
 func (i *Interpreter) executeFromCommands(commands []Commander, specific bool, arguments []string) error {
+	var err error
+	for _, val := range commands {
+		var responsible bool
+		responsible, err = tryExecuteCommand(val, i, specific, arguments)
+		if responsible {
+			return err
+		}
+	}
+	if err != nil {
+		return err
+	}
+	if specific {
+		return errors.New("'" + arguments[1] + "' is not a valid function")
+	}
+	return errors.New("'" + arguments[0] + "' is not a valid function")
+}
+
+func tryExecuteCommand(val Commander, i *Interpreter, specific bool, arguments []string) (bool, error) {
 	commandIndex := 0
 	if specific {
 		commandIndex = 1
 	}
-	for _, val := range commands {
-		if val.IsResponsible(arguments[commandIndex]) {
-			if specific {
-				return val.Execute(i, arguments[0], arguments[2:])
-			}
-			return val.Execute(i, "%", arguments[1:])
+	if val.IsResponsible(arguments[commandIndex]) {
+		if specific {
+			return true, val.Execute(i, arguments[0], arguments[2:])
 		}
+		return true, val.Execute(i, "%", arguments[1:])
 	}
-	if specific {
-		return errors.New("'" + arguments[0] + "' is not a valid function")
-	}
-	return errors.New("'" + arguments[1] + "' is not a valid function")
+	return false, nil
 }

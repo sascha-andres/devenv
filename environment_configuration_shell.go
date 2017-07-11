@@ -50,6 +50,11 @@ func (ev *EnvironmentConfiguration) prepareShell() error {
 
 // StartShell executes configured shell or default shell (sh)
 func (ev *EnvironmentConfiguration) StartShell() error {
+	return ev.StartShellForSubdirectory("")
+}
+
+// StartShell executes configured shell or default shell (sh) within a specified subdirectory
+func (ev *EnvironmentConfiguration) StartShellForSubdirectory(subdirectory string) error {
 	ev.prepareShell()
 	commandName, arguments, err := ev.GetShell()
 	if err != nil {
@@ -66,7 +71,7 @@ func (ev *EnvironmentConfiguration) StartShell() error {
 	if err != nil {
 		return err
 	}
-	command, err := helper.GetCommand(commandName, env, path.Join(viper.GetString("basepath"), ev.Name), arguments...)
+	command, err := helper.GetCommand(commandName, env, path.Join(viper.GetString("basepath"), ev.Name, subdirectory), arguments...)
 	if err != nil {
 		return err
 	}

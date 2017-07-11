@@ -11,28 +11,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package shell
+package interactive
 
-import "log"
+type shellCommand struct{}
 
-type commitCommand struct{}
-
-func (c commitCommand) Execute(i *Interpreter, repositoryName string, args []string) error {
-	for _, repository := range i.EnvConfiguration.Repositories {
-		if repository.Disabled || repository.Pinned != "" {
-			continue
-		}
-		log.Printf("Commit for '%s'\n", repository.Name)
-		r := repositoryCommitCommand{}
-		r.Execute(i, repository.Name, args)
-	}
-	return nil
+func (c shellCommand) Execute(i *Interpreter, repository string, args []string) error {
+	return i.EnvConfiguration.StartShell()
 }
 
-func (c commitCommand) IsResponsible(commandName string) bool {
-	return commandName == "commit" || commandName == "ci"
+func (c shellCommand) IsResponsible(commandName string) bool {
+	return commandName == "shell"
 }
 
 func init() {
-	commands = append(commands, commitCommand{})
+	commands = append(commands, shellCommand{})
 }
