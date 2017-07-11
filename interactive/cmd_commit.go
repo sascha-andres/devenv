@@ -11,20 +11,28 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package shell
+package interactive
 
-import (
-	"bufio"
-	"log"
-	"os"
-	"strings"
-)
+import "log"
 
-func getAnswer() string {
-	reader := bufio.NewReader(os.Stdin)
-	text, err := reader.ReadString('\n')
-	if err != nil {
-		log.Fatalf("Error getting command: %#v", err)
+type commitCommand struct{}
+
+func (c commitCommand) Execute(i *Interpreter, repositoryName string, args []string) error {
+	for _, repository := range i.EnvConfiguration.Repositories {
+		if repository.Disabled || repository.Pinned != "" {
+			continue
+		}
+		log.Printf("Commit for '%s'\n", repository.Name)
+		r := repositoryCommitCommand{}
+		r.Execute(i, repository.Name, args)
 	}
-	return strings.TrimSpace(text)
+	return nil
+}
+
+func (c commitCommand) IsResponsible(commandName string) bool {
+	return commandName == "commit" || commandName == "ci"
+}
+
+func init() {
+	commands = append(commands, commitCommand{})
 }

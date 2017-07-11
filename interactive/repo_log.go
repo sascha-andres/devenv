@@ -11,34 +11,36 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package shell
+package interactive
 
 import (
 	"path"
+	"strings"
 
 	"github.com/sascha-andres/devenv/helper"
+	"github.com/spf13/viper"
 )
 
-type repoMergeCommand struct{}
+type repositoryLogCommand struct{}
 
-func (c repoMergeCommand) Execute(i *Interpreter, repository string, args []string) error {
+func (c repositoryLogCommand) Execute(i *Interpreter, repository string, args []string) error {
 	_, repo := i.EnvConfiguration.GetRepository(repository)
-	repoPath := path.Join(i.ExecuteScriptDirectory, repo.Path)
-	var arguments []string
-	arguments = append(arguments, "merge")
-	arguments = append(arguments, args...)
+	repositoryPath := path.Join(i.ExecuteScriptDirectory, repo.Path)
 	vars, err := i.EnvConfiguration.GetReplacedEnvironment()
 	if err != nil {
 		return err
 	}
-	_, err = helper.Git(vars, repoPath, arguments...)
+	var params = []string{"log"}
+	params = append(params, strings.Split(viper.GetString("logconfiguration"), " ")...)
+	params = append(params, args...)
+	_, err = helper.Git(vars, repositoryPath, params...)
 	return err
 }
 
-func (c repoMergeCommand) IsResponsible(commandName string) bool {
-	return commandName == "merge"
+func (c repositoryLogCommand) IsResponsible(commandName string) bool {
+	return commandName == "log" || commandName == "l"
 }
 
 func init() {
-	repositoryCommands = append(repositoryCommands, repoMergeCommand{})
+	repositoryCommands = append(repositoryCommands, repositoryLogCommand{})
 }

@@ -24,7 +24,7 @@ import (
 	"github.com/pkg/errors"
 	"github.com/sascha-andres/devenv"
 	"github.com/sascha-andres/devenv/helper"
-	"github.com/sascha-andres/devenv/shell"
+	"github.com/sascha-andres/devenv/interactive"
 	"github.com/spf13/viper"
 )
 
@@ -83,7 +83,7 @@ func runInterpreter(args []string) error {
 	log.Printf("Called to start shell for '%s'\n", projectName)
 	setup(projectName)
 
-	interpreter := shell.NewInterpreter(path.Join(viper.GetString("basepath"), projectName), ev)
+	interpreter := interactive.NewInterpreter(path.Join(viper.GetString("basepath"), projectName), ev)
 	l, err := getReadlineConfig(projectName)
 	if err != nil {
 		return err
@@ -126,7 +126,7 @@ func getLine(l *readline.Instance) (string, bool) {
 	}
 	return line, false
 }
-func executeLine(interpreter *shell.Interpreter, line string) {
+func executeLine(interpreter *interactive.Interpreter, line string) {
 	err := interpreter.Execute(line)
 	if err != nil {
 		log.Println(err)

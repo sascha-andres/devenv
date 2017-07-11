@@ -11,18 +11,30 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package shell
+package interactive
 
-type shellCommand struct{}
+import "log"
 
-func (c shellCommand) Execute(i *Interpreter, repository string, args []string) error {
-	return i.EnvConfiguration.StartShell()
+type logCommand struct{}
+
+func (c logCommand) Execute(i *Interpreter, repository string, args []string) error {
+	for _, repo := range i.EnvConfiguration.Repositories {
+		if repo.Disabled {
+			continue
+		}
+		log.Printf("Log for '%s'\n", repo.Name)
+		var params = []string{"-n", "10"}
+		params = append(params, args...)
+		var r repositoryLogCommand
+		r.Execute(i, repo.Name, params)
+	}
+	return nil
 }
 
-func (c shellCommand) IsResponsible(commandName string) bool {
-	return commandName == "shell"
+func (c logCommand) IsResponsible(commandName string) bool {
+	return commandName == "log" || commandName == "l"
 }
 
 func init() {
-	commands = append(commands, shellCommand{})
+	commands = append(commands, logCommand{})
 }

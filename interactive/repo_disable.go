@@ -11,7 +11,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package shell
+package interactive
 
 import (
 	"path"
@@ -19,20 +19,20 @@ import (
 	"github.com/spf13/viper"
 )
 
-type repoEnableCommand struct{}
+type repoDisableCommand struct{}
 
-func (c repoEnableCommand) Execute(i *Interpreter, repository string, args []string) error {
+func (c repoDisableCommand) Execute(i *Interpreter, repository string, args []string) error {
 	index, repo := i.EnvConfiguration.GetRepository(repository)
-	repo.Disabled = false
+	repo.Disabled = true
 	i.EnvConfiguration.Repositories = append(i.EnvConfiguration.Repositories[:index], i.EnvConfiguration.Repositories[index+1:]...)
 	i.EnvConfiguration.Repositories = append(i.EnvConfiguration.Repositories, *repo)
 	return i.EnvConfiguration.SaveToFile(path.Join(viper.GetString("configpath"), i.EnvConfiguration.Name+".yaml"))
 }
 
-func (c repoEnableCommand) IsResponsible(commandName string) bool {
-	return commandName == "enable"
+func (c repoDisableCommand) IsResponsible(commandName string) bool {
+	return commandName == "disable"
 }
 
 func init() {
-	repositoryCommands = append(repositoryCommands, repoEnableCommand{})
+	repositoryCommands = append(repositoryCommands, repoDisableCommand{})
 }

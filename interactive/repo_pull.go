@@ -11,22 +11,38 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package shell
+package interactive
 
 import (
+	"path"
+
+	"github.com/pkg/errors"
 	"github.com/sascha-andres/devenv/helper"
 )
 
-func execHelper(i *Interpreter, repoPath, command string, args []string) error {
+type repositoryPullCommand struct{}
+
+func (c repositoryPullCommand) Execute(i *Interpreter, repositoryName string, args []string) error {
+	_, repository := i.EnvConfiguration.GetRepository(repositoryName)
+	if repository.Pinned != "" {
+		return errors.New("Repository " + repository.Name + " is pinned. Please unpin if you want to update")
+	}
+	repositoryPath := path.Join(i.ExecuteScriptDirectory, repository.Path)
 	var arguments []string
-	arguments = append(arguments, command)
+	arguments = append(arguments, "pull")
 	arguments = append(arguments, args...)
 	vars, err := i.EnvConfiguration.GetReplacedEnvironment()
 	if err != nil {
 		return err
 	}
-	if _, err = helper.Git(vars, repoPath, arguments...); err != nil {
-		return err
-	}
-	return nil
+	_, err = helper.Git(vars, repositoryPath, arguments...)
+	return err
+}
+
+func (c repositoryPullCommand) IsResponsible(commandName string) bool {
+	return commandName == "pull" || commandName == "<"
+}
+
+func init() {
+	repositoryCommands = append(repositoryCommands, repositoryPullCommand{})
 }

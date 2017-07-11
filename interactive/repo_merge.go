@@ -11,7 +11,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package shell
+package interactive
 
 import (
 	"path"
@@ -19,13 +19,13 @@ import (
 	"github.com/sascha-andres/devenv/helper"
 )
 
-type repoPushCommand struct{}
+type repoMergeCommand struct{}
 
-func (c repoPushCommand) Execute(i *Interpreter, repository string, args []string) error {
+func (c repoMergeCommand) Execute(i *Interpreter, repository string, args []string) error {
 	_, repo := i.EnvConfiguration.GetRepository(repository)
 	repoPath := path.Join(i.ExecuteScriptDirectory, repo.Path)
 	var arguments []string
-	arguments = append(arguments, "push")
+	arguments = append(arguments, "merge")
 	arguments = append(arguments, args...)
 	vars, err := i.EnvConfiguration.GetReplacedEnvironment()
 	if err != nil {
@@ -35,10 +35,10 @@ func (c repoPushCommand) Execute(i *Interpreter, repository string, args []strin
 	return err
 }
 
-func (c repoPushCommand) IsResponsible(commandName string) bool {
-	return commandName == "push" || commandName == ">"
+func (c repoMergeCommand) IsResponsible(commandName string) bool {
+	return commandName == "merge"
 }
 
 func init() {
-	repositoryCommands = append(repositoryCommands, repoPushCommand{})
+	repositoryCommands = append(repositoryCommands, repoMergeCommand{})
 }

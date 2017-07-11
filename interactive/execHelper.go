@@ -11,19 +11,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package shell
+package interactive
 
-type repositoryShellCommand struct{}
+import (
+	"github.com/sascha-andres/devenv/helper"
+)
 
-func (c repositoryShellCommand) IsResponsible(commandName string) bool {
-	return commandName == "shell"
-}
-
-func (c repositoryShellCommand) Execute(i *Interpreter, repositoryName string, args []string) error {
-	_, repository := i.EnvConfiguration.GetRepository(repositoryName)
-	return i.EnvConfiguration.StartShellForSubdirectory(repository.Path)
-}
-
-func init() {
-	repositoryCommands = append(repositoryCommands, repositoryShellCommand{})
+func execHelper(i *Interpreter, repoPath, command string, args []string) error {
+	var arguments []string
+	arguments = append(arguments, command)
+	arguments = append(arguments, args...)
+	vars, err := i.EnvConfiguration.GetReplacedEnvironment()
+	if err != nil {
+		return err
+	}
+	if _, err = helper.Git(vars, repoPath, arguments...); err != nil {
+		return err
+	}
+	return nil
 }
