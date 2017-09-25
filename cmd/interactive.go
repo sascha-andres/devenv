@@ -20,6 +20,8 @@ import (
 	"path"
 	"strings"
 
+	"os"
+
 	"github.com/chzyer/readline"
 	"github.com/pkg/errors"
 	"github.com/sascha-andres/devenv"
@@ -82,7 +84,10 @@ func setup(projectName string) error {
 
 func runInterpreter(args []string) error {
 	projectName := strings.Join(args, " ")
-	log.Printf("Called to start shell for '%s'\n", projectName)
+	log.Printf("Called to start shell for '%s'", projectName)
+	if "" == projectName {
+		os.Exit(1)
+	}
 	setup(projectName)
 
 	interpreter := interactive.NewInterpreter(path.Join(viper.GetString("basepath"), projectName), ev)
