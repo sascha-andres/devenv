@@ -165,13 +165,17 @@ This will create a new configuration in your configuration directory.
 
 Open a system shell in the project directory with environment variables preconfigured.
 
+You might add a --force flag to remove even though uncommitted changes exist.
+
+__Please make sure you synced with your remotes!!__
+
 ### clean
 
 Remove project from basepath. Checks for uncommited changes.
 
 ### setup
 
-Create project directory and clone all referenced projects
+Create project directory and clone all referenced projects. If your definition contains disabled projects, those will not be pulled.
 
 ## version
 
