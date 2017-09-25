@@ -34,6 +34,11 @@ changes before deleting the complete directory tree.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		projectName := strings.Join(args, " ")
 		if projectName != "" && devenv.ProjectIsCreated(projectName) {
+			if viper.GetBool("clean.force") {
+				log.Print("Forced removal, all changes are lost")
+				os.RemoveAll(path.Join(viper.GetString("basepath"), projectName))
+				return
+			}
 			var ev devenv.EnvironmentConfiguration
 			if ok, err := helper.Exists(path.Join(viper.GetString("configpath"), projectName+".yaml")); ok && err == nil {
 				if err := ev.LoadFromFile(path.Join(viper.GetString("configpath"), projectName+".yaml")); err != nil {
@@ -55,5 +60,7 @@ changes before deleting the complete directory tree.`,
 }
 
 func init() {
+	cleanCmd.PersistentFlags().BoolP("force", "f", false, "Force removal")
+	viper.BindPFlag("clean.force", cleanCmd.PersistentFlags().Lookup("force"))
 	RootCmd.AddCommand(cleanCmd)
 }

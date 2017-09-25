@@ -32,7 +32,7 @@ var (
 		Long:  `Spawns a shell in the directory where all code is located`,
 		Run: func(cmd *cobra.Command, args []string) {
 			projectName := strings.Join(args, " ")
-			log.Printf("Called to start shell for '%s'\n", projectName)
+			log.Printf("Called to start shell for '%s'", projectName)
 			if "" == projectName || !devenv.ProjectIsCreated(projectName) {
 				log.Fatalf("Project '%s' does not yet exist", projectName)
 			}

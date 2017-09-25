@@ -20,6 +20,8 @@ import (
 	"path"
 	"strings"
 
+	"os"
+
 	"github.com/chzyer/readline"
 	"github.com/pkg/errors"
 	"github.com/sascha-andres/devenv"
@@ -42,6 +44,8 @@ var completer = readline.NewPrefixCompleter(
 			readline.PcItem("status"),
 			readline.PcItem("pin"),
 			readline.PcItem("unpin"),
+			readline.PcItem("enable"),
+			readline.PcItem("disable"),
 		),
 	),
 	readline.PcItem("addrepo"),
@@ -80,7 +84,10 @@ func setup(projectName string) error {
 
 func runInterpreter(args []string) error {
 	projectName := strings.Join(args, " ")
-	log.Printf("Called to start shell for '%s'\n", projectName)
+	log.Printf("Called to start shell for '%s'", projectName)
+	if "" == projectName {
+		os.Exit(1)
+	}
 	setup(projectName)
 
 	interpreter := interactive.NewInterpreter(path.Join(viper.GetString("basepath"), projectName), ev)
@@ -118,14 +125,14 @@ func getLine(l *readline.Instance) (string, bool) {
 	if err == readline.ErrInterrupt {
 		if len(line) == 0 {
 			return "", true
-		} else {
-			return line, false
 		}
+		return line, false
 	} else if err == io.EOF {
 		return "", true
 	}
 	return line, false
 }
+
 func executeLine(interpreter *interactive.Interpreter, line string) {
 	err := interpreter.Execute(line)
 	if err != nil {
