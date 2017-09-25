@@ -1,13 +1,13 @@
 <!--
 
-Have you read Atom's Code of Conduct? By filing an Issue, you are expected to comply with it, including treating everyone with respect: https://github.com/atom/atom/blob/master/CODE_OF_CONDUCT.md
+Have you read Atom's Code of Conduct? By filing an Issue, you are expected to comply with it, including treating everyone with respect: https://github.com/sascha-andres/devenv/blob/master/CODE_OF_CONDUCT.md
 
 -->
 
 ### Prerequisites
 
-* [ ] Put an X between the brackets on this line if you have done all of the following:
-    * Reproduced the problem
+* Put an X between the brackets on this line if you have done all of the following:
+  * [ ] Reproduced the problem
 
 ### Description
 
@@ -19,11 +19,17 @@ Have you read Atom's Code of Conduct? By filing an Issue, you are expected to co
 2. [Second Step]
 3. [and so on...]
 
-**Expected behavior:** [What you expect to happen]
+**Expected behavior:**
 
-**Actual behavior:** [What actually happens]
+[What you expect to happen]
 
-**Reproduces how often:** [What percentage of the time does it reproduce?]
+**Actual behavior:**
+
+[What actually happens]
+
+**Reproduces how often:**
+
+[What percentage of the time does it reproduce?]
 
 ### Versions
 
