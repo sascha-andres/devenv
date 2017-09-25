@@ -42,6 +42,8 @@ var completer = readline.NewPrefixCompleter(
 			readline.PcItem("status"),
 			readline.PcItem("pin"),
 			readline.PcItem("unpin"),
+			readline.PcItem("enable"),
+			readline.PcItem("disable"),
 		),
 	),
 	readline.PcItem("addrepo"),
