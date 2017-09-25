@@ -78,6 +78,10 @@ func init() {
 
 // HasChanges checks whether a repo is clean or has changes ( modifications or additions )
 func HasChanges(ev map[string]string, projectPath string) (bool, error) {
+	_, err := os.Stat(projectPath)
+	if os.IsNotExist(err) {
+		return false, nil
+	}
 	// git status --porcelain
 	command := exec.Command(gitExecutable, "status", "--porcelain")
 	env := buildEnvironment(ev)
