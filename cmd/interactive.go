@@ -118,14 +118,14 @@ func getLine(l *readline.Instance) (string, bool) {
 	if err == readline.ErrInterrupt {
 		if len(line) == 0 {
 			return "", true
-		} else {
-			return line, false
 		}
+		return line, false
 	} else if err == io.EOF {
 		return "", true
 	}
 	return line, false
 }
+
 func executeLine(interpreter *interactive.Interpreter, line string) {
 	err := interpreter.Execute(line)
 	if err != nil {
