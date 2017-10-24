@@ -114,6 +114,9 @@ func runInterpreter(args []string) error {
 			return nil
 		default:
 			executeLine(interpreter, line)
+			if err := setup(projectName); err != nil {
+				return err
+			}
 			break
 		}
 	}
