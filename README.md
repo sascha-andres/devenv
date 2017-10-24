@@ -465,7 +465,11 @@ You can find the code of conduct [here](conde_of_conduct.md), taken from [Contri
 
 |Version|Description|
 |---|---|
-|v1.4.0|Added shell command for interactive shell||
+|1.5.1|Reload list of repositories for autocomplete after adding a new one|
+|1.5.0|Disabled repositories are not cloned|
+||Disable/Enable added to autocomplete|
+||github.com/pkg/erros|
+|v1.4.0|Added shell command for interactive shell|
 |v1.3.1|Fix for push command|
 |v1.3.0|scan for repositories|
 ||pin repositories|
