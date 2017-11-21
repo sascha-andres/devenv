@@ -17,7 +17,7 @@ import (
 	"log"
 
 	"github.com/google/gops/agent"
-	"github.com/sascha-andres/devenv/cmd"
+	"github.com/sascha-andres/devenv/devenv/cmd"
 )
 
 func main() {

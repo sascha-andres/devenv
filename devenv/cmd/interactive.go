@@ -149,9 +149,6 @@ func getReadlineConfig(projectName string) (*readline.Instance, error) {
 		AutoComplete:    completer,
 		InterruptPrompt: "^C",
 		EOFPrompt:       "exit",
-
-		HistorySearchFold:   true,
-		FuncFilterInputRune: filterInput,
 	})
 }
 
