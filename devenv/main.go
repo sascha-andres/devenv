@@ -21,7 +21,8 @@ import (
 )
 
 func main() {
-	if err := agent.Listen(nil); err != nil {
+	options := &agent.Options{}
+	if err := agent.Listen(options); err != nil {
 		log.Fatal(err)
 	}
 	cmd.Execute()
