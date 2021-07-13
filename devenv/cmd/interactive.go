@@ -49,6 +49,7 @@ var completer = readline.NewPrefixCompleter(
 		),
 	),
 	readline.PcItem("addrepo"),
+	readline.PcItem("addscript"),
 	readline.PcItem("branch"),
 	readline.PcItem("commit"),
 	readline.PcItem("delrepo"),
@@ -61,14 +62,14 @@ var completer = readline.NewPrefixCompleter(
 	readline.PcItem("shell"),
 )
 
-func filterInput(r rune) (rune, bool) {
-	switch r {
-	// block CtrlZ feature
-	case readline.CharCtrlZ:
-		return r, false
-	}
-	return r, true
-}
+//func filterInput(r rune) (rune, bool) {
+//	switch r {
+//	// block CtrlZ feature
+//	case readline.CharCtrlZ:
+//		return r, false
+//	}
+//	return r, true
+//}
 
 func setup(projectName string) error {
 	if "" == projectName || !devenv.ProjectIsCreated(projectName) {
@@ -88,7 +89,10 @@ func runInterpreter(args []string) error {
 	if "" == projectName {
 		os.Exit(1)
 	}
-	setup(projectName)
+	err := setup(projectName)
+	if err != nil {
+		return err
+	}
 
 	interpreter := interactive.NewInterpreter(path.Join(viper.GetString("basepath"), projectName), ev)
 	l, err := getReadlineConfig(projectName)
