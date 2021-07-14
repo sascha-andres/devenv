@@ -16,6 +16,7 @@ package cmd
 import (
 	"io/ioutil"
 	"log"
+	"os"
 	"path"
 	"strings"
 
@@ -28,7 +29,7 @@ import (
 // addCmd represents the add command
 var addCmd = &cobra.Command{
 	Use:   "add",
-	Short: "Create e new project environment",
+	Short: "Create a new project environment",
 	Long: `Creates a new environment, adding a YAML file in
 your environment_config_path.`,
 	Run: func(cmd *cobra.Command, args []string) {
@@ -45,6 +46,10 @@ your environment_config_path.`,
 			}
 			if err = ioutil.WriteFile(projectFileNamePath, result, 0600); err != nil {
 				log.Fatalf("Error writing new config: %#v", err)
+			}
+			err = os.MkdirAll(path.Join(viper.GetString("basepath"), projectName), 0700)
+			if err != nil {
+				log.Fatalf("Error creating project dircetory: %#v", err)
 			}
 		} else {
 			log.Fatal("Project already exists")
