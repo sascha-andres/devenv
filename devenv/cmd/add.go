@@ -16,7 +16,6 @@ package cmd
 import (
 	"io/ioutil"
 	"log"
-	"os"
 	"path"
 	"strings"
 
@@ -46,10 +45,6 @@ your environment_config_path.`,
 			}
 			if err = ioutil.WriteFile(projectFileNamePath, result, 0600); err != nil {
 				log.Fatalf("Error writing new config: %#v", err)
-			}
-			err = os.MkdirAll(path.Join(viper.GetString("basepath"), projectName), 0700)
-			if err != nil {
-				log.Fatalf("Error creating project dircetory: %#v", err)
 			}
 		} else {
 			log.Fatal("Project already exists")
