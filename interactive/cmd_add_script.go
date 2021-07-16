@@ -25,6 +25,7 @@ import (
 type addScriptCommand struct{}
 
 func (c addScriptCommand) Execute(i *Interpreter, repositoryName string, args []string) error {
+	_ = repositoryName
 	var filePath = strings.Join(args, "")
 	if ok, err := helper.Exists(filePath); !ok {
 		log.Printf("[%s] does not exist", filePath)
@@ -38,11 +39,24 @@ func (c addScriptCommand) Execute(i *Interpreter, repositoryName string, args []
 			return err
 		}
 	}
-	// TODO copy file to script directory and make executable (0700)
-	// TODO on linux/osx symlink script in env dir to script directory
-	// TODO on Windows copy script tp env dir
+	fileInformation, err := os.Stat(filePath)
+	if err != nil {
+		log.Printf("error getting file information: %v", err)
+		return err
+	}
+	fileNme := fileInformation.Name()
+	scriptFilePath := path.Join(scriptDirectory, fileNme)
+	err = copyFileContents(filePath, scriptFilePath)
+	if err != nil {
+		log.Printf("could not copy file: %v", err)
+		return err
+	}
+	err = copyFileToEnvironmentDirectory(scriptFilePath, path.Join(viper.GetString("basepath"), i.EnvConfiguration.Name, fileNme))
+	if err != nil {
+		log.Printf("could not copy file: %v", err)
+	}
 
-	return nil
+	return err
 }
 
 func (c addScriptCommand) IsResponsible(commandName string) bool {
