@@ -15,5 +15,9 @@ package helper
 
 ///copyFileToEnvironmentDirectory links the file
 func CopyFileToEnvironmentDirectory(src, dst string) error {
-	return copyFile(src, dst)
+	err = CopyFile(src, dst)
+	if err != nil {
+		return
+	}
+	return os.Chmod(dst, 0700)
 }

@@ -14,5 +14,5 @@
 package helper
 
 func CopyFileToEnvironmentDirectory(src, dst) err {
-	return copyFileContents(src, dst)
+	return CopyFileContents(src, dst)
 }

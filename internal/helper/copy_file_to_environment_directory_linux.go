@@ -13,7 +13,13 @@
 
 package helper
 
-/// CopyFileToEnvironmentDirectory links the file
-func CopyFileToEnvironmentDirectory(src, dst string) error {
-	return CopyFile(src, dst)
+import "os"
+
+//CopyFileToEnvironmentDirectory links the file
+func CopyFileToEnvironmentDirectory(src, dst string) (err error) {
+	err = CopyFile(src, dst)
+	if err != nil {
+		return
+	}
+	return os.Chmod(dst, 0700)
 }
