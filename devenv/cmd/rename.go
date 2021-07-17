@@ -15,7 +15,7 @@ package cmd
 
 import (
 	"github.com/sascha-andres/devenv"
-	"github.com/sascha-andres/devenv/helper"
+	helper2 "github.com/sascha-andres/devenv/internal/helper"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"log"
@@ -51,8 +51,8 @@ the directory containing the repositories`,
 		if projectName != "" && devenv.ProjectIsCreated(projectName) {
 			configurationFile := path.Join(viper.GetString("configpath"), projectName+".yaml")
 			newConfigurationFile := path.Join(viper.GetString("configpath"), newProjectName+".yaml")
-			if ok, err := helper.Exists(configurationFile); ok && err == nil {
-				if ok, err := helper.Exists(newConfigurationFile); ok && err == nil {
+			if ok, err := helper2.Exists(configurationFile); ok && err == nil {
+				if ok, err := helper2.Exists(newConfigurationFile); ok && err == nil {
 					log.Printf("project with the name %s already exists!", newProjectName)
 					os.Exit(1)
 				}
