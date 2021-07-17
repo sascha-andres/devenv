@@ -14,13 +14,13 @@
 package cmd
 
 import (
+	helper2 "github.com/sascha-andres/devenv/internal/helper"
 	"log"
 	"os"
 	"path"
 	"strings"
 
 	"github.com/sascha-andres/devenv"
-	"github.com/sascha-andres/devenv/helper"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -34,7 +34,7 @@ repository project.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		projectName := strings.Join(args, " ")
 		log.Printf("Called to get '%s'\n", projectName)
-		if ok, err := helper.Exists(path.Join(viper.GetString("configpath"), projectName+".yaml")); ok && err == nil {
+		if ok, err := helper2.Exists(path.Join(viper.GetString("configpath"), projectName+".yaml")); ok && err == nil {
 			if "" == projectName || !devenv.ProjectIsCreated(projectName) {
 				projectDirectory := path.Join(viper.GetString("basepath"), projectName)
 				os.MkdirAll(projectDirectory, 0700)
@@ -45,11 +45,11 @@ repository project.`,
 						log.Printf("Repository %s is disabled", repo.Name)
 						continue
 					}
-					if _, err := helper.Git(ev.ProcessConfiguration.Environment, projectDirectory, "clone", repo.URL, repo.Path); err != nil {
+					if _, err := helper2.Git(ev.ProcessConfiguration.Environment, projectDirectory, "clone", repo.URL, repo.Path); err != nil {
 						log.Fatalf("Error executing git: '%#v'", err)
 					}
 					if repo.Pinned != "" {
-						if _, err := helper.Git(ev.ProcessConfiguration.Environment, path.Join(projectDirectory, repo.Path), "checkout", repo.Pinned); err != nil {
+						if _, err := helper2.Git(ev.ProcessConfiguration.Environment, path.Join(projectDirectory, repo.Path), "checkout", repo.Pinned); err != nil {
 							log.Fatalf("Error executing git: '%#v'", err)
 						}
 					}

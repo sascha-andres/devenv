@@ -14,13 +14,13 @@
 package cmd
 
 import (
+	helper2 "github.com/sascha-andres/devenv/internal/helper"
 	"log"
 	"os"
 	"path"
 	"strings"
 
 	"github.com/sascha-andres/devenv"
-	"github.com/sascha-andres/devenv/helper"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -40,13 +40,13 @@ changes before deleting the complete directory tree.`,
 				return
 			}
 			var ev devenv.EnvironmentConfiguration
-			if ok, err := helper.Exists(path.Join(viper.GetString("configpath"), projectName+".yaml")); ok && err == nil {
+			if ok, err := helper2.Exists(path.Join(viper.GetString("configpath"), projectName+".yaml")); ok && err == nil {
 				if err := ev.LoadFromFile(path.Join(viper.GetString("configpath"), projectName+".yaml")); err != nil {
 					log.Fatalf("Error reading env config: '%s'", err.Error())
 				}
 			}
 			for _, repo := range ev.Repositories {
-				if hasChanges, err := helper.HasChanges(ev.ProcessConfiguration.Environment, path.Join(path.Join(viper.GetString("basepath"), projectName, repo.Path))); hasChanges || err != nil {
+				if hasChanges, err := helper2.HasChanges(ev.ProcessConfiguration.Environment, path.Join(path.Join(viper.GetString("basepath"), projectName, repo.Path))); hasChanges || err != nil {
 					log.Printf("'%s' has changes", repo.Name)
 					os.Exit(1)
 				}
