@@ -307,6 +307,16 @@ Call with
 
     scan
 
+### rename
+
+|Info||
+|---|---|
+|Description|Allow renaming an environment|
+
+Call with
+
+    rename [old] -> [new]
+
 ### Repository commands
 
 Repository commands take the name of a repository as they work on a single repository and not on every referenced repository.
@@ -465,6 +475,10 @@ You can find the code of conduct [here](conde_of_conduct.md), taken from [Contri
 
 |Version|Description|
 |---|---|
+|1.6.0|use go.mod|
+||allow rename of environment|
+||script management|
+||refactoring of file layout|
 |1.5.1|Reload list of repositories for autocomplete after adding a new one|
 |1.5.0|Disabled repositories are not cloned|
 ||Disable/Enable added to autocomplete|

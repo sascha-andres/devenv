@@ -15,6 +15,8 @@ package cmd
 
 import (
 	"fmt"
+	helper2 "github.com/sascha-andres/devenv/internal/helper"
+	interactive2 "github.com/sascha-andres/devenv/internal/interactive"
 	"io"
 	"log"
 	"path"
@@ -25,8 +27,6 @@ import (
 	"github.com/chzyer/readline"
 	"github.com/pkg/errors"
 	"github.com/sascha-andres/devenv"
-	"github.com/sascha-andres/devenv/helper"
-	"github.com/sascha-andres/devenv/interactive"
 	"github.com/spf13/viper"
 )
 
@@ -75,7 +75,7 @@ func setup(projectName string) error {
 	if "" == projectName || !devenv.ProjectIsCreated(projectName) {
 		return errors.New(fmt.Sprintf("Project '%s' does not yet exist", projectName))
 	}
-	if ok, err := helper.Exists(path.Join(viper.GetString("configpath"), projectName+".yaml")); ok && err == nil {
+	if ok, err := helper2.Exists(path.Join(viper.GetString("configpath"), projectName+".yaml")); ok && err == nil {
 		if err := ev.LoadFromFile(path.Join(viper.GetString("configpath"), projectName+".yaml")); err != nil {
 			return errors.New(fmt.Sprintf("Error reading env config: '%s'", err.Error()))
 		}
@@ -94,7 +94,7 @@ func runInterpreter(args []string) error {
 		return err
 	}
 
-	interpreter := interactive.NewInterpreter(path.Join(viper.GetString("basepath"), projectName), ev)
+	interpreter := interactive2.NewInterpreter(path.Join(viper.GetString("basepath"), projectName), ev)
 	l, err := getReadlineConfig(projectName)
 	if err != nil {
 		return err
@@ -140,7 +140,7 @@ func getLine(l *readline.Instance) (string, bool) {
 	return line, false
 }
 
-func executeLine(interpreter *interactive.Interpreter, line string) {
+func executeLine(interpreter *interactive2.Interpreter, line string) {
 	err := interpreter.Execute(line)
 	if err != nil {
 		log.Println(err)
