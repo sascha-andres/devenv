@@ -6,6 +6,7 @@ import (
 	"github.com/sascha-andres/devenv/internal/interactive/cmds/branch"
 	"github.com/sascha-andres/devenv/internal/interactive/cmds/commit"
 	"github.com/sascha-andres/devenv/internal/interactive/cmds/del_repo"
+	"github.com/sascha-andres/devenv/internal/interactive/cmds/del_script"
 	"github.com/sascha-andres/devenv/internal/interactive/cmds/edit_script"
 	"github.com/sascha-andres/devenv/internal/interactive/cmds/log"
 	"github.com/sascha-andres/devenv/internal/interactive/cmds/pull"
@@ -51,6 +52,7 @@ func addCommands() {
 	commands = append(commands, add_repo.Command{})
 	commands = append(commands, add_script.Command{})
 	commands = append(commands, edit_script.Command{})
+	commands = append(commands, del_script.Command{})
 	commands = append(commands, branch.Command{})
 	commands = append(commands, commit.Command{})
 	commands = append(commands, del_repo.Command{})
