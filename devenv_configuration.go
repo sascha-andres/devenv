@@ -15,7 +15,7 @@ package devenv
 
 // Configuration parameters for devenv operations
 type Configuration struct {
-	BasePath      string
-	ConfigPath    string
-	LogParameters string
+	BasePath             string
+	ConfigPath           string
+	EnableGitIntegration bool
 }
