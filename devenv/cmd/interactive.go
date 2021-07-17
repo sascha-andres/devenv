@@ -14,20 +14,8 @@
 package cmd
 
 import (
-	"fmt"
-	helper2 "github.com/sascha-andres/devenv/internal/helper"
-	interactive2 "github.com/sascha-andres/devenv/internal/interactive"
-	"io"
-	"log"
-	"path"
-	"strings"
-
-	"os"
-
 	"github.com/chzyer/readline"
-	"github.com/pkg/errors"
 	"github.com/sascha-andres/devenv"
-	"github.com/spf13/viper"
 )
 
 var ev devenv.EnvironmentConfiguration
@@ -72,100 +60,3 @@ var completer = readline.NewPrefixCompleter(
 //	}
 //	return r, true
 //}
-
-func setup(projectName string) error {
-	if "" == projectName || !devenv.ProjectIsCreated(projectName) {
-		return errors.New(fmt.Sprintf("Project '%s' does not yet exist", projectName))
-	}
-	if ok, err := helper2.Exists(path.Join(viper.GetString("configpath"), projectName+".yaml")); ok && err == nil {
-		if err := ev.LoadFromFile(path.Join(viper.GetString("configpath"), projectName+".yaml")); err != nil {
-			return errors.New(fmt.Sprintf("Error reading env config: '%s'", err.Error()))
-		}
-	}
-	return nil
-}
-
-func runInterpreter(args []string) error {
-	projectName := strings.Join(args, " ")
-	log.Printf("Called to start shell for '%s'", projectName)
-	if "" == projectName {
-		os.Exit(1)
-	}
-	err := setup(projectName)
-	if err != nil {
-		return err
-	}
-
-	interpreter := interactive2.NewInterpreter(path.Join(viper.GetString("basepath"), projectName), ev)
-	l, err := getReadlineConfig(projectName)
-	if err != nil {
-		return err
-	}
-	defer func() {
-		if err := l.Close(); err != nil {
-			log.Fatalf("Error closing readline: " + err.Error())
-		}
-	}()
-
-	log.SetOutput(l.Stderr())
-
-	for {
-		line, doBreak := getLine(l)
-		if doBreak {
-			break
-		}
-		line = strings.TrimSpace(line)
-		switch line {
-		case "quit", "q":
-			return nil
-		default:
-			executeLine(interpreter, line)
-			if err := setup(projectName); err != nil {
-				return err
-			}
-			break
-		}
-	}
-	return nil
-}
-
-func getLine(l *readline.Instance) (string, bool) {
-	line, err := l.Readline()
-	if err == readline.ErrInterrupt {
-		if len(line) == 0 {
-			return "", true
-		}
-		return line, false
-	} else if err == io.EOF {
-		return "", true
-	}
-	return line, false
-}
-
-func executeLine(interpreter *interactive2.Interpreter, line string) {
-	err := interpreter.Execute(line)
-	if err != nil {
-		log.Println(err)
-	}
-}
-func getReadlineConfig(projectName string) (*readline.Instance, error) {
-	return readline.NewEx(&readline.Config{
-		Prompt:          "\033[31m»\033[0m ",
-		HistoryFile:     "/tmp/devenv-" + projectName + ".tmp",
-		AutoComplete:    completer,
-		InterruptPrompt: "^C",
-		EOFPrompt:       "exit",
-	})
-}
-
-func listRepositories() func(string) []string {
-	return func(line string) []string {
-		var repositories []string
-		for _, val := range ev.Repositories {
-			if !val.Disabled {
-				repositories = append(repositories, val.Name)
-			}
-		}
-		return repositories
-	}
-}
