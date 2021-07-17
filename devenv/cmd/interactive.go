@@ -50,6 +50,8 @@ var completer = readline.NewPrefixCompleter(
 	),
 	readline.PcItem("addrepo"),
 	readline.PcItem("addscript"),
+	readline.PcItem("editscript"),
+	readline.PcItem("delscript"),
 	readline.PcItem("branch"),
 	readline.PcItem("commit"),
 	readline.PcItem("delrepo"),
