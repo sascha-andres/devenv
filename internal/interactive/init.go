@@ -53,7 +53,7 @@ func addCommands() {
 	commands = append(commands, edit_script.Command{})
 	commands = append(commands, branch.Command{})
 	commands = append(commands, commit.Command{})
-	commands = append(commands, del_repo.DeleteRepositoryCommand{})
+	commands = append(commands, del_repo.Command{})
 	commands = append(commands, log.Command{})
 	commands = append(commands, pull.Command{})
 	commands = append(commands, push.Command{})

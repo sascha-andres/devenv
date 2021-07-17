@@ -24,7 +24,7 @@ import (
 	"github.com/spf13/viper"
 )
 
-func (c DeleteRepositoryCommand) Execute(e *devenv.EnvironmentConfiguration, executeScriptDirectory, repository string, args []string) error {
+func (c Command) Execute(e *devenv.EnvironmentConfiguration, executeScriptDirectory, repository string, args []string) error {
 	log.Println("Delete a repository")
 	log.Print("Please provide name: ")
 	name := helper.GetAnswer()

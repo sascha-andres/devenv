@@ -13,4 +13,4 @@
 
 package del_repo
 
-type DeleteRepositoryCommand struct{}
+type Command struct{}
