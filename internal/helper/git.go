@@ -28,7 +28,7 @@ var (
 	gitExecutable string
 )
 
-func buildEnvironment(ev map[string]string) os_helper.Environ {
+func BuildEnvironment(ev map[string]string) os_helper.Environ {
 	env := os_helper.Environ(os.Environ())
 	for key := range ev {
 		env.Unset(key)
@@ -43,7 +43,7 @@ func buildEnvironment(ev map[string]string) os_helper.Environ {
 // Git calls the system git in the project directory with specified arguments
 func Git(ev map[string]string, projectPath string, args ...string) (int, error) {
 	command := exec.Command(gitExecutable, args...)
-	env := buildEnvironment(ev)
+	env := BuildEnvironment(ev)
 	command.Dir = projectPath
 	command.Env = env
 	command.Stdout = os.Stdout
@@ -55,7 +55,7 @@ func Git(ev map[string]string, projectPath string, args ...string) (int, error) 
 // GitOutput calls the system git in the project directory with specified arguments and returns the output
 func GitOutput(ev map[string]string, projectPath string, args ...string) (string, error) {
 	command := exec.Command(gitExecutable, args...)
-	env := buildEnvironment(ev)
+	env := BuildEnvironment(ev)
 	command.Dir = projectPath
 	command.Env = env
 	stdout, err := command.StdoutPipe()
@@ -85,7 +85,7 @@ func HasChanges(ev map[string]string, projectPath string) (bool, error) {
 	}
 	// git status --porcelain
 	command := exec.Command(gitExecutable, "status", "--porcelain")
-	env := buildEnvironment(ev)
+	env := BuildEnvironment(ev)
 	command.Dir = projectPath
 	command.Env = env
 	out, err := command.Output()
