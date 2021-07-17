@@ -1,0 +1,1 @@
+package del_script

@@ -1,5 +1,5 @@
-// Copyright © 2017 Sascha Andres <sascha.andres@outlook.com>
 // Licensed under the Apache License, Version 2.0 (the "License");
+// Copyright © 2017 Sascha Andres <sascha.andres@outlook.com>
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
@@ -14,23 +14,24 @@
 package helper
 
 import (
-	"github.com/sascha-andres/devenv/internal/os_helper"
-	"os"
+	"bytes"
 	"os/exec"
+	"strings"
 )
 
-var (
-	gitExecutable string
-)
-
-// Git calls the system git in the project directory with specified arguments
-func Git(ev map[string]string, projectPath string, args ...string) (int, error) {
+// GitOutput calls the system git in the project directory with specified arguments and returns the output
+func GitOutput(ev map[string]string, projectPath string, args ...string) (string, error) {
 	command := exec.Command(gitExecutable, args...)
 	env := BuildEnvironment(ev)
 	command.Dir = projectPath
 	command.Env = env
-	command.Stdout = os.Stdout
-	command.Stdin = os.Stdin
-	command.Stderr = os.Stderr
-	return os_helper.StartAndWait(command)
+	stdout, err := command.StdoutPipe()
+	err = command.Start()
+	if err != nil {
+		return "", err
+	}
+	buf := new(bytes.Buffer)
+	buf.ReadFrom(stdout)
+	output := buf.String()
+	return strings.TrimSpace(output), err
 }

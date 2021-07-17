@@ -11,6 +11,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package edit_script
+package helper
 
-type Command struct{}
+// HasBranch checks if there is a branch locally or remotely
+func HasBranch(ev map[string]string, projectPath, branch string) (bool, error) {
+	ok, err := HasRemoteBranch(ev, projectPath, branch)
+	if err != nil {
+		return false, err
+	}
+	ok2, err := HasLocalBranch(ev, projectPath, branch)
+	return ok && ok2, err
+}

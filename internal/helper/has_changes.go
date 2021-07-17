@@ -1,5 +1,5 @@
-// Copyright © 2017 Sascha Andres <sascha.andres@outlook.com>
 // Licensed under the Apache License, Version 2.0 (the "License");
+// Copyright © 2017 Sascha Andres <sascha.andres@outlook.com>
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
@@ -14,23 +14,30 @@
 package helper
 
 import (
-	"github.com/sascha-andres/devenv/internal/os_helper"
+	"bufio"
+	"bytes"
 	"os"
 	"os/exec"
 )
 
-var (
-	gitExecutable string
-)
-
-// Git calls the system git in the project directory with specified arguments
-func Git(ev map[string]string, projectPath string, args ...string) (int, error) {
-	command := exec.Command(gitExecutable, args...)
+// HasChanges checks whether a repo is clean or has changes ( modifications or additions )
+func HasChanges(ev map[string]string, projectPath string) (bool, error) {
+	_, err := os.Stat(projectPath)
+	if os.IsNotExist(err) {
+		return false, nil
+	}
+	// git status --porcelain
+	command := exec.Command(gitExecutable, "status", "--porcelain")
 	env := BuildEnvironment(ev)
 	command.Dir = projectPath
 	command.Env = env
-	command.Stdout = os.Stdout
-	command.Stdin = os.Stdin
-	command.Stderr = os.Stderr
-	return os_helper.StartAndWait(command)
+	out, err := command.Output()
+	if err != nil {
+		return true, err
+	}
+	scanner := bufio.NewScanner(bytes.NewBuffer(out))
+	for scanner.Scan() {
+		return true, nil
+	}
+	return false, nil
 }

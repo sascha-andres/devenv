@@ -11,6 +11,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package edit_script
+package helper
 
-type Command struct{}
+// HasLocalBranch checks if there is a branch locally
+func HasLocalBranch(ev map[string]string, projectPath, branch string) (bool, error) {
+	exitCode, _ := Git(ev, projectPath, "rev-parse", "--verify", branch)
+	if exitCode == 0 {
+		return true, nil
+	}
+	return false, nil
+}

@@ -11,6 +11,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package edit_script
+package helper
 
-type Command struct{}
+import "fmt"
+
+// HasRemoteBranch checks if there is a branch remotely
+func HasRemoteBranch(ev map[string]string, projectPath, branch string) (bool, error) {
+	exitCode, err := Git(ev, projectPath, "ls-remote", "--exit-code", ".", fmt.Sprintf("origin/%s", branch))
+	if exitCode == 0 {
+		return true, nil
+	}
+	if err != nil {
+		return true, nil
+	}
+	return false, nil
+}
