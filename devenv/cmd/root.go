@@ -14,19 +14,18 @@
 package cmd
 
 import (
+	"github.com/sascha-andres/devenv"
 	"log"
 	"os"
 	"os/exec"
 
 	homedir "github.com/mitchellh/go-homedir"
-	"github.com/sascha-andres/devenv"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
 var (
 	cfgFile    string
-	cfg        devenv.Configuration
 	configPath string
 )
 
@@ -47,9 +46,17 @@ Commit all repositories at once`,
 // Execute adds all child commands to the root command sets flags appropriately.
 // This is called by main.main(). It only needs to happen once to the rootCmd.
 func Execute() {
+	err := devenv.PullConfiguration()
+	if err != nil {
+		log.Println("could not update config")
+	}
 	if err := RootCmd.Execute(); err != nil {
 		log.Println(err)
 		os.Exit(1)
+	}
+	err = devenv.PushConfiguration()
+	if err != nil {
+		log.Println("could not push config")
 	}
 }
 
