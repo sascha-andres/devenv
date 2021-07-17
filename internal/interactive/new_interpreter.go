@@ -11,8 +11,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package del_script
+package interactive
 
-func (c Command) IsResponsible(commandName string) bool {
-	return commandName == "delscript"
+import "github.com/sascha-andres/devenv"
+
+// NewInterpreter returns a new interpreter
+func NewInterpreter(path string, ev devenv.EnvironmentConfiguration) *Interpreter {
+	return &Interpreter{ExecuteScriptDirectory: path, EnvConfiguration: ev}
 }

@@ -1,4 +1,4 @@
-// Copyright © 2021 Sascha Andres <sascha.andres@outlook.com>
+// Copyright © 2017 Sascha Andres <sascha.andres@outlook.com>
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
@@ -11,8 +11,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package del_script
+package interactive
 
-func (c Command) IsResponsible(commandName string) bool {
-	return commandName == "delscript"
-}
+import (
+	"github.com/sascha-andres/devenv"
+)
+
+type (
+	// Interpreter contains data for where and what to do
+	Interpreter struct {
+		ExecuteScriptDirectory string
+		EnvConfiguration       devenv.EnvironmentConfiguration
+	}
+)
+
+var (
+	repositoryCommands []Commander
+	commands           []Commander
+)

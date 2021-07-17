@@ -11,8 +11,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package del_script
+package interactive
 
-func (c Command) IsResponsible(commandName string) bool {
-	return commandName == "delscript"
+func tryExecuteCommand(val Commander, i *Interpreter, specific bool, arguments []string) (bool, error) {
+	commandIndex := 0
+	if specific {
+		commandIndex = 1
+	}
+	if val.IsResponsible(arguments[commandIndex]) {
+		if specific {
+			return true, val.Execute(&i.EnvConfiguration, i.ExecuteScriptDirectory, arguments[0], arguments[2:])
+		}
+		return true, val.Execute(&i.EnvConfiguration, i.ExecuteScriptDirectory, "%", arguments[1:])
+	}
+	return false, nil
 }

@@ -11,8 +11,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package del_script
+package interactive
 
-func (c Command) IsResponsible(commandName string) bool {
-	return commandName == "delscript"
+import (
+	"github.com/mgutz/str"
+	"strings"
+)
+
+// Execute takes a line entered by the user and calls the command
+func (i *Interpreter) Execute(commandline string) error {
+	if strings.TrimSpace(commandline) == "" {
+		return nil
+	}
+	tokenize := str.ToArgv(commandline)
+	switch tokenize[0] {
+	case "repo":
+		return i.executeFromCommands(repositoryCommands, true, tokenize[1:])
+	}
+	return i.executeFromCommands(commands, false, tokenize)
 }

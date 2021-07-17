@@ -11,8 +11,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package del_script
+package interactive
 
-func (c Command) IsResponsible(commandName string) bool {
-	return commandName == "delscript"
+import "github.com/pkg/errors"
+
+func (i *Interpreter) executeFromCommands(commands []Commander, specific bool, arguments []string) error {
+	var err error
+	for _, val := range commands {
+		var responsible bool
+		responsible, err = tryExecuteCommand(val, i, specific, arguments)
+		if responsible {
+			return err
+		}
+	}
+	if err != nil {
+		return err
+	}
+	if specific {
+		return errors.New("'" + arguments[1] + "' is not a valid function")
+	}
+	return errors.New("'" + arguments[0] + "' is not a valid function")
 }
