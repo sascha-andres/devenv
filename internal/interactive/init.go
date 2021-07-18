@@ -8,6 +8,7 @@ import (
 	"github.com/sascha-andres/devenv/internal/interactive/cmds/del_repo"
 	"github.com/sascha-andres/devenv/internal/interactive/cmds/del_script"
 	"github.com/sascha-andres/devenv/internal/interactive/cmds/edit_script"
+	"github.com/sascha-andres/devenv/internal/interactive/cmds/fetch"
 	"github.com/sascha-andres/devenv/internal/interactive/cmds/log"
 	"github.com/sascha-andres/devenv/internal/interactive/cmds/pull"
 	"github.com/sascha-andres/devenv/internal/interactive/cmds/push"
@@ -15,6 +16,7 @@ import (
 	"github.com/sascha-andres/devenv/internal/interactive/cmds/repo_commit"
 	"github.com/sascha-andres/devenv/internal/interactive/cmds/repo_disable"
 	"github.com/sascha-andres/devenv/internal/interactive/cmds/repo_enable"
+	"github.com/sascha-andres/devenv/internal/interactive/cmds/repo_fetch"
 	"github.com/sascha-andres/devenv/internal/interactive/cmds/repo_log"
 	"github.com/sascha-andres/devenv/internal/interactive/cmds/repo_merge"
 	"github.com/sascha-andres/devenv/internal/interactive/cmds/repo_pin"
@@ -35,6 +37,7 @@ func init() {
 
 func addRepositoryCommands() {
 	repositoryCommands = append(repositoryCommands, repo_disable.Command{})
+	repositoryCommands = append(repositoryCommands, repo_fetch.Command{})
 	repositoryCommands = append(repositoryCommands, repo_branch.Command{})
 	repositoryCommands = append(repositoryCommands, repo_commit.Command{})
 	repositoryCommands = append(repositoryCommands, repo_enable.Command{})
@@ -53,6 +56,7 @@ func addCommands() {
 	commands = append(commands, add_script.Command{})
 	commands = append(commands, edit_script.Command{})
 	commands = append(commands, del_script.Command{})
+	commands = append(commands, fetch.Command{})
 	commands = append(commands, branch.Command{})
 	commands = append(commands, commit.Command{})
 	commands = append(commands, del_repo.Command{})

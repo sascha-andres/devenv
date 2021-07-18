@@ -11,6 +11,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package edit_script
+package repo_fetch
 
-type Command struct{}
+import (
+	"github.com/sascha-andres/devenv"
+	"github.com/sascha-andres/devenv/internal/helper"
+	"path"
+)
+
+func (c Command) Execute(e *devenv.EnvironmentConfiguration, executeScriptDirectory, repositoryName string, args []string) error {
+	_, repository := e.GetRepository(repositoryName)
+	if repository.Disabled || repository.Pinned != "" {
+		return nil
+	}
+
+	repositoryPath := path.Join(executeScriptDirectory, repository.Path)
+	return helper.ExecHelper(e, repositoryPath, "fetch", args)
+}

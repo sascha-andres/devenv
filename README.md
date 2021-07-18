@@ -171,7 +171,14 @@ __Please make sure you synced with your remotes!!__
 
 ### clean
 
-Remove project from basepath. Checks for uncommited changes.
+Remove project from basepath. Checks for uncommitted changes.
+
+### fetch
+
+|Info||
+|---|---|
+|Aliases|f|
+|Description|Run a git fetch on all repositories|
 
 ### setup
 
@@ -335,6 +342,16 @@ The following commands are available for a single repository:
 * pin
 * unpin
 * shell
+* fetch
+
+### fetch
+
+Runs a git fetch on the repository repositories
+
+|Info||
+|---|---|
+|Aliases|f|
+|Description|Run a git fetch on the repository|
 
 ### shell command
 

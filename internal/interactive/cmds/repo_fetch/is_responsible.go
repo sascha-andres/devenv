@@ -11,6 +11,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package edit_script
+package repo_fetch
 
-type Command struct{}
+func (c Command) IsResponsible(commandName string) bool {
+	return commandName == "fetch" || commandName == "f"
+}
