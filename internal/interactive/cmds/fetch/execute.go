@@ -11,6 +11,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package edit_script
+package fetch
 
-type Command struct{}
+import (
+	"github.com/sascha-andres/devenv"
+	"github.com/sascha-andres/devenv/internal/interactive/cmds/repo_fetch"
+	"log"
+)
+
+func (c Command) Execute(e *devenv.EnvironmentConfiguration, executeScriptDirectory, repositoryName string, args []string) error {
+	for _, repository := range e.Repositories {
+		if repository.Disabled || repository.Pinned != "" {
+			continue
+		}
+		log.Printf("Fetch for '%s'\n", repository.Name)
+		var r repo_fetch.Command
+		err := r.Execute(e, executeScriptDirectory, repository.Name, args)
+		if err != nil {
+			log.Println(err)
+		}
+	}
+	return nil
+}

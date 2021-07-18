@@ -24,6 +24,7 @@ var completer = readline.NewPrefixCompleter(
 	readline.PcItem("repo",
 		readline.PcItemDynamic(listRepositories(),
 			readline.PcItem("branch"),
+			readline.PcItem("fetch"),
 			readline.PcItem("commit"),
 			readline.PcItem("log"),
 			readline.PcItem("shell"),
@@ -40,6 +41,7 @@ var completer = readline.NewPrefixCompleter(
 	readline.PcItem("addscript"),
 	readline.PcItem("editscript"),
 	readline.PcItem("delscript"),
+	readline.PcItem("fetch"),
 	readline.PcItem("branch"),
 	readline.PcItem("commit"),
 	readline.PcItem("delrepo"),
@@ -51,12 +53,3 @@ var completer = readline.NewPrefixCompleter(
 	readline.PcItem("scan"),
 	readline.PcItem("shell"),
 )
-
-//func filterInput(r rune) (rune, bool) {
-//	switch r {
-//	// block CtrlZ feature
-//	case readline.CharCtrlZ:
-//		return r, false
-//	}
-//	return r, true
-//}
