@@ -138,12 +138,13 @@ __While technically possible to inject references this is not supported!__
 
 ## Commands
 
-Commands are top level commands to work with devenv itself. The following commands are supported:
+Commands are top level commands to work with devenv itself. The following commands exist:
 
 * add
 * shell
 * clean
 * setup
+* list
 
 ### Interactive shell
 
@@ -152,6 +153,12 @@ Commands are top level commands to work with devenv itself. The following comman
 Call `devenv -- <environment>` to start the interactive shell. With `devenv shell <environment>` the bash shell or configured shell will be called.
 
 For commands see `In-App shell`
+
+### list
+
+List all repositories in an environment:
+
+    devenv list <environment name>
 
 ### add
 
