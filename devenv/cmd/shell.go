@@ -14,7 +14,7 @@
 package cmd
 
 import (
-	helper2 "github.com/sascha-andres/devenv/internal/helper"
+	"github.com/sascha-andres/devenv/internal/helper"
 	"log"
 	"path"
 	"strings"
@@ -37,7 +37,7 @@ var (
 				log.Fatalf("Project '%s' does not yet exist", projectName)
 			}
 			projectFileNamePath := path.Join(viper.GetString("configpath"), projectName+".yaml")
-			if ok, err := helper2.Exists(projectFileNamePath); !ok || err != nil {
+			if ok, err := helper.Exists(projectFileNamePath); !ok || err != nil {
 				log.Fatalf("'%s' does not exist", projectFileNamePath)
 			}
 			log.Printf("Loading from '%s'\n", projectFileNamePath)
