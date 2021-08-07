@@ -13,7 +13,10 @@
 
 package interactive
 
-import "github.com/pkg/errors"
+import (
+	"fmt"
+	"github.com/pkg/errors"
+)
 
 func (i *Interpreter) executeFromCommands(commands []Commander, specific bool, arguments []string) error {
 	var err error
@@ -28,7 +31,12 @@ func (i *Interpreter) executeFromCommands(commands []Commander, specific bool, a
 		return err
 	}
 	if specific {
-		return errors.New("'" + arguments[1] + "' is not a valid function")
+		if len(arguments) < 2 {
+			err = errors.New("subcommand not provided")
+		} else {
+			err = errors.New(fmt.Sprintf("'%s' is not a valid function", arguments[1]))
+		}
+		return err
 	}
 	return errors.New("'" + arguments[0] + "' is not a valid function")
 }
