@@ -18,6 +18,9 @@ func tryExecuteCommand(val Commander, i *Interpreter, specific bool, arguments [
 	if specific {
 		commandIndex = 1
 	}
+	if len(arguments)+1 > commandIndex {
+		return false, nil
+	}
 	if val.IsResponsible(arguments[commandIndex]) {
 		if specific {
 			return true, val.Execute(&i.EnvConfiguration, i.ExecuteScriptDirectory, arguments[0], arguments[2:])
