@@ -1,5 +1,5 @@
-// Copyright © 2017 Sascha Andres <sascha.andres@outlook.com>
 // Licensed under the Apache License, Version 2.0 (the "License");
+// Copyright © 2017 Sascha Andres <sascha.andres@outlook.com>
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
@@ -11,19 +11,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package main
+package scan
 
 import (
-	"log"
-
-	"github.com/google/gops/agent"
-	"github.com/sascha-andres/devenv/devenv/cmd"
+	"os"
+	"strings"
 )
 
-func main() {
-	options := agent.Options{}
-	if err := agent.Listen(options); err != nil {
-		log.Fatal(err)
+func walker(foundPath string, info os.FileInfo, err error) error {
+	if info.IsDir() {
+		localPath := foundPath
+		if strings.HasPrefix(foundPath, packageExecuteScriptDirectory) {
+			localPath = strings.Replace(foundPath, packageExecuteScriptDirectory+"/", "", 1)
+		}
+		if strings.HasSuffix(localPath, ".git") {
+			return handleGitDirectory(localPath)
+		}
 	}
-	cmd.Execute()
+	return nil
 }

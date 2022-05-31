@@ -1,5 +1,5 @@
-// Copyright © 2017 Sascha Andres <sascha.andres@outlook.com>
 // Licensed under the Apache License, Version 2.0 (the "License");
+// Copyright © 2021 Sascha Andres <sascha.andres@outlook.com>
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
@@ -11,19 +11,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package main
+package repo_fetch
 
 import (
-	"log"
-
-	"github.com/google/gops/agent"
-	"github.com/sascha-andres/devenv/devenv/cmd"
+	"github.com/sascha-andres/devenv"
+	"github.com/sascha-andres/devenv/internal/helper"
+	"path"
 )
 
-func main() {
-	options := agent.Options{}
-	if err := agent.Listen(options); err != nil {
-		log.Fatal(err)
+func (c Command) Execute(e *devenv.EnvironmentConfiguration, executeScriptDirectory, repositoryName string, args []string) error {
+	_, repository := e.GetRepository(repositoryName)
+	if repository.Disabled || repository.Pinned != "" {
+		return nil
 	}
-	cmd.Execute()
+
+	repositoryPath := path.Join(executeScriptDirectory, repository.Path)
+	return helper.ExecHelper(e, repositoryPath, "fetch", args)
 }

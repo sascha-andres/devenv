@@ -11,19 +11,26 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package main
+package helper
 
 import (
-	"log"
-
-	"github.com/google/gops/agent"
-	"github.com/sascha-andres/devenv/devenv/cmd"
+	"github.com/sascha-andres/devenv/internal/os_helper"
+	"os"
+	"os/exec"
 )
 
-func main() {
-	options := agent.Options{}
-	if err := agent.Listen(options); err != nil {
-		log.Fatal(err)
-	}
-	cmd.Execute()
+var (
+	gitExecutable string
+)
+
+// Git calls the system git in the project directory with specified arguments
+func Git(ev map[string]string, projectPath string, args ...string) (int, error) {
+	command := exec.Command(gitExecutable, args...)
+	env := BuildEnvironment(ev)
+	command.Dir = projectPath
+	command.Env = env
+	command.Stdout = os.Stdout
+	command.Stdin = os.Stdin
+	command.Stderr = os.Stderr
+	return os_helper.StartAndWait(command)
 }

@@ -11,19 +11,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package main
+package devenv
 
 import (
+	yaml "gopkg.in/yaml.v1"
+	"io/ioutil"
 	"log"
-
-	"github.com/google/gops/agent"
-	"github.com/sascha-andres/devenv/devenv/cmd"
 )
 
-func main() {
-	options := agent.Options{}
-	if err := agent.Listen(options); err != nil {
-		log.Fatal(err)
+// SaveToFile takes the config and saves to disk
+func (ev *EnvironmentConfiguration) SaveToFile(path string) error {
+	data, err := yaml.Marshal(ev)
+	if err != nil {
+		log.Fatalf("Error marshalling project config: %#v\n", err)
 	}
-	cmd.Execute()
+	err = ioutil.WriteFile(path, data, 0600)
+	if err != nil {
+		log.Fatalf("Error saving project config: %#v\n", err)
+	}
+	return nil
 }

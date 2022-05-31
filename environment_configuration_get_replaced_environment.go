@@ -11,19 +11,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package main
+package devenv
 
-import (
-	"log"
-
-	"github.com/google/gops/agent"
-	"github.com/sascha-andres/devenv/devenv/cmd"
-)
-
-func main() {
-	options := agent.Options{}
-	if err := agent.Listen(options); err != nil {
-		log.Fatal(err)
+// GetReplacedEnvironment provides a way to get the environment variables with replaced values
+func (ev *EnvironmentConfiguration) GetReplacedEnvironment() (map[string]string, error) {
+	var localvars map[string]string
+	for key, val := range ev.ProcessConfiguration.Environment {
+		result, err := ev.applyVariables(val)
+		if err != nil {
+			return nil, err
+		}
+		localvars[key] = result
 	}
-	cmd.Execute()
+
+	return localvars, nil
 }

@@ -11,19 +11,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package main
+package helper
 
 import (
-	"log"
-
-	"github.com/google/gops/agent"
-	"github.com/sascha-andres/devenv/devenv/cmd"
+	"github.com/sascha-andres/devenv"
 )
 
-func main() {
-	options := agent.Options{}
-	if err := agent.Listen(options); err != nil {
-		log.Fatal(err)
+func ExecHelper(e *devenv.EnvironmentConfiguration, repoPath, command string, args []string) error {
+	var arguments []string
+	arguments = append(arguments, command)
+	arguments = append(arguments, args...)
+	vars, err := e.GetReplacedEnvironment()
+	if err != nil {
+		return err
 	}
-	cmd.Execute()
+	if _, err = Git(vars, repoPath, arguments...); err != nil {
+		return err
+	}
+	return nil
 }

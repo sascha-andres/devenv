@@ -11,19 +11,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package main
+package repo_enable
 
 import (
-	"log"
-
-	"github.com/google/gops/agent"
-	"github.com/sascha-andres/devenv/devenv/cmd"
+	"github.com/sascha-andres/devenv"
+	"github.com/spf13/viper"
+	"path"
 )
 
-func main() {
-	options := agent.Options{}
-	if err := agent.Listen(options); err != nil {
-		log.Fatal(err)
-	}
-	cmd.Execute()
+func (c Command) Execute(e *devenv.EnvironmentConfiguration, executeScriptDirectory, repository string, args []string) error {
+	index, repo := e.GetRepository(repository)
+	repo.Disabled = false
+	e.Repositories = append(e.Repositories[:index], e.Repositories[index+1:]...)
+	e.Repositories = append(e.Repositories, *repo)
+	return e.SaveToFile(path.Join(viper.GetString("configpath"), e.Name+".yaml"))
 }

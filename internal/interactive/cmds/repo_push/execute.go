@@ -11,19 +11,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package main
+package repo_push
 
 import (
-	"log"
-
-	"github.com/google/gops/agent"
-	"github.com/sascha-andres/devenv/devenv/cmd"
+	"github.com/sascha-andres/devenv"
+	"github.com/sascha-andres/devenv/internal/helper"
+	"path"
 )
 
-func main() {
-	options := agent.Options{}
-	if err := agent.Listen(options); err != nil {
-		log.Fatal(err)
+func (c Command) Execute(e *devenv.EnvironmentConfiguration, executeScriptDirectory, repository string, args []string) error {
+	_, repo := e.GetRepository(repository)
+	repoPath := path.Join(executeScriptDirectory, repo.Path)
+	var arguments []string
+	arguments = append(arguments, "push")
+	arguments = append(arguments, args...)
+	vars, err := e.GetReplacedEnvironment()
+	if err != nil {
+		return err
 	}
-	cmd.Execute()
+	_, err = helper.Git(vars, repoPath, arguments...)
+	return err
 }

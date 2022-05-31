@@ -11,19 +11,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package main
+package repo_unpin
 
 import (
-	"log"
-
-	"github.com/google/gops/agent"
-	"github.com/sascha-andres/devenv/devenv/cmd"
+	"github.com/sascha-andres/devenv"
+	"github.com/sascha-andres/devenv/internal/helper"
+	"path"
 )
 
-func main() {
-	options := agent.Options{}
-	if err := agent.Listen(options); err != nil {
-		log.Fatal(err)
+func checkoutBranch(e *devenv.EnvironmentConfiguration, executeScriptDirectory string, repository *devenv.RepositoryConfiguration, args []string) error {
+	repositoryPath := path.Join(executeScriptDirectory, repository.Path)
+	var arguments []string
+	arguments = append(arguments, "checkout")
+	arguments = append(arguments, args[0])
+	vars, err := e.GetReplacedEnvironment()
+	if err != nil {
+		return err
 	}
-	cmd.Execute()
+	if _, err = helper.Git(vars, repositoryPath, arguments...); err != nil {
+		return err
+	}
+	return nil
 }

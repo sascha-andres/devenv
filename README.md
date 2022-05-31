@@ -138,12 +138,13 @@ __While technically possible to inject references this is not supported!__
 
 ## Commands
 
-Commands are top level commands to work with devenv itself. The following commands are supported:
+Commands are top level commands to work with devenv itself. The following commands exist:
 
 * add
 * shell
 * clean
 * setup
+* list
 
 ### Interactive shell
 
@@ -152,6 +153,12 @@ Commands are top level commands to work with devenv itself. The following comman
 Call `devenv -- <environment>` to start the interactive shell. With `devenv shell <environment>` the bash shell or configured shell will be called.
 
 For commands see `In-App shell`
+
+### list
+
+List all repositories in an environment:
+
+    devenv list <environment name>
 
 ### add
 
@@ -171,7 +178,14 @@ __Please make sure you synced with your remotes!!__
 
 ### clean
 
-Remove project from basepath. Checks for uncommited changes.
+Remove project from basepath. Checks for uncommitted changes.
+
+### fetch
+
+|Info||
+|---|---|
+|Aliases|f|
+|Description|Run a git fetch on all repositories|
 
 ### setup
 
@@ -307,6 +321,16 @@ Call with
 
     scan
 
+### rename
+
+|Info||
+|---|---|
+|Description|Allow renaming an environment|
+
+Call with
+
+    rename [old] -> [new]
+
 ### Repository commands
 
 Repository commands take the name of a repository as they work on a single repository and not on every referenced repository.
@@ -325,6 +349,16 @@ The following commands are available for a single repository:
 * pin
 * unpin
 * shell
+* fetch
+
+### fetch
+
+Runs a git fetch on the repository repositories
+
+|Info||
+|---|---|
+|Aliases|f|
+|Description|Run a git fetch on the repository|
 
 ### shell command
 
@@ -465,6 +499,10 @@ You can find the code of conduct [here](conde_of_conduct.md), taken from [Contri
 
 |Version|Description|
 |---|---|
+|1.6.0|use go.mod|
+||allow rename of environment|
+||script management|
+||refactoring of file layout|
 |1.5.1|Reload list of repositories for autocomplete after adding a new one|
 |1.5.0|Disabled repositories are not cloned|
 ||Disable/Enable added to autocomplete|

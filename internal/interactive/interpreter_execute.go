@@ -1,4 +1,4 @@
-// Copyright © 2017 Sascha Andres <sascha.andres@outlook.com>
+// Copyright © 2021 Sascha Andres <sascha.andres@outlook.com>
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
@@ -11,19 +11,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package main
+package interactive
 
 import (
-	"log"
-
-	"github.com/google/gops/agent"
-	"github.com/sascha-andres/devenv/devenv/cmd"
+	"github.com/mgutz/str"
+	"strings"
 )
 
-func main() {
-	options := agent.Options{}
-	if err := agent.Listen(options); err != nil {
-		log.Fatal(err)
+// Execute takes a line entered by the user and calls the command
+func (i *Interpreter) Execute(commandline string) error {
+	if strings.TrimSpace(commandline) == "" {
+		return nil
 	}
-	cmd.Execute()
+	tokenize := str.ToArgv(commandline)
+	switch tokenize[0] {
+	case "repo":
+		return i.executeFromCommands(repositoryCommands, true, tokenize[1:])
+	}
+	return i.executeFromCommands(commands, false, tokenize)
 }

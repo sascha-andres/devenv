@@ -1,5 +1,5 @@
-// Copyright © 2017 Sascha Andres <sascha.andres@outlook.com>
 // Licensed under the Apache License, Version 2.0 (the "License");
+// Copyright © 2017 Sascha Andres <sascha.andres@outlook.com>
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
@@ -11,19 +11,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package main
+package helper
 
 import (
-	"log"
-
-	"github.com/google/gops/agent"
-	"github.com/sascha-andres/devenv/devenv/cmd"
+	"fmt"
+	"github.com/sascha-andres/devenv/internal/os_helper"
+	"os"
 )
 
-func main() {
-	options := agent.Options{}
-	if err := agent.Listen(options); err != nil {
-		log.Fatal(err)
+func BuildEnvironment(ev map[string]string) os_helper.Environ {
+	env := os_helper.Environ(os.Environ())
+	for key := range ev {
+		env.Unset(key)
 	}
-	cmd.Execute()
+	for key, value := range ev {
+		env = append(env, fmt.Sprintf("%s=%s", key, value))
+	}
+	return env
 }

@@ -1,4 +1,4 @@
-// Copyright © 2017 Sascha Andres <sascha.andres@outlook.com>
+// Copyright © 2021 Sascha Andres <sascha.andres@outlook.com>
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
@@ -11,19 +11,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package main
+package devenv
 
-import (
-	"log"
-
-	"github.com/google/gops/agent"
-	"github.com/sascha-andres/devenv/devenv/cmd"
-)
-
-func main() {
-	options := agent.Options{}
-	if err := agent.Listen(options); err != nil {
-		log.Fatal(err)
+// GetShell returns the shell executable with template applied
+func (ev *EnvironmentConfiguration) GetShell() (string, []string, error) {
+	if ev.ProcessConfiguration.Shell != "" {
+		result, err := ev.applyVariables(ev.ProcessConfiguration.Shell)
+		if err != nil {
+			return "", nil, err
+		}
+		return result, nil, nil
 	}
-	cmd.Execute()
+	return "bash", []string{"-l"}, nil
 }

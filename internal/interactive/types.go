@@ -11,19 +11,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package main
+package interactive
 
 import (
-	"log"
-
-	"github.com/google/gops/agent"
-	"github.com/sascha-andres/devenv/devenv/cmd"
+	"github.com/sascha-andres/devenv"
 )
 
-func main() {
-	options := agent.Options{}
-	if err := agent.Listen(options); err != nil {
-		log.Fatal(err)
+type (
+	// Interpreter contains data for where and what to do
+	Interpreter struct {
+		ExecuteScriptDirectory string
+		EnvConfiguration       devenv.EnvironmentConfiguration
 	}
-	cmd.Execute()
-}
+)
+
+var (
+	repositoryCommands []Commander
+	commands           []Commander
+)

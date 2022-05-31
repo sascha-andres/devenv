@@ -1,4 +1,4 @@
-// Copyright © 2017 Sascha Andres <sascha.andres@outlook.com>
+// Copyright © 2021 Sascha Andres <sascha.andres@outlook.com>
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
@@ -11,19 +11,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package main
+package cmd
 
 import (
-	"log"
-
-	"github.com/google/gops/agent"
-	"github.com/sascha-andres/devenv/devenv/cmd"
+	"github.com/chzyer/readline"
+	"io"
 )
 
-func main() {
-	options := agent.Options{}
-	if err := agent.Listen(options); err != nil {
-		log.Fatal(err)
+func getLine(l *readline.Instance) (string, bool) {
+	line, err := l.Readline()
+	if err == readline.ErrInterrupt {
+		if len(line) == 0 {
+			return "", true
+		}
+		return line, false
+	} else if err == io.EOF {
+		return "", true
 	}
-	cmd.Execute()
+	return line, false
 }

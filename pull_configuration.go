@@ -1,4 +1,4 @@
-// Copyright © 2017 Sascha Andres <sascha.andres@outlook.com>
+// Copyright © 2021 Sascha Andres <sascha.andres@outlook.com>
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
@@ -11,19 +11,26 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package main
+package devenv
 
 import (
-	"log"
-
-	"github.com/google/gops/agent"
-	"github.com/sascha-andres/devenv/devenv/cmd"
+	"github.com/sascha-andres/devenv/internal/os_helper"
+	"github.com/spf13/viper"
+	"path"
 )
 
-func main() {
-	options := agent.Options{}
-	if err := agent.Listen(options); err != nil {
-		log.Fatal(err)
+//PullConfiguration gets the latest commit from remote repository
+func PullConfiguration() error {
+	configPath := viper.GetString("configpath")
+	if ok, _ := os_helper.Exists(path.Join(configPath, ".git")); !ok {
+		return nil
 	}
-	cmd.Execute()
+
+	cmd, err := os_helper.GetCommand("git", nil, configPath, "pull")
+	if err != nil {
+		return err
+	}
+
+	_, err = os_helper.StartAndWait(cmd)
+	return err
 }

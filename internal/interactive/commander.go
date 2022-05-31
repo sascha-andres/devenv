@@ -11,19 +11,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package main
+package interactive
 
-import (
-	"log"
+import "github.com/sascha-andres/devenv"
 
-	"github.com/google/gops/agent"
-	"github.com/sascha-andres/devenv/devenv/cmd"
-)
-
-func main() {
-	options := agent.Options{}
-	if err := agent.Listen(options); err != nil {
-		log.Fatal(err)
-	}
-	cmd.Execute()
+// Commander represents a unit of work for rhe shell
+type Commander interface {
+	IsResponsible(commandName string) bool
+	Execute(e *devenv.EnvironmentConfiguration, executeScriptDirectory, repository string, args []string) error
 }
