@@ -21,7 +21,7 @@ import (
 )
 
 func main() {
-	options := &agent.Options{}
+	options := agent.Options{}
 	if err := agent.Listen(options); err != nil {
 		log.Fatal(err)
 	}
